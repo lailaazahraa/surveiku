@@ -21,9 +21,9 @@ aside{background:var(--side);border-right:1px solid var(--line);padding:26px 18p
 .nv{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:500 14px Poppins,sans-serif;padding:11px 14px;border-radius:12px;cursor:pointer;margin-bottom:4px}
 .nv:hover{background:var(--row)}.nv.on{background:var(--acc2);color:#fff}
 main{padding:34px 44px 60px;max-width:1180px;width:100%}
-.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:16px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:16px;flex-wrap:wrap}
 .hd h1{font-size:32px}.sub{color:var(--mute);margin:2px 0 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(120,90,50,.07);margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(120,90,50,.07);margin-bottom:20px;overflow-x:auto}
 .hero{background:linear-gradient(135deg,#8C6A3F,#C9A66B);color:#fff;border:0;padding:38px}
 .hero h1{font-size:38px;max-width:640px;line-height:1.2}.hero p{max-width:560px;opacity:.95}
 .tg{display:inline-block;font-size:11px;letter-spacing:.14em;background:rgba(255,255,255,.22);padding:5px 12px;border-radius:99px;margin-bottom:14px}
@@ -48,22 +48,37 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 .lgd{display:flex;gap:14px;font-size:12px;color:var(--mute);margin:8px 0 0;flex-wrap:wrap}.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
 .md{position:fixed;inset:0;background:rgba(40,28,16,.45);display:none;place-items:center;z-index:9;padding:20px}.md.on{display:grid}.md .card{width:min(720px,100%);margin:0}.md textarea{height:300px;font:12px monospace}
 .note{color:var(--mute);font-size:13px}
+.ok{color:#4F7A4B;font-weight:600}.no{color:#B0503A;font-weight:600}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ok{color:#9DC796}:root:not([data-theme="light"]) .no{color:#E08C77}}
+:root[data-theme="dark"] .ok{color:#9DC796}:root[data-theme="dark"] .no{color:#E08C77}
 @media(max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto}main{padding:22px 16px}.st{grid-template-columns:1fr 1fr}.ar{grid-template-columns:110px 1fr 50px}.sc,.it{grid-template-columns:1fr repeat(5,34px)}.qb{grid-template-columns:1fr}.qb .qo{grid-column:auto}}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <div class="app">
 <aside>
-  <div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei Responden</small></div></div>
-  <button class="nv" data-go="home">Dashboard</button>
-  <button class="nv" data-go="new">Buat Survei</button>
-  <button class="nv" data-go="fill" data-id="s1">Isi Survei</button>
-  <button class="nv" data-go="res" data-id="s1">Hasil dan Statistik</button>
-  <button class="nv" id="th" style="margin-top:20px">Ganti tema</button>
+<div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei Responden</small></div></div>
+<button class="nv" data-go="home">Dashboard</button>
+<button class="nv" data-go="new">Buat Survei</button>
+<button class="nv" data-go="fill" data-id="s1">Isi Survei</button>
+<button class="nv" data-go="res" data-id="s1">Hasil dan Statistik</button>
+<button class="nv" id="lgn" style="display:none;margin-top:20px"></button>
+<button class="nv" id="th" style="margin-top:8px">Ganti tema</button>
+<p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
 </aside>
 <main id="m"></main>
 </div>
 <div class="md" id="md"><div class="card"><h3 id="mt" style="margin-bottom:10px"></h3><textarea id="mx" readonly></textarea><p style="margin:12px 0 0"><button class="btn" id="mc">Salin</button> <button class="btn g" id="mz">Tutup</button></p></div></div>
+<script>
+/* ===== PENGATURAN DATABASE ONLINE (Firebase). Isi bagian ini mengikuti PANDUAN-FIREBASE.md =====
+   Biarkan null jika belum dipasang: web tetap jalan dalam mode lokal. */
+window.FIREBASE_CONFIG=null;
+/* Contoh isi:
+window.FIREBASE_CONFIG={apiKey:"AIza...",authDomain:"proyek-kamu.firebaseapp.com",projectId:"proyek-kamu",appId:"1:123:web:abc"};
+*/
+</script>
 <script>
 var D=[["Tarif dan biaya",["Tarif yang dikenakan terjangkau dan sesuai anggaran","Penyesuaian tarif pada jam sibuk masih wajar","Biaya perjalanan sepadan dengan jarak yang ditempuh"]],
 ["Promo dan transparansi",["Promo atau diskon yang diberikan menarik dan membantu","Rincian biaya transparan sebelum pesanan dikonfirmasi","Metode pembayaran non tunai berfungsi dengan lancar"]],
@@ -79,70 +94,146 @@ var CL=['#8C4A3B','#C98B5E','#E3C9A0','#9DB08A','#5E7F5A'],LB=['1 Sangat Tidak S
 var $=function(s){return document.querySelector(s)},M=$('#m'),st,cur='home',arg;
 function E(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function seed(){var q=[];D.forEach(function(a){a[1].forEach(function(t){q.push({t:t,type:'likert',g:a[0]})})});q.push({t:'Kritik dan saran untuk peningkatan layanan',type:'text',g:'Kritik dan Saran'});
- return{id:'s1',title:'Evaluasi Layanan Transportasi Online Melalui Aspek Tarif, Keamanan dan Kecepatan',desc:'Survei kepuasan pengguna terhadap tarif, keselamatan, dan kecepatan layanan transportasi online. Jawaban dipakai hanya untuk kepentingan akademik.',qs:q}}
+return{id:'s1',title:'Evaluasi Layanan Transportasi Online Melalui Aspek Tarif, Keamanan dan Kecepatan',desc:'Survei kepuasan pengguna terhadap tarif, keselamatan, dan kecepatan layanan transportasi online. Jawaban dipakai hanya untuk kepentingan akademik.',qs:q}}
 function load(){var sv=null,sr=RAW.map(function(x){return x.split('').map(Number).concat([''])});
- try{sv=JSON.parse(localStorage.getItem('sf2'))}catch(e){}
- st={s:[seed()],r:{s1:sr}};
- if(sv&&Array.isArray(sv.s)){st.s=st.s.concat(sv.s.filter(function(x){return x&&x.id&&Array.isArray(x.qs)}));var r=sv.r||{};for(var k in r){if(Array.isArray(r[k])&&(k!='s1'||r[k].length))st.r[k]=r[k]}}
- st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=[]})}
-function save(){try{localStorage.setItem('sf2',JSON.stringify({s:st.s.slice(1),r:st.r}))}catch(e){}}
+try{sv=JSON.parse(localStorage.getItem('sf2'))}catch(e){}
+st={s:[seed()],r:{s1:sr}};
+if(sv&&Array.isArray(sv.s)){st.s=st.s.concat(sv.s.filter(function(x){return x&&x.id&&Array.isArray(x.qs)}));var r=sv.r||{};for(var k in r){if(Array.isArray(r[k])&&(k!='s1'||r[k].length))st.r[k]=r[k]}}
+st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=[]})}
+function save(){if(window.CLOUD&&window.CLOUD.on)return;try{localStorage.setItem('sf2',JSON.stringify({s:st.s.slice(1),r:st.r}))}catch(e){}}
 function col(sv,j){return st.r[sv.id].map(function(r){return r[j]})}
 function nm(sv,j){return col(sv,j).map(Number).filter(function(x){return x})}
 function stat(a){var n=a.length;if(!n)return null;var m=a.reduce(function(x,y){return x+y},0)/n,s=a.slice().sort(function(x,y){return x-y}),md=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2,sd=n>1?Math.sqrt(a.reduce(function(x,y){return x+(y-m)*(y-m)},0)/(n-1)):0;return{n:n,m:m,md:md,sd:sd}}
 function csi(sv){var a=[];sv.qs.forEach(function(q,j){if(q.type=='likert')a=a.concat(nm(sv,j))});var s=stat(a);return s?s.m/5*100:null}
 function sbar(a){var h='<div class="sb">';for(var k=1;k<=5;k++){var p=a.filter(function(x){return x==k}).length/a.length*100;h+='<i style="width:'+p+'%;background:'+CL[k-1]+'" title="'+LB[k-1]+': '+p.toFixed(0)+'%"></i>'}return h+'</div>'}
 function sv_(id){return st.s.filter(function(s){return s.id==id})[0]||st.s[0]}
+/* ===== Uji validitas (Pearson, r hitung vs r tabel 5%) dan reliabilitas (Cronbach Alpha) ===== */
+function avg(a){return a.reduce(function(x,y){return x+y},0)/a.length}
+function vr2(a){var m=avg(a);return a.reduce(function(x,y){return x+(y-m)*(y-m)},0)/(a.length-1)}
+function pear(x,y){var mx=avg(x),my=avg(y),a=0,b=0,c=0;for(var i=0;i<x.length;i++){a+=(x[i]-mx)*(y[i]-my);b+=(x[i]-mx)*(x[i]-mx);c+=(y[i]-my)*(y[i]-my)}return b&&c?a/Math.sqrt(b*c):NaN}
+function rtab(n){var d=n-2,z=1.96,t=z+(z*z*z+z)/(4*d)+(5*Math.pow(z,5)+16*z*z*z+3*z)/(96*d*d);return t/Math.sqrt(d+t*t)}
+function vr(s){var js=[];s.qs.forEach(function(q,j){if(q.type=='likert')js.push(j)});
+var rows=st.r[s.id].filter(function(r){return js.every(function(j){return +r[j]>0})}),n=rows.length;
+if(n<3||js.length<2)return null;
+var tot=rows.map(function(r){return js.reduce(function(a,j){return a+ +r[j]},0)}),rc=rtab(n),sv=0,vo=0;
+var it=js.map(function(j){var x=rows.map(function(r){return +r[j]}),r=pear(x,tot);sv+=vr2(x);if(r>rc)vo++;return{t:s.qs[j].t,r:r,ok:r>rc}});
+var vt=vr2(tot),k=js.length,al=vt>0?k/(k-1)*(1-sv/vt):NaN;
+return{n:n,k:k,rc:rc,it:it,vo:vo,al:al,rel:al>=0.6,lv:al>=0.8?'Tinggi':al>=0.6?'Cukup':'Rendah'}}
+function vrh(s){var v=vr(s);if(!v)return'';
+var h='<div class="card"><h3 style="margin-bottom:6px">Uji Validitas dan Reliabilitas</h3><p class="note" style="margin:0 0 10px">Validitas: korelasi Pearson skor pernyataan dengan skor total, taraf signifikansi 5%. Pernyataan valid bila r hitung lebih besar dari r tabel. Reliabilitas: Cronbach Alpha, instrumen reliabel bila nilainya 0,60 atau lebih. Dihitung dari '+v.n+' responden dan '+v.k+' pernyataan skala Likert.</p>';
+h+='<div class="st" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px"><div class="card"><b>'+v.rc.toFixed(3)+'</b><span>r tabel (n = '+v.n+', 5%)</span></div><div class="card"><b>'+v.vo+' / '+v.k+'</b><span>Pernyataan valid</span></div><div class="card"><b>'+(isNaN(v.al)?'-':v.al.toFixed(3))+'</b><span>Cronbach Alpha ('+(isNaN(v.al)?'-':(v.rel?'Reliabel, ':'Tidak reliabel, ')+v.lv)+')</span></div></div>';
+h+='<table><tr><th>Pernyataan</th><th>r hitung</th><th>r tabel</th><th>Keputusan</th></tr>';
+v.it.forEach(function(x){h+='<tr><td>'+E(x.t)+'</td><td>'+(isNaN(x.r)?'-':x.r.toFixed(3))+'</td><td>'+v.rc.toFixed(3)+'</td><td class="'+(x.ok?'ok':'no')+'">'+(x.ok?'Valid':'Tidak valid')+'</td></tr>'});
+return h+'</table></div>'}
+/* ===== Ekspor PDF ===== */
+async function pdf(){var s=sv_(arg),J=window.jspdf;
+if(!J||!J.jsPDF){alert('Library PDF belum termuat. Periksa koneksi internet lalu muat ulang halaman.');return}
+var d=new J.jsPDF({unit:'pt',format:'a4'}),c=csi(s),v=vr(s),n=st.r[s.id].length,y=44,all=[];
+d.setFontSize(15);var tl=d.splitTextToSize('Laporan Hasil Survei: '+s.title,515);d.text(tl,40,y);y+=tl.length*18+2;
+d.setFontSize(10);d.text('Responden: '+n+'   |   Indeks kepuasan (CSI): '+(c==null?'-':c.toFixed(1)+'%')+'   |   Dicetak: '+new Date().toLocaleDateString('id-ID'),40,y);y+=12;
+var gs={},go_=[];s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gs[q.g]){gs[q.g]=[];go_.push(q.g)}gs[q.g]=gs[q.g].concat(nm(s,j))}});
+function T(title,head,body){if(!body.length)return;d.setFontSize(12);d.text(title,40,y+18);d.autoTable({startY:y+26,head:[head],body:body,styles:{fontSize:8,cellPadding:3},headStyles:{fillColor:[140,106,63]},margin:{left:40,right:40}});y=d.lastAutoTable.finalY+8}
+T('Indeks kepuasan per aspek',['Aspek','Rata-rata','Indeks'],go_.map(function(g){var z=stat(gs[g]);return z?[g,z.m.toFixed(2),(z.m/5*100).toFixed(1)+'%']:[g,'-','-']}));
+var qb=[];s.qs.forEach(function(q,j){var a=nm(s,j);if(q.type=='likert'&&a.length){var z=stat(a);qb.push([q.t,z.m.toFixed(2),String(z.md),z.sd.toFixed(2)])}});
+T('Statistik per pernyataan',['Pernyataan','Mean','Median','SD'],qb);
+if(v){T('Uji validitas (r tabel = '+v.rc.toFixed(3)+', taraf 5%)',['Pernyataan','r hitung','Keputusan'],v.it.map(function(x){return[x.t,isNaN(x.r)?'-':x.r.toFixed(3),x.ok?'Valid':'Tidak valid']}));
+d.setFontSize(11);if(y>780){d.addPage();y=30}d.text('Uji reliabilitas: Cronbach Alpha = '+(isNaN(v.al)?'-':v.al.toFixed(3))+' ('+(v.rel?'Reliabel':'Tidak reliabel')+', '+v.lv+'), '+v.k+' pernyataan, '+v.n+' responden.',40,y+16)}
+var buf=d.output('arraybuffer'),fn='hasil-survei.pdf',dl=null;
+try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
+if(dl){try{await dl.save({filename:fn,data:buf})}catch(e){}}else d.save(fn)}
 function go(v,id){cur=v;arg=id;render();window.scrollTo(0,0)}
 function render(){document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==cur)});({home:home,new:nw,fill:fill,res:res})[cur]()}
 function home(){var n=0,c=csi(st.s[0]);st.s.forEach(function(s){n+=st.r[s.id].length});
- var h='<div class="card hero"><span class="tg">PLATFORM SURVEI ALL-IN-ONE</span><h1>Buat survei, kumpulkan jawaban, baca hasilnya.</h1><p>Susun kuesioner dengan berbagai tipe pertanyaan, bagikan ke responden, lalu lihat statistik Mean, Median, dan SD serta indeks kepuasan secara otomatis.</p><p style="margin-top:18px"><button class="btn w" data-go="new">Buat Survei Baru</button> <button class="btn" style="background:rgba(255,255,255,.2)" data-go="res" data-id="s1">Lihat Hasil</button></p></div>';
- h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>4</b><span>Tipe pertanyaan</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>CSI survei utama</span></div></div>';
- h+='<div class="card"><h3 style="margin-bottom:8px">Survei Saya</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
- st.s.forEach(function(s,i){h+='<tr><td><b>'+E(s.title)+'</b></td><td>'+s.qs.length+'</td><td>'+st.r[s.id].length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button>'+(i?' <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>'});
- M.innerHTML=h+'</table></div>'}
+var h='<div class="card hero"><span class="tg">PLATFORM SURVEI ALL-IN-ONE</span><h1>Buat survei, kumpulkan jawaban, baca hasilnya.</h1><p>Susun kuesioner dengan berbagai tipe pertanyaan, bagikan ke responden, lalu lihat statistik Mean, Median, dan SD, indeks kepuasan, uji validitas dan reliabilitas, serta unduh laporan PDF secara otomatis.</p><p style="margin-top:18px"><button class="btn w" data-go="new">Buat Survei Baru</button> <button class="btn" style="background:rgba(255,255,255,.2)" data-go="res" data-id="s1">Lihat Hasil</button></p></div>';
+h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>4</b><span>Tipe pertanyaan</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>CSI survei utama</span></div></div>';
+h+='<div class="card"><h3 style="margin-bottom:8px">Survei Saya</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
+st.s.forEach(function(s,i){h+='<tr><td><b>'+E(s.title)+'</b></td><td>'+s.qs.length+'</td><td>'+st.r[s.id].length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button>'+(i&&canDel(s)?' <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>'});
+M.innerHTML=h+'</table></div>'}
 function qrow(){var d=document.createElement('div');d.className='qb';
- d.innerHTML='<input class="qt" placeholder="Tulis pertanyaan"><select class="qy"><option value="likert">Skala Likert 1-5</option><option value="choice">Pilihan ganda</option><option value="yesno">Ya / Tidak</option><option value="text">Jawaban teks</option></select><button class="x" type="button">&#10005;</button><input class="qo" placeholder="Opsi dipisah koma, misal: Gojek, Grab, Maxim" style="display:none">';
- d.querySelector('.qy').onchange=function(){d.querySelector('.qo').style.display=this.value=='choice'?'block':'none'};d.querySelector('.x').onclick=function(){d.remove()};$('#ql').appendChild(d);return d}
+d.innerHTML='<input class="qt" placeholder="Tulis pertanyaan"><select class="qy"><option value="likert">Skala Likert 1-5</option><option value="choice">Pilihan ganda</option><option value="yesno">Ya / Tidak</option><option value="text">Jawaban teks</option></select><button class="x" type="button">&#10005;</button><input class="qo" placeholder="Opsi dipisah koma, misal: Gojek, Grab, Maxim" style="display:none">';
+d.querySelector('.qy').onchange=function(){d.querySelector('.qo').style.display=this.value=='choice'?'block':'none'};d.querySelector('.x').onclick=function(){d.remove()};$('#ql').appendChild(d);return d}
 function nw(){M.innerHTML='<div class="hd"><div><h1>Buat Survei</h1><p class="sub">Susun judul, deskripsi, dan pertanyaan survei Anda.</p></div></div><div class="card"><label class="note">Judul survei</label><input id="nt" placeholder="Contoh: Kepuasan Layanan Kampus" style="margin:4px 0 14px"><label class="note">Deskripsi</label><textarea id="nd" rows="3" placeholder="Jelaskan tujuan survei" style="margin:4px 0 6px"></textarea></div><div class="card"><h3 style="margin-bottom:12px">Pertanyaan</h3><div id="ql"></div><p><button class="btn g" id="aq" type="button">+ Tambah pertanyaan</button></p></div><button class="btn" id="sv" type="button">Simpan dan Terbitkan</button> <span class="note" id="ne"></span>';
- qrow();$('#aq').onclick=qrow;
- $('#sv').onclick=function(){var t=$('#nt').value.trim(),q=[];document.querySelectorAll('.qb').forEach(function(d){var x=d.querySelector('.qt').value.trim(),y=d.querySelector('.qy').value;if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}});
-  if(!t||!q.length){$('#ne').textContent='Isi judul dan minimal satu pertanyaan.';return}
-  var id='s'+Date.now();st.s.push({id:id,title:t,desc:$('#nd').value,qs:q});st.r[id]=[];save();go('home')}}
+qrow();$('#aq').onclick=qrow;
+$('#sv').onclick=function(){var t=$('#nt').value.trim(),q=[];document.querySelectorAll('.qb').forEach(function(d){var x=d.querySelector('.qt').value.trim(),y=d.querySelector('.qy').value;if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}});
+if(!t||!q.length){$('#ne').textContent='Isi judul dan minimal satu pertanyaan.';return}
+var id='s'+Date.now(),nv={id:id,title:t,desc:$('#nd').value,qs:q},C=window.CLOUD;
+if(C&&C.on){if(!C.user){$('#ne').textContent='Masuk dengan Google dulu untuk menerbitkan survei.';C.login();return}
+$('#ne').textContent='Menyimpan...';C.addSurvey(nv).then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal menyimpan: '+e.message});return}
+st.s.push(nv);st.r[id]=[];save();go('home')}}
 function fill(){var s=sv_(arg),h='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div><div class="card" id="fm">',g='';
- s.qs.forEach(function(q,j){if(q.g!=g){g=q.g;h+='<div class="sec"><h3>'+E(g)+'</h3>'+(q.type=='likert'?'<div class="sc"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>':'')+'</div>'}
-  if(q.type=='likert'){h+='<div class="it" data-j="'+j+'"><span>'+E(q.t)+'</span>';for(var v=1;v<=5;v++)h+='<label><input type="radio" name="q'+j+'" value="'+v+'" aria-label="'+v+'"></label>';h+='</div>'}
-  else if(q.type=='text'){h+='<div class="it" style="display:block" data-j="'+j+'"><p style="margin:0 0 6px">'+E(q.t)+'</p><textarea name="q'+j+'" rows="3"></textarea></div>'}
-  else{h+='<div class="it ch" style="display:block" data-j="'+j+'"><p style="margin:0 0 4px">'+E(q.t)+'</p>';q.o.forEach(function(o){h+='<label><input type="radio" name="q'+j+'" value="'+E(o)+'">'+E(o)+'</label>'});h+='</div>'}});
- M.innerHTML=h+'<p style="margin-top:20px"><button class="btn" id="sb" type="button">Kirim Jawaban</button> <span class="note" id="er"></span></p></div>';
- $('#sb').onclick=function(){var r=[],bad=null;s.qs.forEach(function(q,j){var el=document.querySelector('[data-j="'+j+'"]'),v='';
-  if(q.type=='text')v=el.querySelector('textarea').value;else{var c=el.querySelector('input:checked');v=c?(q.type=='likert'?+c.value:c.value):''}
-  if(q.type!='text'&&v===''){el.classList.add('miss');bad=bad||el}r.push(v)});
-  if(bad){$('#er').textContent='Masih ada pertanyaan yang belum dijawab.';bad.scrollIntoView({block:'center'});return}
-  st.r[s.id].push(r);save();go('res',s.id)}}
-function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div><button class="btn g" data-ex="csv">Ekspor CSV</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
- var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(nm(s,j))});var S=stat(all);
- h+='<div class="st"><div class="card"><b>'+n+'</b><span>Responden</span></div><div class="card"><b>'+(S?S.m.toFixed(2):'-')+'</b><span>Rata-rata skor (1-5)</span></div><div class="card"><b>'+(S?S.md:'-')+'</b><span>Median</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>Indeks kepuasan (CSI)</span></div></div>';
- var gs={},go_=[];s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gs[q.g]){gs[q.g]=[];go_.push(q.g)}gs[q.g]=gs[q.g].concat(nm(s,j))}});
- if(!n)h+='<div class="card"><p class="note" style="margin:0">Belum ada responden. Klik <b>Isi Survei</b> pada dashboard untuk mengisi survei ini terlebih dahulu.</p></div>';
- if(go_.length&&n){h+='<div class="card"><h3 style="margin-bottom:6px">Indeks Kepuasan per Aspek</h3>';go_.forEach(function(g){var z=stat(gs[g]);if(!z)return;var m=z.m;h+='<div class="ar"><span>'+E(g)+'</span><div class="bar"><i style="width:'+m/5*100+'%"></i></div><b>'+(m/5*100).toFixed(1)+'%</b></div>'});h+='</div>'}
- h+='<div class="card"><h3 style="margin-bottom:6px">Statistik per Pertanyaan</h3><table><tr><th>Pertanyaan</th><th>Mean</th><th>Median</th><th>SD</th><th>Sebaran jawaban</th></tr>';
- s.qs.forEach(function(q,j){var a=nm(s,j);
-  if(q.type=='likert'&&a.length){var z=stat(a);h+='<tr><td>'+E(q.t)+'</td><td>'+z.m.toFixed(2)+'</td><td>'+z.md+'</td><td>'+z.sd.toFixed(2)+'</td><td>'+sbar(a)+'</td></tr>'}
-  else if(q.type=='choice'||q.type=='yesno'){var cc=col(s,j);h+='<tr><td>'+E(q.t)+'</td><td colspan="4">'+q.o.map(function(o){return E(o)+': <b>'+cc.filter(function(x){return x==o}).length+'</b>'}).join(' &nbsp; ')+'</td></tr>'}
-  else if(q.type=='text'){var t=col(s,j).filter(Boolean);h+='<tr><td>'+E(q.t)+'</td><td colspan="4" class="note">'+(t.length?t.slice(-3).map(E).join(' | '):'Belum ada jawaban teks')+'</td></tr>'}});
- h+='</table><div class="lgd">'+LB.map(function(l,i){return'<span><i style="background:'+CL[i]+'"></i>'+l+'</span>'}).join('')+'</div></div>';M.innerHTML=h}
-function exp(k){var s=sv_(arg),rows=st.r[s.id],o;
- if(k=='json')o=JSON.stringify({survei:s.title,pertanyaan:s.qs.map(function(q){return q.t}),jawaban:rows},null,1);
- else o=[s.qs.map(function(q){return'"'+q.t.replace(/"/g,'""')+'"'}).join(',')].concat(rows.map(function(r){return r.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"'}).join(',')})).join('\n');
- $('#mt').textContent='Ekspor '+k.toUpperCase();$('#mx').value=o;$('#md').classList.add('on')}
+s.qs.forEach(function(q,j){if(q.g!=g){g=q.g;h+='<div class="sec"><h3>'+E(g)+'</h3>'+(q.type=='likert'?'<div class="sc"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>':'')+'</div>'}
+if(q.type=='likert'){h+='<div class="it" data-j="'+j+'"><span>'+E(q.t)+'</span>';for(var v=1;v<=5;v++)h+='<label><input type="radio" name="q'+j+'" value="'+v+'" aria-label="'+v+'"></label>';h+='</div>'}
+else if(q.type=='text'){h+='<div class="it" style="display:block" data-j="'+j+'"><p style="margin:0 0 6px">'+E(q.t)+'</p><textarea name="q'+j+'" rows="3"></textarea></div>'}
+else{h+='<div class="it ch" style="display:block" data-j="'+j+'"><p style="margin:0 0 4px">'+E(q.t)+'</p>';q.o.forEach(function(o){h+='<label><input type="radio" name="q'+j+'" value="'+E(o)+'">'+E(o)+'</label>'});h+='</div>'}});
+M.innerHTML=h+'<p style="margin-top:20px"><button class="btn" id="sb" type="button">Kirim Jawaban</button> <span class="note" id="er"></span></p></div>';
+$('#sb').onclick=function(){var r=[],bad=null;s.qs.forEach(function(q,j){var el=document.querySelector('[data-j="'+j+'"]'),v='';
+if(q.type=='text')v=el.querySelector('textarea').value;else{var c=el.querySelector('input:checked');v=c?(q.type=='likert'?+c.value:c.value):''}
+if(q.type!='text'&&v===''){el.classList.add('miss');bad=bad||el}r.push(v)});
+if(bad){$('#er').textContent='Masih ada pertanyaan yang belum dijawab.';bad.scrollIntoView({block:'center'});return}
+var C=window.CLOUD;if(C&&C.on){$('#er').textContent='Mengirim jawaban...';C.addResp(s.id,r).then(function(){go('res',s.id)}).catch(function(e){$('#er').textContent='Gagal mengirim: '+e.message});return}
+st.r[s.id].push(r);save();go('res',s.id)}}
+function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div><button class="btn" data-ex="pdf">Unduh PDF</button> <button class="btn g" data-ex="csv">Ekspor CSV</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
+var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(nm(s,j))});var S=stat(all);
+h+='<div class="st"><div class="card"><b>'+n+'</b><span>Responden</span></div><div class="card"><b>'+(S?S.m.toFixed(2):'-')+'</b><span>Rata-rata skor (1-5)</span></div><div class="card"><b>'+(S?S.md:'-')+'</b><span>Median</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>Indeks kepuasan (CSI)</span></div></div>';
+var gs={},go_=[];s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gs[q.g]){gs[q.g]=[];go_.push(q.g)}gs[q.g]=gs[q.g].concat(nm(s,j))}});
+if(!n)h+='<div class="card"><p class="note" style="margin:0">Belum ada responden. Klik <b>Isi Survei</b> pada dashboard untuk mengisi survei ini terlebih dahulu.</p></div>';
+if(go_.length&&n){h+='<div class="card"><h3 style="margin-bottom:6px">Indeks Kepuasan per Aspek</h3>';go_.forEach(function(g){var z=stat(gs[g]);if(!z)return;var m=z.m;h+='<div class="ar"><span>'+E(g)+'</span><div class="bar"><i style="width:'+m/5*100+'%"></i></div><b>'+(m/5*100).toFixed(1)+'%</b></div>'});h+='</div>'}
+h+='<div class="card"><h3 style="margin-bottom:6px">Statistik per Pertanyaan</h3><table><tr><th>Pertanyaan</th><th>Mean</th><th>Median</th><th>SD</th><th>Sebaran jawaban</th></tr>';
+s.qs.forEach(function(q,j){var a=nm(s,j);
+if(q.type=='likert'&&a.length){var z=stat(a);h+='<tr><td>'+E(q.t)+'</td><td>'+z.m.toFixed(2)+'</td><td>'+z.md+'</td><td>'+z.sd.toFixed(2)+'</td><td>'+sbar(a)+'</td></tr>'}
+else if(q.type=='choice'||q.type=='yesno'){var cc=col(s,j);h+='<tr><td>'+E(q.t)+'</td><td colspan="4">'+q.o.map(function(o){return E(o)+': <b>'+cc.filter(function(x){return x==o}).length+'</b>'}).join(' &nbsp; ')+'</td></tr>'}
+else if(q.type=='text'){var t=col(s,j).filter(Boolean);h+='<tr><td>'+E(q.t)+'</td><td colspan="4" class="note">'+(t.length?t.slice(-3).map(E).join(' | '):'Belum ada jawaban teks')+'</td></tr>'}});
+h+='</table><div class="lgd">'+LB.map(function(l,i){return'<span><i style="background:'+CL[i]+'"></i>'+l+'</span>'}).join('')+'</div></div>';h+=vrh(s);M.innerHTML=h}
+function slug(t){return String(t).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'survei'}
+function toCSV(s){var q=function(v){v=String(v==null?'':v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+return '\ufeff'+[['No'].concat(s.qs.map(function(x){return x.t}))].concat(st.r[s.id].map(function(r,i){return[i+1].concat(s.qs.map(function(x,j){return r[j]==null?'':r[j]}))})).map(function(r){return r.map(q).join(',')}).join('\r\n')+'\r\n'}
+function toJSON(s){return JSON.stringify({survei:{id:s.id,judul:s.title,deskripsi:s.desc||'',diekspor:new Date().toISOString()},jumlah_responden:st.r[s.id].length,
+pertanyaan:s.qs.map(function(q,j){var o={kode:'Q'+(j+1),teks:q.t,tipe:q.type,kelompok:q.g};if(q.o)o.opsi=q.o;return o}),
+jawaban:st.r[s.id].map(function(r,i){var o={no:i+1};s.qs.forEach(function(q,j){var v=r[j];o['Q'+(j+1)]=(q.type=='likert'&&v!==''&&v!=null)?+v:(v==null?'':v)});return o})},null,2)}
+async function dl(name,mime,text){var blob=new Blob([text],{type:mime+';charset=utf-8'}),du=null;
+try{if(window.claude&&claude.use)du=await claude.use('downloads')}catch(e){}
+if(du){try{await du.save({filename:name,data:await blob.arrayBuffer()});return}catch(e){}}
+var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800)}
+function exp(k){if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
+if(k=='json')return dl(b+'.json','application/json',toJSON(s));return dl(b+'.csv','text/csv',toCSV(s))}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-go]');if(t)return go(t.dataset.go,t.dataset.id);
- t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;st.s=st.s.filter(function(s){return s.id!=i});delete st.r[i];save();return home()}
- t=e.target.closest('[data-ex]');if(t)exp(t.dataset.ex)});
+t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;if(window.CLOUD&&window.CLOUD.on){window.CLOUD.delSurvey(i).catch(function(e){alert('Gagal menghapus: '+e.message)});return}st.s=st.s.filter(function(s){return s.id!=i});delete st.r[i];save();return home()}
+t=e.target.closest('[data-ex]');if(t)exp(t.dataset.ex)});
 document.addEventListener('change',function(e){var it=e.target.closest('.it');if(it)it.classList.remove('miss')});
 $('#mz').onclick=function(){$('#md').classList.remove('on')};
 $('#mc').onclick=function(){$('#mx').select();try{document.execCommand('copy');$('#mc').textContent='Tersalin'}catch(e){}};
 $('#th').onclick=function(){var r=document.documentElement,d=r.getAttribute('data-theme')=='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);r.setAttribute('data-theme',d?'light':'dark')};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){load();render()});else{load();render()}
+/* ===== Sinkronisasi database online ===== */
+function canDel(s){var C=window.CLOUD;return !(C&&C.on)||!!(C.user&&s.owner==C.user.uid)}
+function cloudMerge(){var C=window.CLOUD;if(!C||!C.on)return;var sr=RAW.map(function(x){return x.split('').map(Number).concat([''])});
+st={s:[seed()].concat(C.surveys||[]),r:{s1:sr.concat(C.resp.s1||[])}};st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=C.resp[x.id]||[]})}
+function stamp(m){var C=window.CLOUD,t=$('#stt'),b=$('#lgn');if(!t)return;
+if(C&&C.on){t.textContent='Online: terhubung ke database. Sinkron '+new Date().toLocaleTimeString('id-ID');b.style.display='block';b.textContent=C.user?'Keluar ('+(C.user.displayName||C.user.email||'akun').split(' ')[0]+')':'Masuk dengan Google'}
+else{t.textContent=m||(window.FIREBASE_CONFIG?'Menghubungkan ke database...':'Mode lokal: data tersimpan di browser ini saja.');b.style.display='none'}}
+window.onCloud=function(){cloudMerge();if(cur=='home'||cur=='res')render();stamp()};
+window.onAuth=function(){stamp()};
+window.onCloudErr=function(m){if(window.CLOUD)window.CLOUD.on=false;load();render();stamp('Database online gagal ('+m+'). Memakai mode lokal.')};
+$('#lgn').onclick=function(){var C=window.CLOUD;if(!C||!C.on)return;if(C.user)C.logout();else C.login()};
+function boot(){load();render();stamp()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()
+</script>
+<script type="module">
+var cfg=window.FIREBASE_CONFIG;
+if(cfg&&cfg.apiKey){try{
+const V='https://www.gstatic.com/firebasejs/10.12.2/';
+const [A,F,U]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-firestore.js'),import(V+'firebase-auth.js')]);
+const app=A.initializeApp(cfg),db=F.getFirestore(app),au=U.getAuth(app),prov=new U.GoogleAuthProvider();
+const C=window.CLOUD={on:true,user:null,surveys:[],resp:{},
+login:()=>U.signInWithPopup(au,prov).catch(e=>alert('Login gagal: '+e.message)),
+logout:()=>U.signOut(au),
+addSurvey:s=>F.setDoc(F.doc(db,'surveys',s.id),{title:s.title,desc:s.desc||'',qs:s.qs,owner:C.user.uid,ownerName:C.user.displayName||'',createdAt:F.serverTimestamp()}),
+delSurvey:id=>F.deleteDoc(F.doc(db,'surveys',id)),
+addResp:(sid,a)=>F.addDoc(F.collection(db,'responses'),{surveyId:sid,answers:a,ts:F.serverTimestamp()})};
+const bad=e=>window.onCloudErr(e.code||e.message);
+U.onAuthStateChanged(au,u=>{C.user=u;window.onAuth()});
+F.onSnapshot(F.collection(db,'surveys'),s=>{C.surveys=s.docs.map(d=>{const x=d.data();return{id:d.id,title:x.title,desc:x.desc,qs:x.qs,owner:x.owner}});window.onCloud()},bad);
+F.onSnapshot(F.collection(db,'responses'),s=>{const r={};s.docs.forEach(d=>{const x=d.data();(r[x.surveyId]=r[x.surveyId]||[]).push(x.answers)});C.resp=r;window.onCloud()},bad);
+}catch(e){window.onCloudErr(e.message)}}
 </script>
 </body>
 </html>
