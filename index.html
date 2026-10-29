@@ -52,6 +52,7 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ok{color:#9DC796}:root:not([data-theme="light"]) .no{color:#E08C77}}
 :root[data-theme="dark"] .ok{color:#9DC796}:root[data-theme="dark"] .no{color:#E08C77}
 @media(max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto}main{padding:22px 16px}.st{grid-template-columns:1fr 1fr}.ar{grid-template-columns:110px 1fr 50px}.sc,.it{grid-template-columns:1fr repeat(5,34px)}.qb{grid-template-columns:1fr}.qb .qo{grid-column:auto}}
+.solo .app{display:block}.solo aside{display:none}.solo main{margin:0 auto;padding:28px 20px 60px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -62,19 +63,23 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 <div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei Responden</small></div></div>
 <button class="nv" data-go="home">Dashboard</button>
 <button class="nv" data-go="new">Buat Survei</button>
-<button class="nv" data-go="fill" data-id="s1">Isi Survei</button>
-<button class="nv" data-go="res" data-id="s1">Hasil dan Statistik</button>
-<button class="nv" id="lgn" style="display:none;margin-top:20px"></button>
+<button class="nv" data-go="pickfill">Isi Survei</button>
+<button class="nv" data-go="pickres">Hasil dan Statistik</button>
+<div id="lgs" style="margin-top:20px"></div>
 <button class="nv" id="th" style="margin-top:8px">Ganti tema</button>
 <p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
 </aside>
 <main id="m"></main>
 </div>
+<div class="md" id="lm"><div class="card"><h3 style="margin-bottom:10px">Masuk</h3><label class="note">Nama Anda</label><input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px"><label class="note">Masuk sebagai</label><div class="ch" style="margin:6px 0 12px"><label><input type="radio" name="lr" value="pembuat" checked>Pembuat survei (membuat, edit, dan hapus surveinya sendiri)</label><label><input type="radio" name="lr" value="responden">Responden (mengisi, membagikan, dan melihat hasil)</label></div><p style="margin:0"><button class="btn" id="lgo" type="button">Masuk</button> <button class="btn g" id="lcx" type="button">Batal</button> <span class="note" id="lerr"></span></p></div></div>
+<div class="md" id="sm"><div class="card"><h3 style="margin-bottom:4px">Bagikan survei</h3><p class="note" id="sn" style="margin:0 0 14px"></p><label class="note">Tautan untuk mengisi (hanya halaman survei, seperti Google Form)</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl1" readonly><button class="btn" data-cp="sl1" type="button">Salin</button></div><label class="note">Tautan untuk melihat hasil</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl2" readonly><button class="btn g" data-cp="sl2" type="button">Salin</button></div><p style="margin:0"><button class="btn g" id="sz" type="button">Tutup</button></p></div></div>
 <div class="md" id="md"><div class="card"><h3 id="mt" style="margin-bottom:10px"></h3><textarea id="mx" readonly></textarea><p style="margin:12px 0 0"><button class="btn" id="mc">Salin</button> <button class="btn g" id="mz">Tutup</button></p></div></div>
 <script>
 /* ===== PENGATURAN DATABASE ONLINE (Firebase). Isi bagian ini mengikuti PANDUAN-FIREBASE.md =====
    Biarkan null jika belum dipasang: web tetap jalan dalam mode lokal. */
 window.FIREBASE_CONFIG=null;
+window.DB_BLOB='';  /* ID database bersama (JSONBlob). Lihat PANDUAN-DATABASE.md */
+window.LOGIN_PROVIDERS=['google']; /* tambah 'apple','microsoft','github' bila sudah diaktifkan di Firebase (Apple butuh akun Apple Developer berbayar) */
 /* Contoh isi:
 window.FIREBASE_CONFIG={apiKey:"AIza...",authDomain:"proyek-kamu.firebaseapp.com",projectId:"proyek-kamu",appId:"1:123:web:abc"};
 */
@@ -94,7 +99,7 @@ var CL=['#8C4A3B','#C98B5E','#E3C9A0','#9DB08A','#5E7F5A'],LB=['1 Sangat Tidak S
 var $=function(s){return document.querySelector(s)},M=$('#m'),st,cur='home',arg;
 function E(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function seed(){var q=[];D.forEach(function(a){a[1].forEach(function(t){q.push({t:t,type:'likert',g:a[0]})})});q.push({t:'Kritik dan saran untuk peningkatan layanan',type:'text',g:'Kritik dan Saran'});
-return{id:'s1',title:'Evaluasi Layanan Transportasi Online Melalui Aspek Tarif, Keamanan dan Kecepatan',desc:'Survei kepuasan pengguna terhadap tarif, keselamatan, dan kecepatan layanan transportasi online. Jawaban dipakai hanya untuk kepentingan akademik.',qs:q}}
+return{id:'s1',login:true,ownerName:'Kelompok 6',title:'Evaluasi Layanan Transportasi Online Melalui Aspek Tarif, Keamanan dan Kecepatan',desc:'Survei kepuasan pengguna terhadap tarif, keselamatan, dan kecepatan layanan transportasi online. Jawaban dipakai hanya untuk kepentingan akademik.',qs:q}}
 function load(){var sv=null,sr=RAW.map(function(x){return x.split('').map(Number).concat([''])});
 try{sv=JSON.parse(localStorage.getItem('sf2'))}catch(e){}
 st={s:[seed()],r:{s1:sr}};
@@ -142,36 +147,62 @@ var buf=d.output('arraybuffer'),fn='hasil-survei.pdf',dl=null;
 try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
 if(dl){try{await dl.save({filename:fn,data:buf})}catch(e){}}else d.save(fn)}
 function go(v,id){cur=v;arg=id;render();window.scrollTo(0,0)}
-function render(){document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==cur)});({home:home,new:nw,fill:fill,res:res})[cur]()}
-function home(){var n=0,c=csi(st.s[0]);st.s.forEach(function(s){n+=st.r[s.id].length});
+function render(){var nk={fill:'pickfill',res:'pickres',edit:'new'}[cur]||cur;document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==nk)});({home:home,new:nw,fill:fill,res:res,pickfill:function(){pick('fill')},pickres:function(){pick('res')},edit:function(){nw(arg)},setup:setupView,load:function(){M.innerHTML='<div class="card"><p class="note" style="margin:0">Memuat survei...</p></div>'},nf:function(){M.innerHTML='<div class="card"><h3 style="margin-bottom:6px">Survei tidak ditemukan</h3><p class="note" style="margin:0">Tautan salah atau survei sudah dihapus pembuatnya.</p></div>'}})[cur]()}
+function home(){var n=0,c=csi(st.s[0]),ag={};st.s[0].qs.forEach(function(q){if(q.type=='likert')ag[q.g]=1});var na=Object.keys(ag).length;st.s.forEach(function(s){n+=st.r[s.id].length});
 var h='<div class="card hero"><span class="tg">PLATFORM SURVEI ALL-IN-ONE</span><h1>Buat survei, kumpulkan jawaban, baca hasilnya.</h1><p>Susun kuesioner dengan berbagai tipe pertanyaan, bagikan ke responden, lalu lihat statistik Mean, Median, dan SD, indeks kepuasan, uji validitas dan reliabilitas, serta unduh laporan PDF secara otomatis.</p><p style="margin-top:18px"><button class="btn w" data-go="new">Buat Survei Baru</button> <button class="btn" style="background:rgba(255,255,255,.2)" data-go="res" data-id="s1">Lihat Hasil</button></p></div>';
-h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>4</b><span>Tipe pertanyaan</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>CSI survei utama</span></div></div>';
-h+='<div class="card"><h3 style="margin-bottom:8px">Survei Saya</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
-st.s.forEach(function(s,i){h+='<tr><td><b>'+E(s.title)+'</b></td><td>'+s.qs.length+'</td><td>'+st.r[s.id].length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button>'+(i&&canDel(s)?' <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>'});
+h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+na+'</b><span>Aspek penilaian (survei utama)</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>CSI survei utama</span></div></div>';
+h+='<div class="card"><h3 style="margin-bottom:8px">Daftar Survei</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
+st.s.forEach(function(s,i){h+='<tr><td><b>'+E(s.title)+'</b>'+(s.ownerName?'<div class="note">Dibuat oleh '+E(s.ownerName)+'</div>':'')+'</td><td>'+s.qs.length+'</td><td>'+st.r[s.id].length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button> <button class="btn s g" data-share="'+s.id+'">Bagikan</button>'+(i&&canDel(s)?' <button class="btn s g" data-go="edit" data-id="'+s.id+'">Edit</button> <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>'});
 M.innerHTML=h+'</table></div>'}
+var LN={google:'Google',apple:'Apple',microsoft:'Microsoft',github:'GitHub'};
+function provs(){var C=window.CLOUD;return C&&C.local?['local']:(window.LOGIN_PROVIDERS||['google'])}
+function plab(p){return p=='local'?'Masuk':'Masuk dengan '+(LN[p]||p)}
+function loginBtns(){return provs().map(function(p){return'<button class="btn" data-lp="'+p+'" style="margin:4px 8px 0 0">'+plab(p)+'</button>'}).join('')}
+function gateNew(){var C=window.CLOUD;if(C&&C.local&&C.user&&C.user.role!='pembuat')return'<div class="card" id="gn"><b>Anda masuk sebagai Responden</b><p class="note" style="margin:4px 0 8px">Untuk membuat survei, keluar lalu masuk sebagai Pembuat survei.</p><button class="btn g" data-lo="1">Keluar</button></div>';return C&&C.on&&!C.user?'<div class="card" id="gn"><b>Masuk untuk membuat survei</b><p class="note" style="margin:4px 0 8px">Membuat survei memerlukan akun (tanpa password, cukup lewat akun yang Anda punya).</p>'+loginBtns()+'</div>':''}
+function gateFill(s){var C=window.CLOUD;if(!(C&&C.on))return'';
+var hd='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div>';
+if(C.user&&(C.done||[]).indexOf(s.id+'_'+C.user.uid)>=0)return hd+'<div class="card"><h3 style="margin-bottom:6px">Terima kasih</h3><p class="note">Akun Anda sudah mengisi survei ini. Satu akun hanya dapat mengisi satu kali.</p><p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat Hasil</button></p></div>';
+if(!C.user)return hd+'<div class="card"><h3 style="margin-bottom:6px">Masuk untuk mengisi</h3><p class="note">Masuk dengan akun Anda (tanpa password) untuk mengisi survei ini. Satu akun hanya dapat mengisi satu kali.</p><p>'+loginBtns()+'</p></div>';
+return''}
+function pick(mode){var F=mode=='fill';
+M.innerHTML='<div class="hd"><div><h1>'+(F?'Isi Survei':'Hasil dan Statistik')+'</h1><p class="sub">'+(F?'Pilih survei yang ingin Anda isi.':'Pilih survei untuk melihat hasilnya.')+'</p></div></div><div class="card"><input id="sq" placeholder="Cari judul atau deskripsi survei..." autocomplete="off"></div><div id="sl"></div>';
+function list(){var q=$('#sq').value.trim().toLowerCase(),h='',C=window.CLOUD;
+st.s.forEach(function(s){if(q&&(s.title+' '+(s.desc||'')).toLowerCase().indexOf(q)<0)return;
+h+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:16px"><div><b>'+E(s.title)+'</b>'+'<div class="note">'+E((s.desc||'').slice(0,140))+'</div><div class="note">'+s.qs.length+' pertanyaan - '+st.r[s.id].length+' responden'+(s.ownerName?' - dibuat oleh '+E(s.ownerName):'')+'</div></div><div style="white-space:nowrap"><button class="btn" data-go="'+mode+'" data-id="'+s.id+'">'+(F?'Isi Survei':'Lihat Hasil')+'</button> <button class="btn g" data-share="'+s.id+'">Bagikan</button></div></div>'});
+$('#sl').innerHTML=h||'<div class="card note">Tidak ada survei yang cocok dengan pencarian.</div>'}
+$('#sq').oninput=list;list();window.pickList=list}
+function fillUser(){var C=window.CLOUD;return C&&C.on&&C.user?'<p class="note" style="margin-top:12px">Masuk sebagai <b>'+E(C.user.displayName||C.user.email||'akun')+'</b> <button class="btn g s" data-lo="1" type="button">Keluar</button></p>':''}
+function after(s){if(solo)M.innerHTML='<div class="hd"><div><h1>'+E(s.title)+'</h1></div></div><div class="card"><h3 style="margin-bottom:6px">Terima kasih!</h3><p class="note">Jawaban Anda sudah terkirim.</p><p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></p></div>';else go('res',s.id)}
 function qrow(){var d=document.createElement('div');d.className='qb';
 d.innerHTML='<input class="qt" placeholder="Tulis pertanyaan"><select class="qy"><option value="likert">Skala Likert 1-5</option><option value="choice">Pilihan ganda</option><option value="yesno">Ya / Tidak</option><option value="text">Jawaban teks</option></select><button class="x" type="button">&#10005;</button><input class="qo" placeholder="Opsi dipisah koma, misal: Gojek, Grab, Maxim" style="display:none">';
 d.querySelector('.qy').onchange=function(){d.querySelector('.qo').style.display=this.value=='choice'?'block':'none'};d.querySelector('.x').onclick=function(){d.remove()};$('#ql').appendChild(d);return d}
-function nw(){M.innerHTML='<div class="hd"><div><h1>Buat Survei</h1><p class="sub">Susun judul, deskripsi, dan pertanyaan survei Anda.</p></div></div><div class="card"><label class="note">Judul survei</label><input id="nt" placeholder="Contoh: Kepuasan Layanan Kampus" style="margin:4px 0 14px"><label class="note">Deskripsi</label><textarea id="nd" rows="3" placeholder="Jelaskan tujuan survei" style="margin:4px 0 6px"></textarea></div><div class="card"><h3 style="margin-bottom:12px">Pertanyaan</h3><div id="ql"></div><p><button class="btn g" id="aq" type="button">+ Tambah pertanyaan</button></p></div><button class="btn" id="sv" type="button">Simpan dan Terbitkan</button> <span class="note" id="ne"></span>';
-qrow();$('#aq').onclick=qrow;
-$('#sv').onclick=function(){var t=$('#nt').value.trim(),q=[];document.querySelectorAll('.qb').forEach(function(d){var x=d.querySelector('.qt').value.trim(),y=d.querySelector('.qy').value;if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}});
-if(!t||!q.length){$('#ne').textContent='Isi judul dan minimal satu pertanyaan.';return}
-var id='s'+Date.now(),nv={id:id,title:t,desc:$('#nd').value,qs:q},C=window.CLOUD;
-if(C&&C.on){if(!C.user){$('#ne').textContent='Masuk dengan Google dulu untuk menerbitkan survei.';C.login();return}
-$('#ne').textContent='Menyimpan...';C.addSurvey(nv).then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal menyimpan: '+e.message});return}
+function nw(eid){var E0=eid?sv_(eid):null,lock=!!(E0&&st.r[E0.id].length);
+M.innerHTML='<div class="hd"><div><h1>'+(E0?'Edit Survei':'Buat Survei')+'</h1><p class="sub">'+(E0?'Ubah judul, deskripsi, dan pertanyaan survei Anda.':'Susun judul, deskripsi, dan pertanyaan survei Anda.')+'</p></div></div>'+gateNew()+'<div class="card"><label class="note">Judul survei</label><input id="nt" placeholder="Contoh: Kepuasan Layanan Kampus" style="margin:4px 0 14px"><label class="note">Deskripsi</label><textarea id="nd" rows="3" placeholder="Jelaskan tujuan survei" style="margin:4px 0 6px"></textarea></div><div class="card"><h3 style="margin-bottom:12px">Pertanyaan</h3>'+(lock?'<p class="note" style="margin:0 0 10px">Pertanyaan tidak dapat diubah karena survei ini sudah memiliki responden, agar data tetap konsisten. Judul dan deskripsi masih bisa diubah.</p><div id="ql">'+E0.qs.map(function(q,j){return'<div class="it" style="display:block">'+(j+1)+'. '+E(q.t)+'</div>'}).join('')+'</div>':'<div id="ql"></div><p><button class="btn g" id="aq" type="button">+ Tambah pertanyaan</button></p>')+'</div><button class="btn" id="sv" type="button">'+(E0?'Simpan Perubahan':'Simpan dan Terbitkan')+'</button> <span class="note" id="ne"></span>';
+if(E0){$('#nt').value=E0.title;$('#nd').value=E0.desc||''}
+if(!lock){if(E0){E0.qs.forEach(function(q){var d=qrow();d.querySelector('.qt').value=q.t;d.querySelector('.qy').value=q.type;if(q.type=='choice'){var o=d.querySelector('.qo');o.style.display='block';o.value=(q.o||[]).join(', ')}})}else qrow();$('#aq').onclick=qrow}
+$('#sv').onclick=function(){var t=$('#nt').value.trim(),q=[],C=window.CLOUD;
+if(!lock)document.querySelectorAll('.qb').forEach(function(d){var x=d.querySelector('.qt').value.trim(),y=d.querySelector('.qy').value;if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}});
+if(!t||(!lock&&!q.length)){$('#ne').textContent='Isi judul dan minimal satu pertanyaan.';return}
+if(C&&C.on&&!C.user){$('#ne').textContent='Masuk dulu (tombol di sidebar) untuk menyimpan survei.';return}
+if(C&&C.local&&C.user.role!='pembuat'){$('#ne').textContent='Masuk sebagai Pembuat survei untuk membuat atau mengedit survei.';return}
+if(E0){var ch={title:t,desc:$('#nd').value};if(!lock)ch.qs=q;
+if(C&&C.on){$('#ne').textContent='Menyimpan...';C.updSurvey(E0.id,ch).then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal menyimpan: '+e.message});return}
+E0.title=ch.title;E0.desc=ch.desc;if(ch.qs)E0.qs=ch.qs;save();go('home');return}
+var id='s'+Date.now(),nv={id:id,title:t,desc:$('#nd').value,qs:q,login:true};
+if(C&&C.on){$('#ne').textContent='Menyimpan...';C.addSurvey(nv).then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal menyimpan: '+e.message});return}
 st.s.push(nv);st.r[id]=[];save();go('home')}}
-function fill(){var s=sv_(arg),h='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div><div class="card" id="fm">',g='';
+function fill(){var s=sv_(arg),gt=gateFill(s);if(gt){M.innerHTML=gt;return}var h='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div><div class="card" id="fm">',g='';
 s.qs.forEach(function(q,j){if(q.g!=g){g=q.g;h+='<div class="sec"><h3>'+E(g)+'</h3>'+(q.type=='likert'?'<div class="sc"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>':'')+'</div>'}
 if(q.type=='likert'){h+='<div class="it" data-j="'+j+'"><span>'+E(q.t)+'</span>';for(var v=1;v<=5;v++)h+='<label><input type="radio" name="q'+j+'" value="'+v+'" aria-label="'+v+'"></label>';h+='</div>'}
 else if(q.type=='text'){h+='<div class="it" style="display:block" data-j="'+j+'"><p style="margin:0 0 6px">'+E(q.t)+'</p><textarea name="q'+j+'" rows="3"></textarea></div>'}
 else{h+='<div class="it ch" style="display:block" data-j="'+j+'"><p style="margin:0 0 4px">'+E(q.t)+'</p>';q.o.forEach(function(o){h+='<label><input type="radio" name="q'+j+'" value="'+E(o)+'">'+E(o)+'</label>'});h+='</div>'}});
-M.innerHTML=h+'<p style="margin-top:20px"><button class="btn" id="sb" type="button">Kirim Jawaban</button> <span class="note" id="er"></span></p></div>';
+M.innerHTML=h+'<p style="margin-top:20px"><button class="btn" id="sb" type="button">Kirim Jawaban</button> <span class="note" id="er"></span></p>'+fillUser()+'</div>';
 $('#sb').onclick=function(){var r=[],bad=null;s.qs.forEach(function(q,j){var el=document.querySelector('[data-j="'+j+'"]'),v='';
 if(q.type=='text')v=el.querySelector('textarea').value;else{var c=el.querySelector('input:checked');v=c?(q.type=='likert'?+c.value:c.value):''}
 if(q.type!='text'&&v===''){el.classList.add('miss');bad=bad||el}r.push(v)});
 if(bad){$('#er').textContent='Masih ada pertanyaan yang belum dijawab.';bad.scrollIntoView({block:'center'});return}
-var C=window.CLOUD;if(C&&C.on){$('#er').textContent='Mengirim jawaban...';C.addResp(s.id,r).then(function(){go('res',s.id)}).catch(function(e){$('#er').textContent='Gagal mengirim: '+e.message});return}
-st.r[s.id].push(r);save();go('res',s.id)}}
+var C=window.CLOUD;if(C&&C.on){$('#er').textContent='Mengirim jawaban...';C.addResp(s.id,r).then(function(){after(s)}).catch(function(e){$('#er').textContent=/permission|denied/i.test(e.code+' '+e.message)?(C.user?'Akun ini sudah pernah mengisi survei ini.':'Survei ini mewajibkan login. Silakan masuk dulu.'):'Gagal mengirim: '+e.message});return}
+st.r[s.id].push(r);save();after(s)}}
 function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div><button class="btn" data-ex="pdf">Unduh PDF</button> <button class="btn g" data-ex="csv">Ekspor CSV</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
 var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(nm(s,j))});var S=stat(all);
 h+='<div class="st"><div class="card"><b>'+n+'</b><span>Responden</span></div><div class="card"><b>'+(S?S.m.toFixed(2):'-')+'</b><span>Rata-rata skor (1-5)</span></div><div class="card"><b>'+(S?S.md:'-')+'</b><span>Median</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>Indeks kepuasan (CSI)</span></div></div>';
@@ -197,7 +228,7 @@ var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=na
 function exp(k){if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
 if(k=='json')return dl(b+'.json','application/json',toJSON(s));return dl(b+'.csv','text/csv',toCSV(s))}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-go]');if(t)return go(t.dataset.go,t.dataset.id);
-t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;if(window.CLOUD&&window.CLOUD.on){window.CLOUD.delSurvey(i).catch(function(e){alert('Gagal menghapus: '+e.message)});return}st.s=st.s.filter(function(s){return s.id!=i});delete st.r[i];save();return home()}
+t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;if(!confirm('Hapus survei ini? Tindakan ini tidak bisa dibatalkan.'))return;if(window.CLOUD&&window.CLOUD.on){window.CLOUD.delSurvey(i).catch(function(e){alert('Gagal menghapus: '+e.message)});return}st.s=st.s.filter(function(s){return s.id!=i});delete st.r[i];save();return home()}
 t=e.target.closest('[data-ex]');if(t)exp(t.dataset.ex)});
 document.addEventListener('change',function(e){var it=e.target.closest('.it');if(it)it.classList.remove('miss')});
 $('#mz').onclick=function(){$('#md').classList.remove('on')};
@@ -207,14 +238,62 @@ $('#th').onclick=function(){var r=document.documentElement,d=r.getAttribute('dat
 function canDel(s){var C=window.CLOUD;return !(C&&C.on)||!!(C.user&&s.owner==C.user.uid)}
 function cloudMerge(){var C=window.CLOUD;if(!C||!C.on)return;var sr=RAW.map(function(x){return x.split('').map(Number).concat([''])});
 st={s:[seed()].concat(C.surveys||[]),r:{s1:sr.concat(C.resp.s1||[])}};st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=C.resp[x.id]||[]})}
-function stamp(m){var C=window.CLOUD,t=$('#stt'),b=$('#lgn');if(!t)return;
-if(C&&C.on){t.textContent='Online: terhubung ke database. Sinkron '+new Date().toLocaleTimeString('id-ID');b.style.display='block';b.textContent=C.user?'Keluar ('+(C.user.displayName||C.user.email||'akun').split(' ')[0]+')':'Masuk dengan Google'}
-else{t.textContent=m||(window.FIREBASE_CONFIG?'Menghubungkan ke database...':'Mode lokal: data tersimpan di browser ini saja.');b.style.display='none'}}
-window.onCloud=function(){cloudMerge();if(cur=='home'||cur=='res')render();stamp()};
-window.onAuth=function(){stamp()};
-window.onCloudErr=function(m){if(window.CLOUD)window.CLOUD.on=false;load();render();stamp('Database online gagal ('+m+'). Memakai mode lokal.')};
-$('#lgn').onclick=function(){var C=window.CLOUD;if(!C||!C.on)return;if(C.user)C.logout();else C.login()};
-function boot(){load();render();stamp()}
+function stamp(m){var C=window.CLOUD,t=$('#stt'),b=$('#lgs');if(!t)return;t.textContent=m||'';
+var sb=(C&&C.local&&!C.remote&&C.user&&C.user.role=='pembuat')?'<button class="nv" data-go="setup">Aktifkan database bersama</button>':'';b.innerHTML=sb+((C&&C.on)?(C.user?'<button class="nv" data-lo="1">Keluar ('+E((C.user.displayName||C.user.email||'akun').split(' ')[0])+')</button>':provs().map(function(p){return'<button class="nv" data-lp="'+p+'">'+plab(p)+'</button>'}).join('')):'')}
+window.onCloud=function(){cloudMerge();var C=window.CLOUD;
+if(wait){if(st.s.some(function(x){return x.id==wait.id})){cur=wait.c;arg=wait.id;wait=null;render()}else if(C.sloaded){cur='nf';wait=null;render()}}
+else if(cur=='home'||cur=='res')render();else if((cur=='pickfill'||cur=='pickres')&&window.pickList)window.pickList();stamp()};
+window.onAuth=function(){stamp();var g=$('#gn');if(g&&window.CLOUD&&window.CLOUD.user)g.style.display='none';if(cur=='fill'&&!document.querySelector('#fm'))render()};
+window.onCloudErr=function(m){window.CLOUDFAIL=true;window.DB_BLOB='';initLocal();wait=null;route();render();stamp('Database online tidak dapat dihubungi ('+m+'). Memakai penyimpanan di browser ini.')};
+document.addEventListener('click',function(e){var C=window.CLOUD,t=e.target.closest('[data-lp]');if(t&&C&&C.on){C.login(t.dataset.lp);return}t=e.target.closest('[data-lo]');if(t&&C&&C.on)C.logout()});
+var wait=null,solo=false;
+function route(){var m=/^#(isi|hasil)=([^&]+)/.exec(location.hash);solo=!!m;document.body.classList.toggle('solo',solo);if(!m){wait=null;return}
+var id=decodeURIComponent(m[2]),c=m[1]=='isi'?'fill':'res',C=window.CLOUD;
+if(st.s.some(function(x){return x.id==id})){cur=c;arg=id;wait=null}
+else if((window.FIREBASE_CONFIG||window.DB_BLOB)&&!window.CLOUDFAIL&&!(C&&C.sloaded)){wait={c:c,id:id};cur='load'}else{cur='nf';wait=null}}
+function base(){return location.href.split('#')[0]}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-share]');if(t){var sv=sv_(t.dataset.share),id=encodeURIComponent(sv.id);$('#sn').textContent=sv.title;var dq=(window.DB_BLOB&&!window.DB_FIXED)?'&db='+window.DB_BLOB:'';$('#sl1').value=base()+'#isi='+id+dq;$('#sl2').value=base()+'#hasil='+id+dq;$('#sm').classList.add('on');return}
+t=e.target.closest('[data-cp]');if(t){var i=$('#'+t.dataset.cp),ok=false;i.select();try{ok=document.execCommand('copy')}catch(x){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(i.value);t.textContent='Tersalin';setTimeout(function(){t.textContent='Salin'},1500);return}
+if(e.target.id=='sz'||e.target.id=='sm')$('#sm').classList.remove('on')});
+window.onhashchange=function(){route();render()};
+function initRemote(){var U=(window.DB_URL||'https://jsonblob.com/api/jsonBlob/')+window.DB_BLOB,KU='sf_user',H={'Content-Type':'application/json','Accept':'application/json'},last='';
+var C=window.CLOUD={on:true,local:true,remote:true,user:null,surveys:[],resp:{},done:[],sloaded:false};
+try{C.user=JSON.parse(localStorage.getItem(KU))}catch(e){}
+function norm(d){d=d||{};C.surveys=d.surveys||[];C.resp=d.resp||{};C.done=d.done||[]}
+function get(){return fetch(U,{headers:H,cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})}
+function put(d){return fetch(U,{method:'PUT',headers:H,body:JSON.stringify(d)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status)})}
+function mut(fn){return get().then(function(d){d=d||{};d.surveys=d.surveys||[];d.resp=d.resp||{};d.done=d.done||[];var e=fn(d);if(e)throw e;return put(d).then(function(){last=JSON.stringify(d);norm(d);window.onCloud()})})}
+function poll(first){return get().then(function(d){var j=JSON.stringify(d);if(j===last&&C.sloaded)return;last=j;norm(d);C.sloaded=true;window.onCloud()}).catch(function(e){if(!C.sloaded&&first)window.onCloudErr(e.message)})}
+C.login=function(){$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
+C.loginDo=function(n,role){C.user={uid:'l_'+n.toLowerCase().replace(/\s+/g,'_'),displayName:n,role:role};try{localStorage.setItem(KU,JSON.stringify(C.user))}catch(e){}window.onAuth();window.onCloud()};
+C.logout=function(){C.user=null;try{localStorage.removeItem(KU)}catch(e){}window.onAuth();window.onCloud()};
+C.addSurvey=function(v){v.owner=C.user.uid;v.ownerName=C.user.displayName;return mut(function(d){d.surveys.push(v)})};
+C.updSurvey=function(id,ch){return mut(function(d){d.surveys.forEach(function(x){if(x.id==id&&x.owner==C.user.uid)for(var k in ch)x[k]=ch[k]})})};
+C.delSurvey=function(id){return mut(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==id&&x.owner==C.user.uid)});delete d.resp[id]})};
+C.addResp=function(sid,a){var id=sid+'_'+C.user.uid;return mut(function(d){if(d.done.indexOf(id)>=0)return{code:'permission-denied',message:'denied'};d.done.push(id);(d.resp[sid]=d.resp[sid]||[]).push(a)})};
+cloudMerge();poll(true);setInterval(function(){if(!document.hidden)poll(false)},5000)}
+function initLocal(){var K='sf3';
+function rd(){var d={surveys:[],resp:{},done:[],user:null};try{var x=JSON.parse(localStorage.getItem(K));if(x)for(var k in x)d[k]=x[k]}catch(e){}return d}
+function wr(d){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
+var C=window.CLOUD={on:true,local:true,user:null,surveys:[],resp:{},done:[],sloaded:true};
+function sync(){var d=rd();C.surveys=d.surveys;C.resp=d.resp;C.done=d.done;C.user=d.user}
+function ok(){sync();window.onCloud();return Promise.resolve()}
+C.login=function(){$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
+C.loginDo=function(n,role){var d=rd();d.user={uid:'l_'+n.toLowerCase().replace(/\s+/g,'_'),displayName:n,role:role};wr(d);sync();window.onAuth();window.onCloud()};
+C.logout=function(){var d=rd();d.user=null;wr(d);sync();window.onAuth();window.onCloud()};
+C.addSurvey=function(v){var d=rd();v.owner=d.user.uid;v.ownerName=d.user.displayName;d.surveys.push(v);wr(d);return ok()};
+C.updSurvey=function(id,ch){var d=rd();d.surveys.forEach(function(x){if(x.id==id)for(var k in ch)x[k]=ch[k]});wr(d);return ok()};
+C.delSurvey=function(id){var d=rd();d.surveys=d.surveys.filter(function(x){return x.id!=id});delete d.resp[id];wr(d);return ok()};
+C.addResp=function(sid,a){var d=rd(),id=sid+'_'+d.user.uid;if(d.done.indexOf(id)>=0)return Promise.reject({code:'permission-denied',message:'denied'});d.done.push(id);(d.resp[sid]=d.resp[sid]||[]).push(a);wr(d);return ok()};
+window.addEventListener('storage',function(e){if(e.key==K){sync();window.onAuth();window.onCloud()}});
+sync();cloudMerge()}
+$('#lgo').onclick=function(){var n=$('#ln').value.trim();if(!n){$('#lerr').textContent='Isi nama Anda.';return}window.CLOUD.loginDo(n,document.querySelector('input[name=lr]:checked').value);$('#lm').classList.remove('on')};
+$('#lcx').onclick=function(){$('#lm').classList.remove('on')};
+function dbId(){var m=/[#&]db=([^&]+)/.exec(location.hash);if(m){try{localStorage.setItem('sf_db',m[1])}catch(e){}return m[1]}try{return window.DB_BLOB||localStorage.getItem('sf_db')||''}catch(e){return window.DB_BLOB||''}}
+function setupView(){M.innerHTML='<div class="hd"><div><h1>Aktifkan Database Bersama</h1><p class="sub">Dilakukan sekali oleh pembuat web.</p></div></div><div class="card"><p class="note" style="margin-top:0">Tekan tombol di bawah. Web akan membuat database bersama lalu memberi satu tautan resmi. Pakai tautan itu untuk semua orang, termasuk dosen.</p><button class="btn" id="mk" type="button">Buat database bersama</button><div id="mo" class="note" style="margin-top:12px"></div></div>';
+$('#mk').onclick=function(){$('#mo').textContent='Membuat...';fetch((window.DB_URL||'https://jsonblob.com/api/jsonBlob/').replace(/\/$/,''),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({surveys:[],resp:{},done:[]})}).then(function(r){var l=r.headers.get('Location')||r.headers.get('X-jsonblob')||'',id=l.split('/').pop();if(!id)throw new Error('ID tidak terbaca');
+try{localStorage.setItem('sf_db',id)}catch(e){}var u=base()+'#db='+id;$('#mo').innerHTML='<b>Berhasil.</b> Tautan resmi web (salin, pakai untuk semua orang):<input readonly value="'+u+'" onclick="this.select()" style="margin-top:8px"><p><button class="btn" id="gc" type="button">Lanjut</button></p><p class="note">Setelah menekan Lanjut, web memakai database bersama. Kirim tautan di atas ke teman dan dosen.</p>';$('#gc').onclick=function(){try{var u=(JSON.parse(localStorage.getItem('sf3'))||{}).user;if(u)localStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}location.hash='#db='+id;location.reload()}}).catch(function(e){$('#mo').textContent='Gagal otomatis ('+e.message+'). Kirim pesan ini ke pembuat kode.'})}}
+function boot(){window.DB_FIXED=!!window.DB_BLOB;window.DB_BLOB=dbId();load();if(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey){}else if(window.DB_BLOB)initRemote();else initLocal();route();if(location.hash=='#setup'&&!window.DB_BLOB)cur='setup';render();stamp()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()
 </script>
 <script type="module">
@@ -222,18 +301,20 @@ var cfg=window.FIREBASE_CONFIG;
 if(cfg&&cfg.apiKey){try{
 const V='https://www.gstatic.com/firebasejs/10.12.2/';
 const [A,F,U]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-firestore.js'),import(V+'firebase-auth.js')]);
-const app=A.initializeApp(cfg),db=F.getFirestore(app),au=U.getAuth(app),prov=new U.GoogleAuthProvider();
-const C=window.CLOUD={on:true,user:null,surveys:[],resp:{},
-login:()=>U.signInWithPopup(au,prov).catch(e=>alert('Login gagal: '+e.message)),
+const app=A.initializeApp(cfg),db=F.getFirestore(app),au=U.getAuth(app);
+const PV={google:()=>new U.GoogleAuthProvider(),apple:()=>new U.OAuthProvider('apple.com'),microsoft:()=>new U.OAuthProvider('microsoft.com'),github:()=>new U.GithubAuthProvider()};
+const C=window.CLOUD={on:true,user:null,surveys:[],resp:{},done:[],
+login:p=>U.signInWithPopup(au,(PV[p]||PV.google)()).catch(e=>{if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')alert('Login gagal: '+e.message)}),
 logout:()=>U.signOut(au),
-addSurvey:s=>F.setDoc(F.doc(db,'surveys',s.id),{title:s.title,desc:s.desc||'',qs:s.qs,owner:C.user.uid,ownerName:C.user.displayName||'',createdAt:F.serverTimestamp()}),
+addSurvey:s=>F.setDoc(F.doc(db,'surveys',s.id),{title:s.title,desc:s.desc||'',qs:s.qs,login:!!s.login,owner:C.user.uid,ownerName:C.user.displayName||'',createdAt:F.serverTimestamp()}),
+updSurvey:(id,ch)=>F.updateDoc(F.doc(db,'surveys',id),ch),
 delSurvey:id=>F.deleteDoc(F.doc(db,'surveys',id)),
-addResp:(sid,a)=>F.addDoc(F.collection(db,'responses'),{surveyId:sid,answers:a,ts:F.serverTimestamp()})};
+addResp:(sid,a)=>C.user?F.setDoc(F.doc(db,'responses',sid+'_'+C.user.uid),{surveyId:sid,answers:a,ts:F.serverTimestamp()}):F.addDoc(F.collection(db,'responses'),{surveyId:sid,answers:a,ts:F.serverTimestamp()})};
 const bad=e=>window.onCloudErr(e.code||e.message);
 U.onAuthStateChanged(au,u=>{C.user=u;window.onAuth()});
-F.onSnapshot(F.collection(db,'surveys'),s=>{C.surveys=s.docs.map(d=>{const x=d.data();return{id:d.id,title:x.title,desc:x.desc,qs:x.qs,owner:x.owner}});window.onCloud()},bad);
-F.onSnapshot(F.collection(db,'responses'),s=>{const r={};s.docs.forEach(d=>{const x=d.data();(r[x.surveyId]=r[x.surveyId]||[]).push(x.answers)});C.resp=r;window.onCloud()},bad);
+F.onSnapshot(F.collection(db,'surveys'),s=>{C.surveys=s.docs.map(d=>{const x=d.data();return{id:d.id,title:x.title,desc:x.desc,qs:x.qs,owner:x.owner,ownerName:x.ownerName||'',login:!!x.login}});C.sloaded=true;window.onCloud()},bad);
+F.onSnapshot(F.collection(db,'responses'),s=>{const r={};C.done=s.docs.map(d=>d.id);s.docs.forEach(d=>{const x=d.data();(r[x.surveyId]=r[x.surveyId]||[]).push(x.answers)});C.resp=r;window.onCloud()},bad);
 }catch(e){window.onCloudErr(e.message)}}
 </script>
 </body>
-</html>
+                                                                                                                                                                                                                                                                                          </html>
