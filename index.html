@@ -13,8 +13,10 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Poppins,'Segoe UI',sans-serif}
 h1,h2,h3{font-family:Lora,Georgia,serif;margin:0;font-weight:600}
-.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
-aside{background:var(--side);border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh}
+.app{display:grid;grid-template-columns:1fr 248px;min-height:100vh}
+aside{background:var(--side);border-left:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh;order:2;overflow:auto}
+#mb{display:none;position:fixed;top:12px;right:12px;z-index:25;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;cursor:pointer;align-items:center;justify-content:center}
+#ov{display:none;position:fixed;inset:0;background:rgba(30,20,10,.45);z-index:28}
 .logo{display:flex;gap:12px;align-items:center;margin-bottom:30px}
 .lg{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8C6A3F,#C9A66B);color:#fff;display:grid;place-items:center;font:700 22px Lora,serif}
 .logo b{font:600 20px Lora,serif;display:block;line-height:1.1}.logo small{color:var(--mute);font-size:11px}
@@ -51,20 +53,22 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 .ok{color:#4F7A4B;font-weight:600}.no{color:#B0503A;font-weight:600}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ok{color:#9DC796}:root:not([data-theme="light"]) .no{color:#E08C77}}
 :root[data-theme="dark"] .ok{color:#9DC796}:root[data-theme="dark"] .no{color:#E08C77}
-@media(max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto}main{padding:22px 16px}.st{grid-template-columns:1fr 1fr}.ar{grid-template-columns:110px 1fr 50px}.sc,.it{grid-template-columns:1fr repeat(5,34px)}.qb{grid-template-columns:1fr}.qb .qo{grid-column:auto}}
-.solo .app{display:block}.solo aside{display:none}.solo main{margin:0 auto;padding:28px 20px 60px}
+@media(max-width:900px){.app{display:block}aside{position:fixed;top:0;right:0;height:100%;width:270px;max-width:82vw;transform:translateX(105%);transition:transform .25s;z-index:30;box-shadow:-8px 0 30px rgba(0,0,0,.25)}.open aside{transform:none}.open #ov{display:block}#mb{display:flex}main{padding:66px 16px 40px}.st{grid-template-columns:1fr 1fr}.ar{grid-template-columns:110px 1fr 50px}.sc,.it{grid-template-columns:1fr repeat(5,34px)}.qb{grid-template-columns:1fr}.qb .qo{grid-column:auto}}
+.solo .app{display:block}.solo aside,.solo #mb,.solo #ov{display:none!important}.solo main{margin:0 auto;padding:28px 20px 60px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 <div class="app">
+<button id="mb" type="button" aria-label="Menu">&#9776;</button><div id="ov"></div>
 <aside>
 <div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei Responden</small></div></div>
 <button class="nv" data-go="home">Dashboard</button>
 <button class="nv" data-go="new">Buat Survei</button>
 <button class="nv" data-go="pickfill">Isi Survei</button>
 <button class="nv" data-go="pickres">Hasil dan Statistik</button>
+<button class="nv" data-go="stat">Analisis Data</button>
 <div id="lgs" style="margin-top:20px"></div>
 <button class="nv" id="th" style="margin-top:8px">Ganti tema</button>
 <p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
@@ -72,12 +76,14 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 <main id="m"></main>
 </div>
 <div class="md" id="lm"><div class="card"><h3 style="margin-bottom:10px">Masuk</h3><label class="note">Nama Anda</label><input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px"><label class="note">Masuk sebagai</label><div class="ch" style="margin:6px 0 12px"><label><input type="radio" name="lr" value="pembuat" checked>Pembuat survei (membuat, edit, dan hapus surveinya sendiri)</label><label><input type="radio" name="lr" value="responden">Responden (mengisi, membagikan, dan melihat hasil)</label></div><p style="margin:0"><button class="btn" id="lgo" type="button">Masuk</button> <button class="btn g" id="lcx" type="button">Batal</button> <span class="note" id="lerr"></span></p></div></div>
-<div class="md" id="sm"><div class="card"><h3 style="margin-bottom:4px">Bagikan survei</h3><p class="note" id="sn" style="margin:0 0 14px"></p><label class="note">Tautan untuk mengisi (hanya halaman survei, seperti Google Form)</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl1" readonly><button class="btn" data-cp="sl1" type="button">Salin</button></div><label class="note">Tautan untuk melihat hasil</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl2" readonly><button class="btn g" data-cp="sl2" type="button">Salin</button></div><p style="margin:0"><button class="btn g" id="sz" type="button">Tutup</button></p></div></div>
+<div class="md" id="cm"><div class="card"><h3 style="margin-bottom:6px">Hapus survei?</h3><p class="note" id="ct" style="margin:0 0 14px"></p><button class="btn" id="cy" type="button">Hapus</button> <button class="btn g" id="cn" type="button">Batal</button></div></div>
+<div class="md" id="sm"><div class="card"><h3 style="margin-bottom:4px">Bagikan survei</h3><p class="note" id="sn" style="margin:0 0 14px"></p><label class="note">Tautan untuk mengisi (hanya halaman survei, seperti Google Form)</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl1" readonly><button class="btn" data-cp="sl1" type="button">Salin</button></div><label class="note">Tautan untuk melihat hasil</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl2" readonly><button class="btn g" data-cp="sl2" type="button">Salin</button></div><div id="sw" style="display:none;margin:0 0 14px"><p class="note" style="margin:0 0 6px">Halaman ini dibuka dari pratinjau, jadi alamat webnya belum benar. Isi alamat web GitHub Pages Anda sekali, lalu tautan di atas otomatis benar.</p><div style="display:flex;gap:8px"><input id="si" placeholder="https://usernamekamu.github.io/namarepo/"><button class="btn g" id="ssv" type="button">Simpan</button></div></div><p style="margin:0"><button class="btn g" id="sz" type="button">Tutup</button></p></div></div>
 <div class="md" id="md"><div class="card"><h3 id="mt" style="margin-bottom:10px"></h3><textarea id="mx" readonly></textarea><p style="margin:12px 0 0"><button class="btn" id="mc">Salin</button> <button class="btn g" id="mz">Tutup</button></p></div></div>
 <script>
 /* ===== PENGATURAN DATABASE ONLINE (Firebase). Isi bagian ini mengikuti PANDUAN-FIREBASE.md =====
    Biarkan null jika belum dipasang: web tetap jalan dalam mode lokal. */
 window.FIREBASE_CONFIG=null;
+window.GOOGLE_CLIENT_ID='';  /* opsional: bisa juga diisi lewat menu Pengaturan login Google di web */
 window.DB_BLOB='';  /* ID database bersama (JSONBlob). Lihat PANDUAN-DATABASE.md */
 window.LOGIN_PROVIDERS=['google']; /* tambah 'apple','microsoft','github' bila sudah diaktifkan di Firebase (Apple butuh akun Apple Developer berbayar) */
 /* Contoh isi:
@@ -146,8 +152,9 @@ d.setFontSize(11);if(y>780){d.addPage();y=30}d.text('Uji reliabilitas: Cronbach 
 var buf=d.output('arraybuffer'),fn='hasil-survei.pdf',dl=null;
 try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
 if(dl){try{await dl.save({filename:fn,data:buf})}catch(e){}}else d.save(fn)}
-function go(v,id){cur=v;arg=id;render();window.scrollTo(0,0)}
-function render(){var nk={fill:'pickfill',res:'pickres',edit:'new'}[cur]||cur;document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==nk)});({home:home,new:nw,fill:fill,res:res,pickfill:function(){pick('fill')},pickres:function(){pick('res')},edit:function(){nw(arg)},setup:setupView,load:function(){M.innerHTML='<div class="card"><p class="note" style="margin:0">Memuat survei...</p></div>'},nf:function(){M.innerHTML='<div class="card"><h3 style="margin-bottom:6px">Survei tidak ditemukan</h3><p class="note" style="margin:0">Tautan salah atau survei sudah dihapus pembuatnya.</p></div>'}})[cur]()}
+function go(v,id){document.body.classList.remove('open');cur=v;arg=id;render();window.scrollTo(0,0)}
+$('#mb').onclick=function(){document.body.classList.toggle('open')};$('#ov').onclick=function(){document.body.classList.remove('open')};
+function render(){var nk={fill:'pickfill',res:'pickres',edit:'new'}[cur]||cur;document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==nk)});({home:home,new:nw,fill:fill,res:res,pickfill:function(){pick('fill')},pickres:function(){pick('res')},edit:function(){nw(arg)},setup:setupView,gset:gsetView,stat:statView,load:function(){M.innerHTML='<div class="card"><p class="note" style="margin:0">Memuat survei...</p></div>'},nf:function(){M.innerHTML='<div class="card"><h3 style="margin-bottom:6px">Survei tidak ditemukan</h3><p class="note" style="margin:0">Tautan salah atau survei sudah dihapus pembuatnya.</p></div>'}})[cur]()}
 function home(){var n=0,c=csi(st.s[0]),ag={};st.s[0].qs.forEach(function(q){if(q.type=='likert')ag[q.g]=1});var na=Object.keys(ag).length;st.s.forEach(function(s){n+=st.r[s.id].length});
 var h='<div class="card hero"><span class="tg">PLATFORM SURVEI ALL-IN-ONE</span><h1>Buat survei, kumpulkan jawaban, baca hasilnya.</h1><p>Susun kuesioner dengan berbagai tipe pertanyaan, bagikan ke responden, lalu lihat statistik Mean, Median, dan SD, indeks kepuasan, uji validitas dan reliabilitas, serta unduh laporan PDF secara otomatis.</p><p style="margin-top:18px"><button class="btn w" data-go="new">Buat Survei Baru</button> <button class="btn" style="background:rgba(255,255,255,.2)" data-go="res" data-id="s1">Lihat Hasil</button></p></div>';
 h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+na+'</b><span>Aspek penilaian (survei utama)</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>CSI survei utama</span></div></div>';
@@ -155,7 +162,7 @@ h+='<div class="card"><h3 style="margin-bottom:8px">Daftar Survei</h3><table><tr
 st.s.forEach(function(s,i){h+='<tr><td><b>'+E(s.title)+'</b>'+(s.ownerName?'<div class="note">Dibuat oleh '+E(s.ownerName)+'</div>':'')+'</td><td>'+s.qs.length+'</td><td>'+st.r[s.id].length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button> <button class="btn s g" data-share="'+s.id+'">Bagikan</button>'+(i&&canDel(s)?' <button class="btn s g" data-go="edit" data-id="'+s.id+'">Edit</button> <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>'});
 M.innerHTML=h+'</table></div>'}
 var LN={google:'Google',apple:'Apple',microsoft:'Microsoft',github:'GitHub'};
-function provs(){var C=window.CLOUD;return C&&C.local?['local']:(window.LOGIN_PROVIDERS||['google'])}
+function provs(){var C=window.CLOUD;return C&&C.local?(window.GID?['google']:['local']):(window.LOGIN_PROVIDERS||['google'])}
 function plab(p){return p=='local'?'Masuk':'Masuk dengan '+(LN[p]||p)}
 function loginBtns(){return provs().map(function(p){return'<button class="btn" data-lp="'+p+'" style="margin:4px 8px 0 0">'+plab(p)+'</button>'}).join('')}
 function gateNew(){var C=window.CLOUD;if(C&&C.local&&C.user&&C.user.role!='pembuat')return'<div class="card" id="gn"><b>Anda masuk sebagai Responden</b><p class="note" style="margin:4px 0 8px">Untuk membuat survei, keluar lalu masuk sebagai Pembuat survei.</p><button class="btn g" data-lo="1">Keluar</button></div>';return C&&C.on&&!C.user?'<div class="card" id="gn"><b>Masuk untuk membuat survei</b><p class="note" style="margin:4px 0 8px">Membuat survei memerlukan akun (tanpa password, cukup lewat akun yang Anda punya).</p>'+loginBtns()+'</div>':''}
@@ -173,6 +180,52 @@ $('#sl').innerHTML=h||'<div class="card note">Tidak ada survei yang cocok dengan
 $('#sq').oninput=list;list();window.pickList=list}
 function fillUser(){var C=window.CLOUD;return C&&C.on&&C.user?'<p class="note" style="margin-top:12px">Masuk sebagai <b>'+E(C.user.displayName||C.user.email||'akun')+'</b> <button class="btn g s" data-lo="1" type="button">Keluar</button></p>':''}
 function after(s){if(solo)M.innerHTML='<div class="hd"><div><h1>'+E(s.title)+'</h1></div></div><div class="card"><h3 style="margin-bottom:6px">Terima kasih!</h3><p class="note">Jawaban Anda sudah terkirim.</p><p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></p></div>';else go('res',s.id)}
+function doDel(i){if(window.CLOUD&&window.CLOUD.on){window.CLOUD.delSurvey(i).catch(function(e){stamp('Gagal menghapus: '+e.message)});return}st.s=st.s.filter(function(x){return x.id!=i});delete st.r[i];save();home()}
+$('#cn').onclick=function(){$('#cm').classList.remove('on')};
+/* ===== Analisis Data: uji statistik ===== */
+var SL=(function(){
+function lg(x){var c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.001208650973866179,-0.000005395239384953],y=x,t=x+5.5;t-=(x+.5)*Math.log(t);var s=1.000000000190015;for(var j=0;j<6;j++)s+=c[j]/++y;return -t+Math.log(2.5066282746310005*s/x)}
+function bcf(a,b,x){var m,m2,aa,c=1,d,del,h,qab=a+b,qap=a+1,qam=a-1;d=1-qab*x/qap;if(Math.abs(d)<1e-30)d=1e-30;d=1/d;h=d;for(m=1;m<=500;m++){m2=2*m;aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;del=d*c;h*=del;if(Math.abs(del-1)<1e-14)break}return h}
+function ib(x,a,b){if(x<=0)return 0;if(x>=1)return 1;var bt=Math.exp(lg(a+b)-lg(a)-lg(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*bcf(a,b,x)/a:1-bt*bcf(b,a,1-x)/b}
+function pF(f,d1,d2){return f<=0?1:ib(d2/(d2+d1*f),d2/2,d1/2)}
+function pT(t,df){return ib(df/(df+t*t),df/2,.5)}
+function sum(a){return a.reduce(function(x,y){return x+y},0)}
+function mean(a){return sum(a)/a.length}
+function vr(a){var m=mean(a);return sum(a.map(function(x){return(x-m)*(x-m)}))/(a.length-1)}
+function med(a){var s=a.slice().sort(function(x,y){return x-y}),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2}
+function desc(a){return{n:a.length,mean:mean(a),median:med(a),sd:Math.sqrt(vr(a)),v:vr(a),min:Math.min.apply(null,a),max:Math.max.apply(null,a)}}
+function levene(gs,center){var k=gs.length,N=0,all=[],Z=gs.map(function(g){var c=center=='median'?med(g):mean(g);return g.map(function(x){return Math.abs(x-c)})});Z.forEach(function(z){N+=z.length;all=all.concat(z)});var zb=mean(all),num=0,den=0;Z.forEach(function(z){var m=mean(z);num+=z.length*(m-zb)*(m-zb);z.forEach(function(v){den+=(v-m)*(v-m)})});var W=(N-k)/(k-1)*num/den;return{W:W,df1:k-1,df2:N-k,p:pF(W,k-1,N-k)}}
+function ftest(a,b){var F=vr(a)/vr(b),d1=a.length-1,d2=b.length-1,pu=pF(F,d1,d2);return{F:F,df1:d1,df2:d2,p:Math.min(1,2*Math.min(pu,1-pu))}}
+function corr(a,b){var ma=mean(a),mb=mean(b),sab=0,sa=0,sb=0,n=a.length;for(var i=0;i<n;i++){sab+=(a[i]-ma)*(b[i]-mb);sa+=(a[i]-ma)*(a[i]-ma);sb+=(b[i]-mb)*(b[i]-mb)}var r=sab/Math.sqrt(sa*sb);return{r:r,n:n,p:Math.abs(r)>=1?0:pT(r*Math.sqrt((n-2)/(1-r*r)),n-2)}}
+function inv(M){var n=M.length,A=M.map(function(r,i){return r.concat(M.map(function(_,j){return i==j?1:0}))});for(var i=0;i<n;i++){var p=i;for(var r=i+1;r<n;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;if(Math.abs(A[p][i])<1e-12)return null;var t=A[i];A[i]=A[p];A[p]=t;var d=A[i][i];for(var c=0;c<2*n;c++)A[i][c]/=d;for(var r2=0;r2<n;r2++)if(r2!=i){var f=A[r2][i];for(var c2=0;c2<2*n;c2++)A[r2][c2]-=f*A[i][c2]}}return A.map(function(r){return r.slice(n)})}
+function ols(y,Xs){var n=y.length,p=Xs.length+1,X=y.map(function(_,i){return[1].concat(Xs.map(function(c){return c[i]}))}),XtX=[],Xty=[];for(var i=0;i<p;i++){XtX.push([]);for(var j=0;j<p;j++){var s=0;for(var k=0;k<n;k++)s+=X[k][i]*X[k][j];XtX[i].push(s)}var s2=0;for(var k2=0;k2<n;k2++)s2+=X[k2][i]*y[k2];Xty.push(s2)}
+var I=inv(XtX);if(!I||n<=p)return null;var b=I.map(function(r){return sum(r.map(function(v,j){return v*Xty[j]}))}),sse=0,my=mean(y),sst=0;for(var k3=0;k3<n;k3++){var yh=sum(X[k3].map(function(v,j){return v*b[j]}));sse+=(y[k3]-yh)*(y[k3]-yh);sst+=(y[k3]-my)*(y[k3]-my)}
+var s2e=sse/(n-p),r2=1-sse/sst,F=((sst-sse)/(p-1))/s2e,sdy=Math.sqrt(vr(y));return{b:b,se:b.map(function(_,i){return Math.sqrt(s2e*I[i][i])}),t:b.map(function(v,i){return v/Math.sqrt(s2e*I[i][i])}),p:b.map(function(v,i){return pT(v/Math.sqrt(s2e*I[i][i]),n-p)}),beta:Xs.map(function(c,i){return b[i+1]*Math.sqrt(vr(c))/sdy}),r2:r2,adj:1-(1-r2)*(n-1)/(n-p),F:F,df1:p-1,df2:n-p,pF:pF(F,p-1,n-p),n:n}}
+return{pF:pF,pT:pT,desc:desc,levene:levene,ftest:ftest,corr:corr,ols:ols}})();
+var EX1='No\tX1\tX2\tX3\n1\t8\t12\t23\n2\t10\t11\t14\n3\t12\t23\t26\n4\t11\t14\t25\n5\t23\t26\t28\n6\t14\t25\t8\n7\t26\t8\t10\n8\t25\t10\t12\n9\t28\t12\t11\n10\t24\t26\t24';
+var EX2='No\tMotivasi Belajar\tPrestasi Belajar\n1\t75\t80\n2\t60\t75\n3\t65\t75\n4\t75\t90\n5\t65\t85\n6\t80\t85\n7\t75\t95\n8\t80\t95\n9\t65\t80\n10\t80\t90\n11\t60\t75\n12\t65\t75';
+function parseData(t){var L=t.split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean);if(L.length<3)return{err:'Data minimal berisi 1 baris nama variabel dan 2 baris angka.'};
+function sp(l){if(/\t|;/.test(l))return l.split(/[\t;]+/).map(function(x){return x.trim().replace(',','.')});if(/,/.test(l)&&!/\s/.test(l))return l.split(',');return l.split(/\s+/).map(function(x){return x.replace(',','.')})}
+var rows=L.slice(1).map(sp),nc=rows[0].length,h=/\t|;/.test(L[0])||(/,/.test(L[0])&&!/\s/.test(L[0]))?sp(L[0]):L[0].split(/\s{2,}/);if(h.length!=nc)h=L[0].split(/\s+/);if(h.length!=nc)return{err:'Jumlah nama variabel ('+h.length+') tidak sama dengan jumlah kolom angka ('+nc+').'};
+var cols=[],names=[];for(var j=0;j<nc;j++){var a=[];for(var i=0;i<rows.length;i++){var v=parseFloat(rows[i][j]);if(rows[i].length!=nc||isNaN(v)){if(j==0&&/^no\.?$/i.test(h[0])&&!isNaN(v)){}else return{err:'Baris '+(i+2)+' kolom "'+h[j]+'" bukan angka atau kolomnya tidak lengkap.'}}a.push(v)}if(/^no\.?$/i.test(h[j]))continue;cols.push(a);names.push(h[j])}
+if(!cols.length)return{err:'Tidak ada kolom data.'};return{names:names,cols:cols}}
+function f4(x){return isFinite(x)?(Math.abs(x)<1e-4&&x!==0?x.toExponential(2):x.toFixed(4)):'-'}
+function tbl(h,r){return'<table><tr>'+h.map(function(x){return'<th>'+x+'</th>'}).join('')+'</tr>'+r.map(function(x){return'<tr>'+x.map(function(c){return'<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</table>'}
+function statView(){M.innerHTML='<div class="hd"><div><h1>Analisis Data</h1><p class="sub">Tempel data dari Excel atau SPSS. Baris pertama berisi nama variabel.</p></div></div><div class="card"><textarea id="stx" rows="9" placeholder="Contoh (pisahkan kolom dengan Tab):&#10;Motivasi Belajar&#9;Prestasi Belajar&#10;75&#9;80&#10;60&#9;75" style="font-family:monospace"></textarea><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn g s" id="ex1" type="button">Contoh Soal 1</button><button class="btn g s" id="ex2" type="button">Contoh Soal 2</button><span class="note">Variabel terikat (regresi):</span><select id="sxy" style="width:auto"></select><button class="btn" id="sxgo" type="button">Analisis</button></div><div id="sxm" class="note" style="margin-top:10px"></div></div><div id="sxr"></div>';
+function sel(){var p=parseData($('#stx').value),o='';if(p.names)p.names.forEach(function(n,i){o+='<option value="'+i+'"'+(i==p.names.length-1?' selected':'')+'>'+E(n)+'</option>'});$('#sxy').innerHTML=o}
+$('#stx').oninput=sel;$('#ex1').onclick=function(){$('#stx').value=EX1;sel()};$('#ex2').onclick=function(){$('#stx').value=EX2;sel()};
+$('#sxgo').onclick=function(){var p=parseData($('#stx').value);if(p.err){$('#sxm').textContent=p.err;$('#sxr').innerHTML='';return}$('#sxm').textContent='';var N=p.names,C=p.cols,h='',a=0.05,k=C.length;
+h+='<div class="card"><h3 style="margin-bottom:8px">Statistik Deskriptif</h3>'+tbl(['Variabel','N','Mean','Median','Std. Deviasi','Varians','Min','Maks'],C.map(function(c,i){var d=SL.desc(c);return[E(N[i]),d.n,f4(d.mean),f4(d.median),f4(d.sd),f4(d.v),d.min,d.max]}))+'</div>';
+if(k>=2){var L1=SL.levene(C,'mean'),L2=SL.levene(C,'median'),dk=function(p){return p>a?'Varians sama (homogen)':'Varians berbeda'},rr=[['Levene (berdasar rata-rata)',f4(L1.W),L1.df1+' ; '+L1.df2,f4(L1.p),dk(L1.p)],['Levene (berdasar median)',f4(L2.W),L2.df1+' ; '+L2.df2,f4(L2.p),dk(L2.p)]];
+if(k==2){var F=SL.ftest(C[0],C[1]);rr.push(['Uji F dua varians',f4(F.F),F.df1+' ; '+F.df2,f4(F.p),dk(F.p)])}
+h+='<div class="card"><h3 style="margin-bottom:8px">Uji Homogenitas Varians</h3>'+tbl(['Uji','Statistik','df','Sig. (p)','Keputusan (α = 0,05)'],rr)+'<p class="note" style="margin:10px 0 0">H0: varians antarvariabel sama. Jika Sig. &gt; 0,05 maka H0 diterima.</p></div>';
+var cr=[];for(var i=0;i<k;i++)for(var j=i+1;j<k;j++){var c=SL.corr(C[i],C[j]);cr.push([E(N[i])+' dengan '+E(N[j]),f4(c.r),f4(c.p),c.n,c.p<a?'Signifikan':'Tidak signifikan'])}
+h+='<div class="card"><h3 style="margin-bottom:8px">Korelasi Pearson</h3>'+tbl(['Pasangan variabel','r','Sig. (2-tailed)','N','Keputusan'],cr)+'</div>';
+var yi=+$('#sxy').value,Xs=C.filter(function(_,i){return i!=yi}),Xn=N.filter(function(_,i){return i!=yi}),o=SL.ols(C[yi],Xs);
+if(o){var rows=[['(Konstanta)',f4(o.b[0]),f4(o.se[0]),'-',f4(o.t[0]),f4(o.p[0])]];Xn.forEach(function(n,i){rows.push([E(n),f4(o.b[i+1]),f4(o.se[i+1]),f4(o.beta[i]),f4(o.t[i+1]),f4(o.p[i+1])])});
+h+='<div class="card"><h3 style="margin-bottom:8px">Regresi Linear Berganda</h3><p class="note" style="margin:0 0 8px">Variabel terikat: <b>'+E(N[yi])+'</b></p>'+tbl(['Ringkasan Model','R','R Square','Adjusted R Square','F','df','Sig. F'],[[' ',f4(Math.sqrt(o.r2)),f4(o.r2),f4(o.adj),f4(o.F),o.df1+' ; '+o.df2,f4(o.pF)]])+'<div style="height:12px"></div>'+tbl(['Variabel','B','Std. Error','Beta','t','Sig.'],rows)+'</div>'}
+else h+='<div class="card note">Regresi tidak dapat dihitung (data terlalu sedikit atau antarvariabel bergantung sempurna).</div>'}
+$('#sxr').innerHTML=h}}
 function qrow(){var d=document.createElement('div');d.className='qb';
 d.innerHTML='<input class="qt" placeholder="Tulis pertanyaan"><select class="qy"><option value="likert">Skala Likert 1-5</option><option value="choice">Pilihan ganda</option><option value="yesno">Ya / Tidak</option><option value="text">Jawaban teks</option></select><button class="x" type="button">&#10005;</button><input class="qo" placeholder="Opsi dipisah koma, misal: Gojek, Grab, Maxim" style="display:none">';
 d.querySelector('.qy').onchange=function(){d.querySelector('.qo').style.display=this.value=='choice'?'block':'none'};d.querySelector('.x').onclick=function(){d.remove()};$('#ql').appendChild(d);return d}
@@ -228,7 +281,7 @@ var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=na
 function exp(k){if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
 if(k=='json')return dl(b+'.json','application/json',toJSON(s));return dl(b+'.csv','text/csv',toCSV(s))}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-go]');if(t)return go(t.dataset.go,t.dataset.id);
-t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;if(!confirm('Hapus survei ini? Tindakan ini tidak bisa dibatalkan.'))return;if(window.CLOUD&&window.CLOUD.on){window.CLOUD.delSurvey(i).catch(function(e){alert('Gagal menghapus: '+e.message)});return}st.s=st.s.filter(function(s){return s.id!=i});delete st.r[i];save();return home()}
+t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;$('#ct').textContent='Survei "'+sv_(i).title+'" akan dihapus beserta jawabannya. Tindakan ini tidak bisa dibatalkan.';$('#cm').classList.add('on');$('#cy').onclick=function(){$('#cm').classList.remove('on');doDel(i)};return}
 t=e.target.closest('[data-ex]');if(t)exp(t.dataset.ex)});
 document.addEventListener('change',function(e){var it=e.target.closest('.it');if(it)it.classList.remove('miss')});
 $('#mz').onclick=function(){$('#md').classList.remove('on')};
@@ -239,7 +292,7 @@ function canDel(s){var C=window.CLOUD;return !(C&&C.on)||!!(C.user&&s.owner==C.u
 function cloudMerge(){var C=window.CLOUD;if(!C||!C.on)return;var sr=RAW.map(function(x){return x.split('').map(Number).concat([''])});
 st={s:[seed()].concat(C.surveys||[]),r:{s1:sr.concat(C.resp.s1||[])}};st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=C.resp[x.id]||[]})}
 function stamp(m){var C=window.CLOUD,t=$('#stt'),b=$('#lgs');if(!t)return;t.textContent=m||'';
-var sb=(C&&C.local&&!C.remote&&C.user&&C.user.role=='pembuat')?'<button class="nv" data-go="setup">Aktifkan database bersama</button>':'';b.innerHTML=sb+((C&&C.on)?(C.user?'<button class="nv" data-lo="1">Keluar ('+E((C.user.displayName||C.user.email||'akun').split(' ')[0])+')</button>':provs().map(function(p){return'<button class="nv" data-lp="'+p+'">'+plab(p)+'</button>'}).join('')):'')}
+var sb='';if(C&&C.local&&C.user&&C.user.role=='pembuat'&&String(C.user.uid).indexOf('l_')==0){if(!C.remote)sb+='<button class="nv" data-go="setup">Aktifkan database bersama</button>';if(!window.GID)sb+='<button class="nv" data-go="gset">Aktifkan login Google</button>'}b.innerHTML=sb+((C&&C.on)?(C.user?'<button class="nv" data-lo="1">Keluar ('+E((C.user.displayName||C.user.email||'akun').split(' ')[0])+')</button>':provs().map(function(p){return'<button class="nv" data-lp="'+p+'">'+plab(p)+'</button>'}).join('')):'')}
 window.onCloud=function(){cloudMerge();var C=window.CLOUD;
 if(wait){if(st.s.some(function(x){return x.id==wait.id})){cur=wait.c;arg=wait.id;wait=null;render()}else if(C.sloaded){cur='nf';wait=null;render()}}
 else if(cur=='home'||cur=='res')render();else if((cur=='pickfill'||cur=='pickres')&&window.pickList)window.pickList();stamp()};
@@ -251,22 +304,32 @@ function route(){var m=/^#(isi|hasil)=([^&]+)/.exec(location.hash);solo=!!m;docu
 var id=decodeURIComponent(m[2]),c=m[1]=='isi'?'fill':'res',C=window.CLOUD;
 if(st.s.some(function(x){return x.id==id})){cur=c;arg=id;wait=null}
 else if((window.FIREBASE_CONFIG||window.DB_BLOB)&&!window.CLOUDFAIL&&!(C&&C.sloaded)){wait={c:c,id:id};cur='load'}else{cur='nf';wait=null}}
-function base(){return location.href.split('#')[0]}
-document.addEventListener('click',function(e){var t=e.target.closest('[data-share]');if(t){var sv=sv_(t.dataset.share),id=encodeURIComponent(sv.id);$('#sn').textContent=sv.title;var dq=(window.DB_BLOB&&!window.DB_FIXED)?'&db='+window.DB_BLOB:'';$('#sl1').value=base()+'#isi='+id+dq;$('#sl2').value=base()+'#hasil='+id+dq;$('#sm').classList.add('on');return}
+function isWeb(){return /^https?:/.test(location.href)}
+function base(){var h=location.href.split('#')[0];if(isWeb())return h;try{return localStorage.getItem('sf_site')||h}catch(e){return h}}
+function showShare(id){var sv=sv_(id),q=encodeURIComponent(sv.id),dq=(window.DB_BLOB&&!window.DB_FIXED)?'&db='+window.DB_BLOB:'';window._sh=id;$('#sn').textContent=sv.title;$('#sl1').value=base()+'#isi='+q+dq;$('#sl2').value=base()+'#hasil='+q+dq;var bad=!isWeb()&&!(function(){try{return localStorage.getItem('sf_site')}catch(e){return ''}})();$('#sw').style.display=bad?'block':'none';$('#sm').classList.add('on')}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-share]');if(t){showShare(t.dataset.share);return}
 t=e.target.closest('[data-cp]');if(t){var i=$('#'+t.dataset.cp),ok=false;i.select();try{ok=document.execCommand('copy')}catch(x){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(i.value);t.textContent='Tersalin';setTimeout(function(){t.textContent='Salin'},1500);return}
-if(e.target.id=='sz'||e.target.id=='sm')$('#sm').classList.remove('on')});
+if(e.target.id=='sz'||e.target.id=='sm')$('#sm').classList.remove('on');if(e.target.id=='ssv'){var u=$('#si').value.trim();if(/^https?:\/\//.test(u)){if(u.indexOf('#')>=0)u=u.split('#')[0];try{localStorage.setItem('sf_site',u)}catch(x){}showShare(window._sh)}}});
 window.onhashchange=function(){route();render()};
+function loadGIS(cb){if(window.google&&google.accounts&&google.accounts.oauth2)return cb();var sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.onload=cb;sc.onerror=function(){stamp('Tidak dapat memuat layanan login Google. Periksa koneksi internet.')};document.head.appendChild(sc)}
+function gLogin(){loadGIS(function(){var tc=google.accounts.oauth2.initTokenClient({client_id:window.GID,scope:'openid profile email',callback:function(r){if(!r||r.error){stamp('Login Google dibatalkan atau gagal.');return}
+fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+r.access_token}}).then(function(x){return x.json()}).then(function(u){if(!u.sub)throw new Error('profil tidak terbaca');window.CLOUD.setUser({uid:'g_'+u.sub,displayName:u.name||u.email,email:u.email,role:'pembuat'});stamp('')}).catch(function(e){stamp('Login Google gagal: '+e.message)})}});tc.requestAccessToken({prompt:'select_account'})})}
+function gsetView(){var o=(location.origin&&location.origin!='null')?location.origin:'(alamat GitHub Pages Anda, tanpa garis miring di akhir)';
+M.innerHTML='<div class="hd"><div><h1>Aktifkan Login Google</h1><p class="sub">Dilakukan sekali oleh pembuat web.</p></div></div><div class="card"><p class="note" style="margin-top:0">Login Google asli memerlukan satu kode (Client ID) dari akun Google Anda. Langkah:</p><ol class="note" style="padding-left:20px;line-height:1.9"><li>Buka console.cloud.google.com lalu buat proyek baru.</li><li>Menu APIs &amp; Services &gt; OAuth consent screen: pilih External, isi nama aplikasi dan email, simpan.</li><li>Menu Credentials &gt; Create credentials &gt; OAuth client ID &gt; Web application.</li><li>Pada Authorized JavaScript origins isi: <b>'+E(o)+'</b></li><li>Klik Create, salin <b>Client ID</b> (berakhiran .apps.googleusercontent.com) lalu tempel di bawah.</li></ol><input id="gi" placeholder="123456-abc.apps.googleusercontent.com"><p style="margin:12px 0 0"><button class="btn" id="gs" type="button">Simpan dan aktifkan</button></p><div id="go" class="note" style="margin-top:10px"></div></div>';
+$('#gs').onclick=function(){var v=$('#gi').value.trim();if(!/\.apps\.googleusercontent\.com$/.test(v)){$('#go').textContent='Client ID tidak valid.';return}window.GID=v;try{localStorage.setItem('sf_gid',v)}catch(e){}var C=window.CLOUD,p=(C&&C.setCfg)?C.setCfg({gid:v}):Promise.resolve();p.then(function(){$('#go').textContent='Tersimpan. Login Google sekarang aktif. Klik Keluar lalu Masuk dengan Google.';stamp()}).catch(function(e){$('#go').textContent='Gagal menyimpan: '+e.message})}}
 function initRemote(){var U=(window.DB_URL||'https://jsonblob.com/api/jsonBlob/')+window.DB_BLOB,KU='sf_user',H={'Content-Type':'application/json','Accept':'application/json'},last='';
 var C=window.CLOUD={on:true,local:true,remote:true,user:null,surveys:[],resp:{},done:[],sloaded:false};
 try{C.user=JSON.parse(localStorage.getItem(KU))}catch(e){}
-function norm(d){d=d||{};C.surveys=d.surveys||[];C.resp=d.resp||{};C.done=d.done||[]}
+function norm(d){d=d||{};C.surveys=d.surveys||[];C.resp=d.resp||{};C.done=d.done||[];var g=(d.cfg||{}).gid;if(g&&g!=window.GID){window.GID=g;try{localStorage.setItem('sf_gid',g)}catch(e){}}}
 function get(){return fetch(U,{headers:H,cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})}
 function put(d){return fetch(U,{method:'PUT',headers:H,body:JSON.stringify(d)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status)})}
 function mut(fn){return get().then(function(d){d=d||{};d.surveys=d.surveys||[];d.resp=d.resp||{};d.done=d.done||[];var e=fn(d);if(e)throw e;return put(d).then(function(){last=JSON.stringify(d);norm(d);window.onCloud()})})}
 function poll(first){return get().then(function(d){var j=JSON.stringify(d);if(j===last&&C.sloaded)return;last=j;norm(d);C.sloaded=true;window.onCloud()}).catch(function(e){if(!C.sloaded&&first)window.onCloudErr(e.message)})}
-C.login=function(){$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
+C.login=function(){if(window.GID){gLogin();return}$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
 C.loginDo=function(n,role){C.user={uid:'l_'+n.toLowerCase().replace(/\s+/g,'_'),displayName:n,role:role};try{localStorage.setItem(KU,JSON.stringify(C.user))}catch(e){}window.onAuth();window.onCloud()};
 C.logout=function(){C.user=null;try{localStorage.removeItem(KU)}catch(e){}window.onAuth();window.onCloud()};
+C.setUser=function(u){C.user=u;try{localStorage.setItem(KU,JSON.stringify(u))}catch(e){}window.onAuth();window.onCloud()};
+C.setCfg=function(ch){return mut(function(d){d.cfg=d.cfg||{};for(var k in ch)d.cfg[k]=ch[k]})};
 C.addSurvey=function(v){v.owner=C.user.uid;v.ownerName=C.user.displayName;return mut(function(d){d.surveys.push(v)})};
 C.updSurvey=function(id,ch){return mut(function(d){d.surveys.forEach(function(x){if(x.id==id&&x.owner==C.user.uid)for(var k in ch)x[k]=ch[k]})})};
 C.delSurvey=function(id){return mut(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==id&&x.owner==C.user.uid)});delete d.resp[id]})};
@@ -278,9 +341,10 @@ function wr(d){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
 var C=window.CLOUD={on:true,local:true,user:null,surveys:[],resp:{},done:[],sloaded:true};
 function sync(){var d=rd();C.surveys=d.surveys;C.resp=d.resp;C.done=d.done;C.user=d.user}
 function ok(){sync();window.onCloud();return Promise.resolve()}
-C.login=function(){$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
+C.login=function(){if(window.GID){gLogin();return}$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
 C.loginDo=function(n,role){var d=rd();d.user={uid:'l_'+n.toLowerCase().replace(/\s+/g,'_'),displayName:n,role:role};wr(d);sync();window.onAuth();window.onCloud()};
 C.logout=function(){var d=rd();d.user=null;wr(d);sync();window.onAuth();window.onCloud()};
+C.setUser=function(u){var d=rd();d.user=u;wr(d);sync();window.onAuth();window.onCloud()};
 C.addSurvey=function(v){var d=rd();v.owner=d.user.uid;v.ownerName=d.user.displayName;d.surveys.push(v);wr(d);return ok()};
 C.updSurvey=function(id,ch){var d=rd();d.surveys.forEach(function(x){if(x.id==id)for(var k in ch)x[k]=ch[k]});wr(d);return ok()};
 C.delSurvey=function(id){var d=rd();d.surveys=d.surveys.filter(function(x){return x.id!=id});delete d.resp[id];wr(d);return ok()};
@@ -292,8 +356,8 @@ $('#lcx').onclick=function(){$('#lm').classList.remove('on')};
 function dbId(){var m=/[#&]db=([^&]+)/.exec(location.hash);if(m){try{localStorage.setItem('sf_db',m[1])}catch(e){}return m[1]}try{return window.DB_BLOB||localStorage.getItem('sf_db')||''}catch(e){return window.DB_BLOB||''}}
 function setupView(){M.innerHTML='<div class="hd"><div><h1>Aktifkan Database Bersama</h1><p class="sub">Dilakukan sekali oleh pembuat web.</p></div></div><div class="card"><p class="note" style="margin-top:0">Tekan tombol di bawah. Web akan membuat database bersama lalu memberi satu tautan resmi. Pakai tautan itu untuk semua orang, termasuk dosen.</p><button class="btn" id="mk" type="button">Buat database bersama</button><div id="mo" class="note" style="margin-top:12px"></div></div>';
 $('#mk').onclick=function(){$('#mo').textContent='Membuat...';fetch((window.DB_URL||'https://jsonblob.com/api/jsonBlob/').replace(/\/$/,''),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({surveys:[],resp:{},done:[]})}).then(function(r){var l=r.headers.get('Location')||r.headers.get('X-jsonblob')||'',id=l.split('/').pop();if(!id)throw new Error('ID tidak terbaca');
-try{localStorage.setItem('sf_db',id)}catch(e){}var u=base()+'#db='+id;$('#mo').innerHTML='<b>Berhasil.</b> Tautan resmi web (salin, pakai untuk semua orang):<input readonly value="'+u+'" onclick="this.select()" style="margin-top:8px"><p><button class="btn" id="gc" type="button">Lanjut</button></p><p class="note">Setelah menekan Lanjut, web memakai database bersama. Kirim tautan di atas ke teman dan dosen.</p>';$('#gc').onclick=function(){try{var u=(JSON.parse(localStorage.getItem('sf3'))||{}).user;if(u)localStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}location.hash='#db='+id;location.reload()}}).catch(function(e){$('#mo').textContent='Gagal otomatis ('+e.message+'). Kirim pesan ini ke pembuat kode.'})}}
-function boot(){window.DB_FIXED=!!window.DB_BLOB;window.DB_BLOB=dbId();load();if(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey){}else if(window.DB_BLOB)initRemote();else initLocal();route();if(location.hash=='#setup'&&!window.DB_BLOB)cur='setup';render();stamp()}
+try{localStorage.setItem('sf_db',id)}catch(e){}var u=base()+'#db='+id;$('#mo').innerHTML='<b>Berhasil.</b> Tautan resmi web (salin, pakai untuk semua orang):<input readonly value="'+u+'" onclick="this.select()" style="margin-top:8px"><p><button class="btn" id="gc" type="button">Lanjut</button></p><p class="note">Setelah menekan Lanjut, web memakai database bersama. Kirim tautan di atas ke teman dan dosen.</p>';$('#gc').onclick=function(){try{var u=(JSON.parse(localStorage.getItem('sf3'))||{}).user;if(u)localStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}location.hash='#db='+id;location.reload()}}).catch(function(e){$('#mo').textContent=isWeb()?'Gagal membuat database ('+e.message+'). Periksa koneksi internet lalu coba lagi.':'Gagal: halaman ini dibuka dari pratinjau yang memblokir koneksi. Buka web lewat alamat GitHub Pages Anda (https://...github.io/...), lalu ulangi langkah ini.'})}}
+function boot(){try{window.GID=window.GOOGLE_CLIENT_ID||localStorage.getItem('sf_gid')||''}catch(e){window.GID=window.GOOGLE_CLIENT_ID||''}window.DB_FIXED=!!window.DB_BLOB;window.DB_BLOB=dbId();load();if(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey){}else if(window.DB_BLOB)initRemote();else initLocal();route();if(location.hash=='#setup'&&!window.DB_BLOB)cur='setup';render();stamp()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()
 </script>
 <script type="module">
@@ -317,4 +381,4 @@ F.onSnapshot(F.collection(db,'responses'),s=>{const r={};C.done=s.docs.map(d=>d.
 }catch(e){window.onCloudErr(e.message)}}
 </script>
 </body>
-                                                                                                                                                                                                                                                                                          </html>
+</html>
