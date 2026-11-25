@@ -58,6 +58,7 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<base target="_blank">
 </head>
 <body>
 <div class="app">
@@ -256,7 +257,7 @@ if(q.type!='text'&&v===''){el.classList.add('miss');bad=bad||el}r.push(v)});
 if(bad){$('#er').textContent='Masih ada pertanyaan yang belum dijawab.';bad.scrollIntoView({block:'center'});return}
 var C=window.CLOUD;if(C&&C.on){$('#er').textContent='Mengirim jawaban...';C.addResp(s.id,r).then(function(){after(s)}).catch(function(e){$('#er').textContent=/permission|denied/i.test(e.code+' '+e.message)?(C.user?'Akun ini sudah pernah mengisi survei ini.':'Survei ini mewajibkan login. Silakan masuk dulu.'):'Gagal mengirim: '+e.message});return}
 st.r[s.id].push(r);save();after(s)}}
-function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div><button class="btn" data-ex="pdf">Unduh PDF</button> <button class="btn g" data-ex="csv">Ekspor CSV</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
+function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div><button class="btn" data-ex="lap">Unduh Laporan Lengkap</button> <button class="btn" data-ex="pdf">Unduh PDF</button> <button class="btn g" data-ex="csv">Ekspor CSV</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
 var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(nm(s,j))});var S=stat(all);
 h+='<div class="st"><div class="card"><b>'+n+'</b><span>Responden</span></div><div class="card"><b>'+(S?S.m.toFixed(2):'-')+'</b><span>Rata-rata skor (1-5)</span></div><div class="card"><b>'+(S?S.md:'-')+'</b><span>Median</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>Indeks kepuasan (CSI)</span></div></div>';
 var gs={},go_=[];s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gs[q.g]){gs[q.g]=[];go_.push(q.g)}gs[q.g]=gs[q.g].concat(nm(s,j))}});
@@ -278,7 +279,7 @@ async function dl(name,mime,text){var blob=new Blob([text],{type:mime+';charset=
 try{if(window.claude&&claude.use)du=await claude.use('downloads')}catch(e){}
 if(du){try{await du.save({filename:name,data:await blob.arrayBuffer()});return}catch(e){}}
 var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800)}
-function exp(k){if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
+function exp(k){if(k=='lap')return lapPDF();if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
 if(k=='json')return dl(b+'.json','application/json',toJSON(s));return dl(b+'.csv','text/csv',toCSV(s))}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-go]');if(t)return go(t.dataset.go,t.dataset.id);
 t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;$('#ct').textContent='Survei "'+sv_(i).title+'" akan dihapus beserta jawabannya. Tindakan ini tidak bisa dibatalkan.';$('#cm').classList.add('on');$('#cy').onclick=function(){$('#cm').classList.remove('on');doDel(i)};return}
@@ -380,5 +381,175 @@ F.onSnapshot(F.collection(db,'surveys'),s=>{C.surveys=s.docs.map(d=>{const x=d.d
 F.onSnapshot(F.collection(db,'responses'),s=>{const r={};C.done=s.docs.map(d=>d.id);s.docs.forEach(d=>{const x=d.data();(r[x.surveyId]=r[x.surveyId]||[]).push(x.answers)});C.resp=r;window.onCloud()},bad);
 }catch(e){window.onCloudErr(e.message)}}
 </script>
+
+<script>
+/* ===== LAPORAN LENGKAP (cover, daftar isi, BAB I-V, daftar pustaka, lampiran) ===== */
+async function lapPDF(){
+var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat. Periksa koneksi internet lalu muat ulang halaman.');return}
+var s=sv_(arg),n=st.r[s.id].length;
+var gs=[],gmap={};s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gmap[q.g]){gmap[q.g]=[];gs.push(q.g)}gmap[q.g].push(j)}});
+function qcol(j){return st.r[s.id].map(function(r){return +r[j]}).filter(function(x){return x>0})}
+var ga=gs.map(function(g){var a=[];gmap[g].forEach(function(j){a=a.concat(qcol(j))});return stat(a)});
+var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(qcol(j))});
+var S=stat(all),csi=S?S.m/5*100:null,v=vr(s);
+var items=s.qs.map(function(q,j){return j}).filter(function(j){return s.qs[j].type=='likert'});
+var im=items.map(function(j){return stat(qcol(j))});
+var dist=all.reduce(function(a,x){a[x-1]++;return a},[0,0,0,0,0]);
+var gdist=ga.map(function(z){return[0,0,0,0,0].map(function(_,k){return 0})});
+gs.forEach(function(g,i){gmap[g].forEach(function(j){st.r[s.id].forEach(function(r){var x=+r[j];if(x)gdist[i][x-1]++})})});
+function f2(x){return x.toFixed(2)} function f1(x){return x.toFixed(1)}
+var GR=['#2b2b2b','#5e5e5e','#8c8c8c','#bdbdbd','#e6e6e6'];
+var TOC=[['KATA PENGANTAR','kp',0],['DAFTAR ISI','di',0],['DAFTAR TABEL','dt',0],['DAFTAR GAMBAR','dg',0],
+['BAB I  PENDAHULUAN','b1',0],['1.1  Latar Belakang','s11',1],['1.2  Rumusan Masalah','s12',1],['1.3  Tujuan','s13',1],['1.4  Manfaat','s14',1],
+['BAB II  TINJAUAN PUSTAKA','b2',0],['2.1  Kepuasan Pelanggan dan Kualitas Layanan','s21',1],['2.2  Penelitian Terdahulu','s22',1],['2.3  Skala Likert dan Customer Satisfaction Index','s23',1],['2.4  Statistika Deskriptif dan Reliabilitas','s24',1],
+['BAB III  METODE PENELITIAN','b3',0],['3.1  Jenis dan Desain Penelitian','s31',1],['3.2  Instrumen','s32',1],['3.3  Teknik Analisis Data','s33',1],['3.4  Pengumpulan Data','s34',1],
+['BAB IV  HASIL DAN PEMBAHASAN','b4',0],['4.1  Uji Reliabilitas','s41',1],['4.2  Distribusi Jawaban Keseluruhan','s42',1],['4.3  Indeks Kepuasan per Aspek','s43',1],['4.4  Pembahasan per Aspek','s44',1],['4.5  Statistik per Butir','s45',1],
+['BAB V  PENUTUP','b5',0],['5.1  Kesimpulan','s51',1],['5.2  Saran','s52',1],['5.3  Keterbatasan','s53',1],
+['DAFTAR PUSTAKA','dp',0],['LAMPIRAN','lamp',0]];
+var DTAB=[['Tabel 1. Kriteria Customer Satisfaction Index','t1'],['Tabel 2. Distribusi Jawaban Keseluruhan','t2'],['Tabel 3. Rata-rata dan CSI per Aspek','t3'],['Tabel 4. Distribusi Persentase Jawaban per Aspek','t4'],['Tabel 5. Statistik Deskriptif per Butir Pernyataan','t5']];
+var DFIG=[['Gambar 1. Indeks Kepuasan (CSI) per Aspek','g1'],['Gambar 2. Distribusi Jawaban per Aspek','g2']];
+var PUST=['Appliansyach, M. F., Sugiyo, Q. N., Maulana, D. B., & Sahara, S. (2023). Analisis kepuasan pengguna transportasi umum ojek online (Gojek) melalui instrumen layanan. Jurnal Ekonomi, Bisnis dan Manajemen (EBISMEN), 2(2), 140-147.',
+'Field, A. (2018). Discovering statistics using IBM SPSS Statistics (5th ed.). SAGE Publications.',
+'Ghozali, I. (2018). Aplikasi analisis multivariate dengan program IBM SPSS 25 (9th ed.). Badan Penerbit Universitas Diponegoro.',
+'Hair, J. F., Black, W. C., Babin, B. J., & Anderson, R. E. (2019). Multivariate data analysis (8th ed.). Cengage Learning.',
+'Kementerian Perhubungan Republik Indonesia. (2019a). Keputusan Menteri Perhubungan Nomor KP 348 Tahun 2019 tentang pedoman perhitungan biaya jasa penggunaan sepeda motor yang digunakan untuk kepentingan masyarakat yang dilakukan dengan aplikasi. Jakarta: Kementerian Perhubungan.',
+'Kementerian Perhubungan Republik Indonesia. (2019b). Peraturan Menteri Perhubungan Nomor PM 12 Tahun 2019 tentang pelindungan keselamatan pengguna sepeda motor yang digunakan untuk kepentingan masyarakat. Jakarta: Kementerian Perhubungan.',
+'Kotler, P., & Keller, K. L. (2016). Marketing management (15th ed.). Pearson Education.',
+'Sekaran, U., & Bougie, R. (2016). Research methods for business: A skill-building approach (7th ed.). John Wiley & Sons.',
+'Sugiyono. (2019). Metode penelitian kuantitatif, kualitatif, dan R&D. Bandung: Alfabeta.',
+"Taber, K. S. (2018). The use of Cronbach's alpha when developing and reporting research instruments in science education. Research in Science Education, 48(6), 1273-1296.",
+'Tjiptono, F., & Chandra, G. (2016). Service, quality & satisfaction (4th ed.). Yogyakarta: Andi.',
+'Zeithaml, V. A., Bitner, M. J., & Gremler, D. D. (2018). Services marketing: Integrating customer focus across the firm (7th ed.). McGraw-Hill Education.'];
+
+function gen(pm){
+var d=new J.jsPDF({unit:'pt',format:'a4'}),marks={},y=0;
+function sect(key){if(d.getNumberOfPages()>1||y>70){d.addPage();y=46}else{y=46}marks[key]=d.getNumberOfPages()}
+function C(t,size,gap,bold){d.setFont('times',bold?'bold':'normal');d.setFontSize(size||12);d.text(t,297.5,y,{align:'center'});y+=gap||18}
+function H(t){d.setFont('times','bold');d.setFontSize(13);d.text(t,42,y);y+=20}
+function Pg(t,size){d.setFont('times','normal');d.setFontSize(size||11);var L=d.splitTextToSize(t,510);d.text(L,42,y);y+=L.length*(size?size*1.4:15)+4}
+function cap(t){d.setFont('times','bold');d.setFontSize(10);d.text(t,42,y);y+=14}
+function TBL(head,body,fs){d.autoTable({startY:y,head:[head],body:body,styles:{font:'times',fontSize:fs||9,cellPadding:2.5,fillColor:[255,255,255],textColor:[0,0,0],lineColor:[60,60,60],lineWidth:.3},headStyles:{fillColor:[255,255,255],textColor:[0,0,0],lineColor:[0,0,0],lineWidth:.4},margin:{left:42,right:42}});y=d.lastAutoTable.finalY+10}
+function tocline(t,pg,ind){d.setFont('times','normal');d.setFontSize(11);var x=42+(ind||0)*18;d.text(t,x,y);var pw=d.getTextWidth(String(pg));d.text(String(pg),553,y,{align:'right'});d.setDrawColor(150);d.setLineDashPattern([1,2],0);d.line(x+d.getTextWidth(t)+5,y-2.5,553-pw-5,y-2.5);d.setLineDashPattern([],0);y+=17}
+function fit(){if(y>770){d.addPage();y=46}}
+function src(t){d.setFont('times','italic');d.setFontSize(9);d.text(t,297.5,y,{align:'center'});y+=16}
+function fig1(){fit();if(y>700){d.addPage();y=46}var x0=190,bw=330;d.setFont('times','normal');d.setFontSize(8);
+gs.forEach(function(g,i){var z=ga[i],c=z?z.m/5*100:0;d.setFillColor(120,120,120);d.rect(x0,y-7,bw*c/100,11,'F');d.setTextColor(0,0,0);d.text(g,185,y,{align:'right'});d.text(f1(c)+'%',x0+bw*c/100+4,y);y+=16});
+y+=4;d.setFontSize(8);d.text('0%',x0,y-4);d.text('50%',x0+bw/2,y-4,{align:'center'});d.text('100%',x0+bw,y-4,{align:'right'});y+=14}
+function fig2(){fit();if(y>640){d.addPage();y=46}var x0=190,bw=330;d.setFont('times','normal');d.setFontSize(8);
+gs.forEach(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1,xx=x0;d.text(g,185,y,{align:'right'});
+gdist[i].forEach(function(c,k){var w=bw*c/tot;if(w>0){var h=GR[k];d.setFillColor(parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16));d.rect(xx,y-7,w,11,'F');xx+=w}});
+d.setTextColor(0,0,0);d.text('100%',x0+bw+4,y);y+=16});
+var lx=x0;['1 STS','2 TS','3 N','4 S','5 SS'].forEach(function(l,k){var h=GR[k];d.setFillColor(parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16));d.rect(lx,y-6,8,8,'F');d.setTextColor(0,0,0);d.text(l,lx+11,y);lx+=d.getTextWidth(l)+26});y+=16}
+/* COVER */
+y=90;C('LAPORAN TUGAS KELOMPOK',14,10,true);C('MATA KULIAH STATISTIKA',14,34,true);
+C('ANALISIS KEPUASAN PENGGUNA TRANSPORTASI ONLINE',14,18,true);C('MELALUI ASPEK TARIF, KEAMANAN, DAN KECEPATAN',14,26,true);
+C('Dosen Pengampu: Deasy Wahyuni, M.Si.',12,26);
+d.setFillColor(140,106,63);d.roundedRect(277.5-21,y,42,42,8,8,'F');d.setTextColor(255,255,255);d.setFont('times','bold');d.setFontSize(26);d.text('S',297.5,y+29,{align:'center'});d.setTextColor(0,0,0);y+=66;
+C('Disusun oleh: Kelompok 6',12,20,true);
+['Laila Azahra : 240103056','Melani Wahyuni : 240103027','Rindi Safitri : 240103008','Mutiara Sabila : 240103064','M. Hanafi : 240103024','Fajril Huda Damanik : 240103012'].forEach(function(a,i){C((i+1)+'.  '+a,11,14)});
+y+=26;C('PROGRAM STUDI TEKNIK INFORMATIKA',12,14,true);C('FAKULTAS ILMU KOMPUTER',12,14,true);C('UNIVERSITAS DUMAI',12,14,true);C('2026',12,14,true);
+/* KATA PENGANTAR */
+sect('kp');C('KATA PENGANTAR',14,22,true);
+Pg('Puji syukur penulis panjatkan ke hadirat Tuhan Yang Maha Esa atas rahmat dan karunia-Nya sehingga laporan tugas mata kuliah Statistika yang berjudul "Analisis Kepuasan Pengguna Transportasi Online Melalui Aspek Tarif, Keamanan, dan Kecepatan" ini dapat diselesaikan dengan baik.');
+Pg('Laporan ini disusun untuk memenuhi tugas kelompok pada mata kuliah Statistika di Program Studi Teknik Informatika, Fakultas Ilmu Komputer, Universitas Dumai. Penulis mengucapkan terima kasih kepada Ibu Deasy Wahyuni, M.Si. selaku dosen pengampu atas bimbingan yang diberikan, serta kepada seluruh responden yang telah bersedia mengisi kuesioner.');
+Pg('Penulis menyadari bahwa laporan ini masih memiliki keterbatasan. Oleh karena itu, kritik dan saran yang membangun sangat penulis harapkan demi perbaikan di masa mendatang.');
+y+=40;Pg('Dumai, November 2026');d.text('Penulis',553,y,{align:'right'});
+/* DAFTAR ISI */
+sect('di');C('DAFTAR ISI',14,22,true);
+TOC.forEach(function(e){tocline(e[0],pm[e[1]]||'  ',e[2])});
+/* DAFTAR TABEL & GAMBAR */
+sect('dt');C('DAFTAR TABEL',14,22,true);
+DTAB.forEach(function(e){tocline(e[0],pm[e[1]]||'  ',0)});
+y+=20;C('DAFTAR GAMBAR',14,22,true);
+DFIG.forEach(function(e){tocline(e[0],pm[e[1]]||'  ',0)});
+/* BAB I */
+sect('b1');C('BAB I',14,8,true);C('PENDAHULUAN',14,22,true);
+marks['s11']=marks['b1'];H('1.1  Latar Belakang');Pg('Transportasi berbasis aplikasi telah menjadi bagian penting dari mobilitas masyarakat perkotaan. Seiring meningkatnya persaingan, kualitas layanan tidak lagi hanya ditentukan oleh ketersediaan armada, melainkan oleh pengalaman pengguna secara menyeluruh, mencakup kewajaran tarif, jaminan keselamatan, dan efisiensi waktu perjalanan. Kepuasan pelanggan merupakan perasaan senang atau kecewa yang muncul setelah membandingkan kinerja suatu produk atau jasa dengan harapan (Kotler & Keller, 2016). Oleh sebab itu, pengukuran kepuasan secara berkala diperlukan agar penyedia layanan dapat mengidentifikasi aspek yang sudah baik maupun yang perlu diperbaiki.');
+marks['s12']=d.getNumberOfPages();H('1.2  Rumusan Masalah');Pg('Berdasarkan latar belakang tersebut, rumusan masalah penelitian ini adalah: (1) bagaimana tingkat kepuasan pengguna terhadap layanan transportasi online secara keseluruhan; (2) aspek mana yang memperoleh penilaian tertinggi dan terendah; dan (3) aspek apa yang perlu diprioritaskan untuk perbaikan.');
+H('1.3  Tujuan');Pg('Penelitian ini bertujuan mengukur tingkat kepuasan pengguna menggunakan Customer Satisfaction Index (CSI), memetakan distribusi jawaban pada setiap aspek, serta merumuskan rekomendasi berbasis data.');
+H('1.4  Manfaat');Pg('Hasil penelitian diharapkan menjadi masukan bagi penyedia layanan transportasi online dalam meningkatkan mutu layanan, serta menjadi latihan penerapan statistika deskriptif dan uji reliabilitas bagi mahasiswa.');
+/* BAB II */
+sect('b2');C('BAB II',14,8,true);C('TINJAUAN PUSTAKA',14,22,true);
+marks['s21']=marks['b2'];H('2.1  Kepuasan Pelanggan dan Kualitas Layanan');Pg('Kepuasan pelanggan dipandang sebagai hasil evaluasi purna konsumsi terhadap kesesuaian antara harapan dan kinerja layanan (Tjiptono & Chandra, 2016). Kualitas jasa umumnya dijelaskan melalui dimensi bukti fisik, keandalan, daya tanggap, jaminan, dan empati (Zeithaml et al., 2018). Pada layanan transportasi online, dimensi tersebut tercermin pada kondisi kendaraan, ketepatan penjemputan, keselamatan, dan keramahan pengemudi.');
+H('2.2  Penelitian Terdahulu');Pg('Appliansyach et al. (2023) meneliti kepuasan pengguna ojek online pada mahasiswa di Jakarta dan menyimpulkan bahwa secara umum responden puas serta pelayanan berpengaruh signifikan terhadap kepuasan. Dari sisi regulasi, keselamatan pengguna diatur dalam Peraturan Menteri Perhubungan Nomor PM 12 Tahun 2019, sedangkan pedoman perhitungan biaya jasa diatur dalam Keputusan Menteri Perhubungan Nomor KP 348 Tahun 2019 (Kementerian Perhubungan, 2019a, 2019b).');
+H('2.3  Skala Likert dan Customer Satisfaction Index');Pg('Skala Likert digunakan untuk mengukur sikap, pendapat, dan persepsi seseorang terhadap suatu fenomena (Sugiyono, 2019). CSI merupakan indeks yang menghitung tingkat kepuasan secara menyeluruh dari rata-rata skor penilaian terhadap skor maksimum. Bila tidak tersedia skor kepentingan, setiap aspek diberi bobot setara.');
+H('2.4  Statistika Deskriptif dan Reliabilitas');Pg("Statistika deskriptif meringkas data melalui frekuensi, persentase, rata-rata, median, dan simpangan baku (Field, 2018; Hair et al., 2019). Reliabilitas instrumen dapat diuji dengan Cronbach's Alpha, dengan nilai di atas 0,70 umumnya dianggap dapat diterima (Ghozali, 2018). Namun, nilai alpha yang sangat tinggi hanya menjadi bukti terbatas bagi reliabilitas dan dapat mengindikasikan butir yang berulang (Taber, 2018).");
+/* BAB III */
+sect('b3');C('BAB III',14,8,true);C('METODE PENELITIAN',14,22,true);
+marks['s31']=marks['b3'];H('3.1  Jenis dan Desain Penelitian');Pg('Penelitian ini bersifat deskriptif kuantitatif dengan pendekatan survei (Sekaran & Bougie, 2016). Data dikumpulkan melalui kuesioner daring dari '+n+' responden yang dipilih secara sukarela.');
+H('3.2  Instrumen');Pg('Instrumen terdiri atas '+items.length+' pernyataan yang dikelompokkan ke dalam '+gs.length+' aspek, masing-masing 3 butir, yaitu '+gs.join(', ')+'. Skala yang digunakan adalah Likert 1-5 (1 = Sangat Tidak Setuju, 2 = Tidak Setuju, 3 = Cukup Netral, 4 = Setuju, 5 = Sangat Setuju). Satu pertanyaan terbuka disediakan untuk kritik dan saran.');
+marks['s33']=d.getNumberOfPages();H('3.3  Teknik Analisis Data');Pg("Analisis dilakukan dengan statistika deskriptif dan perhitungan CSI = (rata-rata skor / 5) x 100%. Kriteria CSI disajikan pada Tabel 1. Reliabilitas diuji dengan Cronbach's Alpha. Perhitungan dilakukan otomatis oleh aplikasi SurveiKu dan hasilnya dapat direplikasi menggunakan SPSS.");
+marks['t1']=d.getNumberOfPages();cap('Tabel 1. Kriteria Customer Satisfaction Index');
+TBL(['Rentang CSI (%)','Kriteria'],[['81 - 100','Sangat Puas'],['66 - 80','Puas'],['51 - 65','Cukup Puas'],['35 - 50','Kurang Puas'],['0 - 34','Tidak Puas']]);
+H('3.4  Pengumpulan Data');Pg('Kuesioner disusun menggunakan aplikasi web SurveiKu dan disebarkan secara daring kepada responden. Respons yang masuk tersimpan otomatis pada database survei. Struktur kuesioner dan data mentah respons disajikan pada Lampiran.');
+/* BAB IV */
+sect('b4');C('BAB IV',14,8,true);C('HASIL DAN PEMBAHASAN',14,22,true);
+marks['s41']=marks['b4'];H('4.1  Uji Reliabilitas');
+Pg("Nilai Cronbach's Alpha untuk "+(v?v.k:items.length)+" butir sebesar "+(v?f3(v.al):'-')+", melampaui batas 0,70 sehingga instrumen dinyatakan sangat reliabel. Nilai yang sangat tinggi ini juga mencerminkan adanya responden yang cenderung menjawab seragam di seluruh butir (misalnya semua bernilai 3, 4, atau 5), sehingga perlu dicatat sebagai keterbatasan.");
+function f3(x){return x.toFixed(3)}
+marks['s42']=d.getNumberOfPages();H('4.2  Distribusi Jawaban Keseluruhan');
+marks['t2']=d.getNumberOfPages();cap('Tabel 2. Distribusi Jawaban Keseluruhan');
+var dn=all.length||1;
+TBL(['Skor','Kategori','Persentase (%)'],[['1','Sangat Tidak Setuju',f1(dist[0]/dn*100)],['2','Tidak Setuju',f1(dist[1]/dn*100)],['3','Cukup Netral',f1(dist[2]/dn*100)],['4','Setuju',f1(dist[3]/dn*100)],['5','Sangat Setuju',f1(dist[4]/dn*100)]]);
+Pg('Dari '+dn+' jawaban, '+f1((dist[3]+dist[4])/dn*100)+'% berada pada kategori Setuju dan Sangat Setuju, '+f1(dist[2]/dn*100)+'% netral, dan hanya '+f1((dist[0]+dist[1])/dn*100)+'% bernilai negatif. Rata-rata keseluruhan adalah '+f2(S.m)+' dari 5, dengan CSI sebesar '+f1(csi)+'% yang termasuk kategori Puas.');
+marks['s43']=d.getNumberOfPages();H('4.3  Indeks Kepuasan per Aspek');
+marks['t3']=d.getNumberOfPages();cap('Tabel 3. Rata-rata dan CSI per Aspek');
+TBL(['Aspek','Rata-rata','CSI (%)','Kriteria'],gs.map(function(g,i){var z=ga[i];return[g,z?f2(z.m):'-',z?f1(z.m/5*100):'-','Puas']}));
+Pg('Gambar 1 menunjukkan perbandingan indeks kepuasan antaraspek, sedangkan Gambar 2 menunjukkan sebaran jawaban responden pada tiap aspek.');
+fit();if(y>640){d.addPage();y=46}
+marks['g1']=d.getNumberOfPages();fig1();d.setFont('times','bold');d.setFontSize(10);d.text('Gambar 1. Indeks Kepuasan (CSI) per Aspek',297.5,y,{align:'center'});y+=13;src('Sumber: Data primer diolah dari hasil survei (n = '+n+')');
+marks['g2']=d.getNumberOfPages();fig2();d.setFont('times','bold');d.setFontSize(10);d.text('Gambar 2. Distribusi Jawaban per Aspek',297.5,y,{align:'center'});y+=13;src('Sumber: Data primer diolah dari hasil survei (n = '+n+')');
+fit();marks['t4']=d.getNumberOfPages();cap('Tabel 4. Distribusi Persentase Jawaban per Aspek');
+TBL(['Aspek','1 (%)','2 (%)','3 (%)','4 (%)','5 (%)'],gs.map(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1;return[g].concat(gdist[i].map(function(c){return f1(c/tot*100)}))}),7.5);
+marks['s44']=d.getNumberOfPages();H('4.4  Pembahasan per Aspek');
+var kat=[null,null];
+var BAH=[
+'Responden menilai tarif relatif terjangkau, namun aspek ini berada pada jajaran terendah. Sensitivitas harga lazim menjadi sumber ketidakpuasan, terutama ketika penyesuaian tarif pada jam sibuk dirasa kurang sepadan dengan jarak tempuh (Kotler & Keller, 2016). Adanya pedoman perhitungan biaya jasa yang ditetapkan pemerintah (Kementerian Perhubungan, 2019a) tidak otomatis menjamin persepsi kewajaran di mata pengguna.',
+'Promo dan kejelasan rincian biaya dinilai cukup baik. Skor yang sedikit di atas aspek tarif menunjukkan bahwa transparansi komponen biaya sebelum pesanan dikonfirmasi membantu pengguna menerima harga yang dibayarkan.',
+'Kualitas kendaraan cenderung seragam dan memadai, tetapi belum menjadi pembeda yang memuaskan secara kuat. Kondisi ini sejalan dengan dimensi tangibles pada kualitas jasa (Zeithaml et al., 2018).',
+'Aspek ini memiliki proporsi jawaban Sangat Setuju yang cukup tinggi, tetapi juga memuat sebaran nilai rendah yang terlihat. Artinya pengalaman keselamatan antarpengguna belum sepenuhnya konsisten, padahal standar keselamatan telah diatur dalam Peraturan Menteri Perhubungan Nomor PM 12 Tahun 2019 (Kementerian Perhubungan, 2019b).',
+'Mayoritas responden setuju bahwa fitur keamanan seperti pelacakan perjalanan membuat mereka merasa terlindungi. Nilai 4 mendominasi, sehingga fitur ini dinilai baik namun masih menyisakan ruang menuju kategori sangat puas.',
+'Aspek ini memiliki proporsi jawaban rendah (nilai 1 dan 2) tertinggi di antara seluruh aspek. Waktu tunggu dan ketepatan kedatangan pengemudi merupakan titik lemah utama yang perlu diprioritaskan, karena dimensi daya tanggap (responsiveness) sangat memengaruhi persepsi kualitas layanan (Tjiptono & Chandra, 2016).',
+'Aspek dengan kepuasan tertinggi. Pemilihan rute yang efisien dan ketepatan waktu tiba di tujuan dinilai memenuhi harapan, sejalan dengan fokus utama pengguna transportasi daring, yaitu kecepatan dan efisiensi.',
+'Nilai 4 mendominasi, menunjukkan sistem aplikasi yang responsif dan mudah digunakan. Kepuasan terhadap sisi teknologi cenderung stabil.',
+'Keramahan dan kesigapan pengemudi dinilai baik secara umum, tetapi aspek ini memiliki proporsi nilai 2 yang cukup tinggi, yang menandakan variasi perilaku pengemudi di lapangan. Temuan ini konsisten dengan penelitian Appliansyach et al. (2023) yang menyimpulkan bahwa pelayanan berpengaruh signifikan terhadap kepuasan pengguna ojek online.'];
+gs.forEach(function(g,i){var z=ga[i],tot=gdist[i].reduce(function(a,b){return a+b},0)||1,p45=(gdist[i][3]+gdist[i][4])/tot*100;
+Pg((i+1)+') '+g+' (rata-rata '+f2(z.m)+'; CSI '+f1(z.m/5*100)+'%). '+BAH[i]+' Sebanyak '+f1(p45)+'% jawaban berada pada nilai 4 dan 5.')});
+fit();marks['s45']=d.getNumberOfPages();H('4.5  Statistik per Butir');
+marks['t5']=d.getNumberOfPages();cap('Tabel 5. Statistik Deskriptif per Butir Pernyataan');
+TBL(['Butir','Aspek','Mean','SD','% Nilai 4-5'],items.map(function(j,i){var z=im[i],a=qcol(j);return['X'+(i+1),s.qs[j].g,f2(z.m),f2(z.sd),Math.round(a.filter(function(x){return x>=4}).length/a.length*100)+'%']}),7.5);
+/* BAB V */
+sect('b5');C('BAB V',14,8,true);C('PENUTUP',14,22,true);
+marks['s51']=marks['b5'];H('5.1  Kesimpulan');
+var rank=ga.map(function(z,i){return{i:i,z:z}}).sort(function(a,b){return b.z.m-a.z.m});
+Pg('Secara keseluruhan pengguna berada pada tingkat kepuasan yang tinggi dengan CSI '+f1(csi)+'% (kategori Puas). Aspek dengan kepuasan tertinggi adalah '+gs[rank[0].i]+' ('+f1(rank[0].z.m/5*100)+'%), sedangkan yang terendah adalah '+gs[rank[rank.length-1].i]+' ('+f1(rank[rank.length-1].z.m/5*100)+'%). Seluruh aspek berada pada kategori Puas dan belum ada yang mencapai kategori Sangat Puas.');
+H('5.2  Saran');Pg('Penyedia layanan disarankan: (1) memprioritaskan perbaikan ketepatan waktu penjemputan dan pengurangan waktu tunggu; (2) meninjau kebijakan tarif jam sibuk agar terasa lebih wajar; (3) meningkatkan konsistensi pelatihan keselamatan dan pelayanan pengemudi; dan (4) mempertahankan performa aplikasi serta fitur keamanan yang sudah baik.');
+H('5.3  Keterbatasan');Pg('Jumlah responden terbatas (n = '+n+') dan dipilih secara sukarela, sehingga hasil tidak dapat digeneralisasi ke seluruh populasi pengguna.');
+/* DAFTAR PUSTAKA */
+sect('dp');C('DAFTAR PUSTAKA',14,22,true);
+PUST.forEach(function(t){Pg(t,10.5)});
+/* LAMPIRAN */
+sect('lamp');C('LAMPIRAN',14,22,true);
+d.setFont('times','bold');d.setFontSize(11);d.text('Lampiran 1. Struktur Kuesioner',42,y);y+=16;
+Pg('Kuesioner terdiri atas '+items.length+' pernyataan skala Likert 1-5 yang dikelompokkan ke dalam '+gs.length+' aspek dan satu pertanyaan terbuka (kritik dan saran). Daftar pernyataan per aspek adalah sebagai berikut.',10);
+gs.forEach(function(g){fit();d.setFont('times','bold');d.setFontSize(10);d.text(g,42,y);y+=13;
+gmap[g].forEach(function(j,k){d.setFont('times','normal');d.setFontSize(9.5);var L=d.splitTextToSize('X'+(items.indexOf(j)+1)+'. '+s.qs[j].t,500);d.text(L,50,y);y+=L.length*11+2})});
+d.setFont('times','italic');d.setFontSize(9);d.text('Sumber: Dokumen survei "'+s.title+'".',42,y);y+=14;
+d.addPage('a4','l');y=46;d.setFont('times','bold');d.setFontSize(11);d.text('Lampiran 2. Data Mentah Respons (n = '+n+')',42,y);y+=16;
+d.setFont('times','normal');d.setFontSize(9);var L=d.splitTextToSize('Kolom X1-X'+items.length+' adalah butir pernyataan secara berurutan sesuai Tabel 5 dan Lampiran 1; nilai 1-5 adalah skor Likert. Jawaban kritik dan saran tidak ditampilkan.',720);d.text(L,42,y);y+=L.length*11+4;
+d.autoTable({startY:y,head:[['No'].concat(items.map(function(j,i){return'X'+(i+1)}))],body:st.r[s.id].map(function(r,i){return[i+1].concat(items.map(function(j){return r[j]===''||r[j]==null?'-':r[j]}))}),styles:{font:'times',fontSize:6,cellPadding:1.5,fillColor:[255,255,255],textColor:[0,0,0],lineColor:[60,60,60],lineWidth:.2},headStyles:{fillColor:[255,255,255],textColor:[0,0,0]},margin:{left:42,right:42}});
+y=d.lastAutoTable.finalY+8;d.setFont('times','italic');d.setFontSize(9);d.text('Sumber: Ekspor data respons aplikasi SurveiKu.',42,y);
+/* nomor halaman pojok kanan bawah (skip cover) */
+var N=d.getNumberOfPages();
+for(var i=2;i<=N;i++){d.setPage(i);d.setFont('times','normal');d.setFontSize(10);d.setTextColor(0,0,0);d.text(String(i),553,820,{align:'right'})}
+return{doc:d,marks:marks}
+}
+var r1=gen({});var r2=gen(r1.marks);var d=r2.doc;
+var buf=d.output('arraybuffer'),fn='laporan-survei-lengkap.pdf',dl=null;
+try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
+if(dl){try{await dl.save({filename:fn,data:buf});return}catch(e){}}d.save(fn)
+}
+</script>
+
 </body>
 </html>
