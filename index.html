@@ -4,40 +4,80 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SurveiKu - Platform Survei</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F6F0E6;--side:#EEE2CC;--card:#FFFBF4;--ink:#3B2A1C;--mute:#8A7461;--acc:#B08A57;--acc2:#8C6A3F;--line:#E6D8C0;--row:#F8F1E4}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Poppins,sans-serif}
-h1,h2,h3{font-family:Lora,serif;margin:0;font-weight:600}
-.app{display:grid;grid-template-columns:1fr 248px;min-height:100vh}
-aside{background:var(--side);border-left:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Poppins,'Segoe UI',sans-serif}
+h1,h2,h3{font-family:Lora,Georgia,serif;margin:0;font-weight:600}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+aside{background:var(--side);border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+main{padding:34px 44px 60px;max-width:1180px;width:100%}
 .logo{display:flex;gap:12px;align-items:center;margin-bottom:30px}
 .lg{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8C6A3F,#C9A66B);color:#fff;display:grid;place-items:center;font:700 22px Lora,serif}
-.logo b{font:600 20px Lora,serif;display:block;line-height:1.1}.logo small{color:var(--mute);font-size:11px}
+.logo b{font:600 20px Lora,serif;display:block;line-height:1.1}
+.logo small{color:var(--mute);font-size:11px}
 .nv{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:500 14px Poppins,sans-serif;padding:11px 14px;border-radius:12px;cursor:pointer;margin-bottom:4px}
-.nv:hover{background:var(--row)}.nv.on{background:var(--acc2);color:#fff}
-main{padding:34px 44px 60px;max-width:1180px;width:100%}
+.nv:hover{background:var(--row)}
+.nv.on{background:var(--acc2);color:#fff}
 .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:16px;flex-wrap:wrap}
-.hd h1{font-size:32px}.sub{color:var(--mute);margin:2px 0 0}
+.hd h1{font-size:32px}
+.sub{color:var(--mute);margin:2px 0 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(120,90,50,.07);margin-bottom:20px;overflow-x:auto}
+.hero{background:linear-gradient(135deg,#8C6A3F,#C9A66B);color:#fff;border:0;padding:38px}
+.hero h1{font-size:38px;max-width:640px;line-height:1.2}
+.hero p{max-width:560px;opacity:.95}
+.tg{display:inline-block;font-size:11px;letter-spacing:.14em;background:rgba(255,255,255,.22);padding:5px 12px;border-radius:99px;margin-bottom:14px}
 .btn{font:500 14px Poppins,sans-serif;background:var(--acc2);color:#fff;border:0;border-radius:11px;padding:10px 20px;cursor:pointer}
-.btn.g{background:transparent;color:var(--acc2);border:1px solid var(--acc)}.btn.s{padding:6px 14px;font-size:13px}
-table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;color:var(--mute);padding:8px 10px;border-bottom:1px solid var(--line)}td{padding:12px 10px;border-bottom:1px solid var(--line)}
+.btn.g{background:transparent;color:var(--acc2);border:1px solid var(--acc)}
+.btn.w{background:#fff;color:#8C6A3F}
+.btn.s{padding:6px 14px;font-size:13px}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.st .card{margin:0}
+.st b{font:600 32px Lora,serif;color:var(--acc2);display:block;line-height:1.2}
+.st span{color:var(--mute);font-size:13px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;color:var(--mute);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border:0}
 input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
-.qb{display:grid;grid-template-columns:1fr 190px 40px;gap:10px;margin-bottom:10px;align-items:start}.qb .qo{grid-column:1/3}
+.qb{display:grid;grid-template-columns:1fr 190px 40px;gap:10px;margin-bottom:10px;align-items:start}
+.qb .qo{grid-column:1/3}
 .x{border:0;background:var(--row);border-radius:10px;height:40px;cursor:pointer;color:var(--mute)}
-.it{background:var(--row);border-radius:12px;padding:10px 12px;margin-top:8px;display:grid;grid-template-columns:1fr repeat(5,52px);gap:4px;align-items:center}
+.sec h3{font-size:22px;color:var(--acc2);margin:18px 0 6px}
+.sc,.it{display:grid;grid-template-columns:1fr repeat(5,52px);gap:4px;align-items:center}
+.sc{text-align:center;color:var(--mute);font-size:12px;padding:0 12px}
+.it{background:var(--row);border-radius:12px;padding:10px 12px;margin-top:8px}
+.it.miss{outline:2px solid #C0603F}
 .it label{display:flex;justify-content:center;padding:5px;cursor:pointer}
-.it input[type=radio]{appearance:none;width:20px;height:20px;border:2px solid var(--acc);border-radius:50%;background:transparent;cursor:pointer}
+.it input[type=radio]{appearance:none;width:20px;height:20px;padding:0;border:2px solid var(--acc);border-radius:50%;margin:0;background:transparent;cursor:pointer}
 .it input:checked{background:radial-gradient(circle,var(--acc2) 45%,transparent 50%);border-color:var(--acc2)}
-.md{position:fixed;inset:0;background:rgba(40,28,16,.45);display:none;place-items:center;z-index:9;padding:20px}.md.on{display:grid}.md .card{width:min(720px,100%);margin:0}
-.note{color:var(--mute);font-size:13px}
-.st{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}.st .card{margin:0}
-.st b{font:600 32px Lora,serif;color:var(--acc2);display:block}.st span{color:var(--mute);font-size:13px}
+.ch label{display:flex;gap:10px;align-items:center;padding:6px 0;cursor:pointer}
+.ch input{width:20px}
+.sb{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--line);min-width:180px}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
 .ar{display:grid;grid-template-columns:200px 1fr 60px;gap:12px;align-items:center;margin:9px 0}
-.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
-.dbok{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;padding:12px;margin-bottom:16px;font-size:13px}
-.dberr{background:#FFEBEE;border:1px solid #EF9A9A;border-radius:12px;padding:12px;margin-bottom:16px;font-size:13px;color:#B71C1C}
+.lgd{display:flex;gap:14px;font-size:12px;color:var(--mute);margin:8px 0 0;flex-wrap:wrap}
+.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.md{position:fixed;inset:0;background:rgba(40,28,16,.45);display:none;place-items:center;z-index:9;padding:20px}
+.md.on{display:grid}
+.md .card{width:min(720px,100%);margin:0}
+.note{color:var(--mute);font-size:13px}
+.ok{color:#4F7A4B;font-weight:600}
+.no{color:#B0503A;font-weight:600}
+@media(max-width:900px){
+  .app{display:block}
+  aside{position:fixed;top:0;left:0;height:100%;width:270px;max-width:82vw;transform:translateX(-105%);transition:transform .25s;z-index:30;box-shadow:8px 0 30px rgba(0,0,0,.25)}
+  .open aside{transform:none}
+  main{padding:66px 16px 40px}
+  .st{grid-template-columns:1fr 1fr}
+  .ar{grid-template-columns:110px 1fr 50px}
+  .sc,.it{grid-template-columns:1fr repeat(5,34px)}
+  .qb{grid-template-columns:1fr}
+  .qb .qo{grid-column:auto}
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -45,98 +85,63 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 <body>
 <div class="app">
 <aside>
-<div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Database: JSONBlob (cloud)</small></div></div>
-<button class="nv" data-go="home">Dashboard</button>
-<button class="nv" data-go="new">Buat Survei</button>
-<button class="nv" data-go="pickfill">Isi Survei</button>
-<button class="nv" data-go="pickres">Hasil dan Laporan</button>
-<div id="lgs" style="margin-top:20px"></div>
-<p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
+  <div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei</small></div></div>
+  <button class="nv" data-go="home">Dashboard</button>
+  <button class="nv" data-go="new">Buat Survei</button>
+  <button class="nv" data-go="pickfill">Isi Survei</button>
+  <button class="nv" data-go="pickres">Hasil dan Laporan</button>
+  <div id="lgs" style="margin-top:20px"></div>
+  <p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
 </aside>
 <main id="m"></main>
 </div>
 
-<div class="md" id="lm"><div class="card"><h3 style="margin-bottom:10px">Masuk</h3><label class="note">Nama Anda</label><input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px"><label class="note">Masuk sebagai</label><div style="margin:6px 0 12px"><label style="display:block;padding:6px 0"><input type="radio" name="lr" value="pembuat" checked> Pembuat survei</label><label style="display:block;padding:6px 0"><input type="radio" name="lr" value="responden"> Responden</label></div><p style="margin:0"><button class="btn" id="lgo">Masuk</button> <button class="btn g" id="lcx">Batal</button> <span class="note" id="lerr"></span></p></div></div>
-
-<div class="md" id="setupm"><div class="card"><h3 style="margin-bottom:10px">Aktifkan Database Bersama</h3><p class="note" style="margin:0 0 12px">Tekan tombol di bawah. Web akan membuat database online (JSONBlob) lalu memberi 1 tautan resmi. Tautan itu yang dibagikan ke semua orang (teman, dosen). Data tersimpan di cloud, bukan di browser.</p><button class="btn" id="mk">Buat database bersama</button><div id="mo" class="note" style="margin-top:12px"></div></div></div>
+<div class="md" id="lm"><div class="card">
+  <h3 style="margin-bottom:10px">Masuk</h3>
+  <label class="note">Nama Anda</label>
+  <input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px">
+  <label class="note">Masuk sebagai</label>
+  <div style="margin:6px 0 12px">
+    <label style="display:block;padding:6px 0"><input type="radio" name="lr" value="pembuat" checked> Pembuat survei</label>
+    <label style="display:block;padding:6px 0"><input type="radio" name="lr" value="responden"> Responden</label>
+  </div>
+  <p style="margin:0"><button class="btn" id="lgo">Masuk</button> <button class="btn g" id="lcx">Batal</button> <span class="note" id="lerr"></span></p>
+</div></div>
 
 <script>
 /* ============================================================
-   SURVEIKU - dengan JSONBlob sebagai database cloud
-   - TIDAK pakai localStorage untuk data (kecuali cache user)
-   - TIDAK pakai Firebase
-   - Data survei & respons tersimpan permanen di cloud
-   - Laporan PDF otomatis menyesuaikan survei yang dipilih
+   SURVEIKU - dengan localStorage (data tersimpan di browser)
    ============================================================ */
 
-var DB_URL='https://jsonblob.com/api/jsonBlob/';
 var $=function(s){return document.querySelector(s)},M=$('#m');
-var st={s:[],r:{},user:null,blobId:null,loaded:false};
+var st={s:[],r:{},user:null,loaded:false};
 var cur='home',arg=null;
 
 function E(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
-/* ====== JSONBlob API ====== */
+/* ====== localStorage API ====== */
 function dbGet(){
-  if(!st.blobId)return Promise.reject(new Error('Database belum dibuat'));
-  return fetch(DB_URL+st.blobId,{headers:{'Content-Type':'application/json','Accept':'application/json'},cache:'no-store'})
-    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
-    .then(function(d){d=d||{};st.s=d.surveys||[];st.r=d.resp||{};st.loaded=true;return d});
+  var data;
+  try{data=JSON.parse(localStorage.getItem('sf_data'))}catch(e){data={surveys:[],resp:{},done:[]}}
+  data=data||{surveys:[],resp:{},done:[]};
+  st.s=data.surveys||[];st.r=data.resp||{};st.loaded=true;
+  return data;
 }
 function dbPut(data){
-  if(!st.blobId)return Promise.reject(new Error('Database belum dibuat'));
-  return fetch(DB_URL+st.blobId,{method:'PUT',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
-    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status)});
+  try{localStorage.setItem('sf_data',JSON.stringify(data))}catch(e){}
 }
 function dbMutate(fn){
-  return dbGet().then(function(d){
-    d=d||{};d.surveys=d.surveys||[];d.resp=d.resp||{};d.done=d.done||[];
-    var err=fn(d);if(err)throw err;
-    return dbPut(d).then(function(){st.s=d.surveys;st.r=d.resp;return d});
-  });
-}
-function dbCreate(){
-  return fetch(DB_URL.replace(/\/$/,''),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({surveys:[],resp:{},done:[]})})
-    .then(function(r){
-      var loc=r.headers.get('Location')||r.headers.get('X-jsonblob')||'';
-      var id=loc.split('/').pop();
-      if(!id)throw new Error('ID tidak terbaca');
-      return id;
-    });
+  var data=dbGet();
+  data.surveys=data.surveys||[];data.resp=data.resp||{};data.done=data.done||[];
+  var err=fn(data);if(err)throw err;
+  dbPut(data);st.s=data.surveys;st.r=data.resp;
+  return data;
 }
 
-/* ====== Seed data transportasi (HANYA untuk survei default pertama kali) ====== */
-var SEED_D=[["Tarif dan biaya",["Tarif yang dikenakan terjangkau dan sesuai anggaran","Penyesuaian tarif pada jam sibuk masih wajar","Biaya perjalanan sepadan dengan jarak yang ditempuh"]],
-["Promo dan transparansi",["Promo atau diskon yang diberikan menarik dan membantu","Rincian biaya transparan sebelum pesanan dikonfirmasi","Metode pembayaran non tunai berfungsi dengan lancar"]],
-["Kualitas kendaraan",["Kondisi kendaraan bersih dan terawat","Helm yang disediakan bersih dan layak pakai","Fasilitas pendukung di kendaraan memadai"]],
-["Keselamatan berkendara",["Pengemudi berkendara sesuai aturan lalu lintas","Kecepatan berkendara terasa aman dan terkendali","Pengemudi tidak menggunakan ponsel saat berkendara"]],
-["Fitur keamanan aplikasi",["Fitur keamanan darurat mudah diakses","Fitur pelacakan perjalanan berfungsi dengan baik","Saya merasa terlindungi saat memakai layanan"]],
-["Waktu penjemputan",["Waktu tunggu penjemputan singkat","Pengemudi tiba di titik jemput tepat waktu","Estimasi waktu kedatangan akurat"]],
-["Rute dan perjalanan",["Pengemudi memilih rute yang efisien","Pengemudi menanyakan preferensi rute","Waktu sampai di tujuan sesuai estimasi"]],
-["Performa aplikasi",["Sistem aplikasi responsif","Proses pencarian pengemudi cepat","Tampilan menu aplikasi mudah dipahami"]],
-["Pelayanan pengemudi",["Pengemudi bersikap ramah dan sopan","Pengemudi sigap membantu","Secara keseluruhan saya puas dengan pelayanan pengemudi"]]];
-
-function makeSeedQuestions(){
-  var q=[];SEED_D.forEach(function(a){a[1].forEach(function(t){q.push({t:t,type:'likert',g:a[0]})})});
-  q.push({t:'Kritik dan saran untuk peningkatan layanan',type:'text',g:'Kritik dan Saran'});
-  return q;
-}
-
-/* ====== Init: cek blobId dari URL atau cache ====== */
-function getBlobId(){
-  var m=/[#&]db=([^&]+)/.exec(location.hash);
-  if(m)return m[1];
-  try{return sessionStorage.getItem('sf_db')||''}catch(e){return ''}
-}
-function setBlobId(id){
-  try{sessionStorage.setItem('sf_db',id)}catch(e){}
-  location.hash='#db='+id;
-}
-
-/* ====== User (cache di sessionStorage, bukan localStorage) ====== */
-function getUser(){try{return JSON.parse(sessionStorage.getItem('sf_user'))}catch(e){return null}}
-function setUser(u){st.user=u;try{sessionStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}}
-function clearUser(){st.user=null;try{sessionStorage.removeItem('sf_user')}catch(e){}}
+/* ====== User ====== */
+function getUser(){try{return JSON.parse(localStorage.getItem('sf_user'))}catch(e){return null}}
+function setUser(u){st.user=u;try{localStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}}
+function clearUser(){st.user=null;try{localStorage.removeItem('sf_user')}catch(e){}}
 
 /* ====== Statistika ====== */
 function stat(a){var n=a.length;if(!n)return null;var m=a.reduce(function(x,y){return x+y},0)/n,s=a.slice().sort(function(x,y){return x-y}),md=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2,sd=n>1?Math.sqrt(a.reduce(function(x,y){return x+(y-m)*(y-m)},0)/(n-1)):0;return{n:n,m:m,md:md,sd:sd}}
@@ -146,18 +151,14 @@ function sv_(id){return st.s.filter(function(s){return s.id==id})[0]}
 function canEdit(s){return st.user&&st.user.role=='pembuat'&&s.owner==st.user.uid}
 
 /* ============================================================
-   LAPORAN PDF - DINAMIS (tidak ada hardcode data transportasi)
-   Semua angka diambil dari st.r[s.id] yang real
+   LAPORAN PDF - DINAMIS
    ============================================================ */
 async function lapPDF(){
   var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat.');return}
   var s=sv_(arg);if(!s){alert('Survei tidak ditemukan');return}
   var n=st.r[s.id].length;
   
-  // Kelompokkan pertanyaan likert per aspek
-  var gs=[],gmap={};
-  s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gmap[q.g]){gmap[q.g]=[];gs.push(q.g)}gmap[q.g].push(j)}});
-  
+  var gs=[],gmap={};s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gmap[q.g]){gmap[q.g]=[];gs.push(q.g)}gmap[q.g].push(j)}});
   function qcol(j){return st.r[s.id].map(function(r){return +r[j]}).filter(function(x){return x>0})}
   var ga=gs.map(function(g){var a=[];gmap[g].forEach(function(j){a=a.concat(qcol(j))});return stat(a)});
   var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(qcol(j))});
@@ -178,7 +179,6 @@ async function lapPDF(){
   function Pg(t,size){
     d.setFont('times','normal');d.setFontSize(size||11);
     var L=d.splitTextToSize(t,CW);
-    // Anti halaman nanggung: kalau sisa < 60pt, langsung page baru
     if(y+L.length*(size||11)*1.45>BTM){d.addPage();y=60}
     d.text(L,MX,y);y+=L.length*(size||11)*1.45+5
   }
@@ -220,20 +220,20 @@ async function lapPDF(){
   /* ===== BAB I ===== */
   newPage();C('BAB I',14,10,true);C('PENDAHULUAN',14,26,true);
   H('1.1  Latar Belakang');
-  Pg('Survei ini dilakukan untuk mengukur persepsi dan kepuasan responden terhadap objek yang diteliti. Pengukuran dilakukan menggunakan kuesioner daring yang disebarluaskan kepada responden secara sukarela. Hasil survei ini diharapkan dapat memberikan gambaran kuantitatif yang dapat dipertanggungjawabkan secara statistik.');
+  Pg('Survei ini dilakukan untuk mengukur persepsi dan kepuasan responden terhadap objek yang diteliti. Pengukuran dilakukan menggunakan kuesioner daring yang disebarluaskan kepada responden secara sukarela.');
   H('1.2  Rumusan Masalah');
   Pg('Rumusan masalah penelitian ini adalah: (1) bagaimana tingkat kepuasan responden secara keseluruhan; (2) aspek mana yang memperoleh penilaian tertinggi dan terendah; dan (3) aspek apa yang perlu diprioritaskan untuk perbaikan.');
   H('1.3  Tujuan');
   Pg('Penelitian ini bertujuan mengukur tingkat kepuasan menggunakan Customer Satisfaction Index (CSI), memetakan distribusi jawaban pada setiap aspek, serta merumuskan rekomendasi berbasis data.');
   H('1.4  Manfaat');
-  Pg('Hasil survei diharapkan menjadi masukan bagi pihak terkait dalam meningkatkan mutu layanan/objek yang diteliti, serta menjadi latihan penerapan statistika deskriptif.');
+  Pg('Hasil survei diharapkan menjadi masukan bagi pihak terkait dalam meningkatkan mutu layanan/objek yang diteliti.');
   
   /* ===== BAB II ===== */
   newPage();C('BAB II',14,10,true);C('TINJAUAN PUSTAKA',14,26,true);
   H('2.1  Kepuasan dan Kualitas Layanan');
-  Pg('Kepuasan merupakan perasaan senang atau kecewa yang muncul setelah membandingkan kinerja suatu produk atau jasa dengan harapan (Kotler & Keller, 2016). Pengukuran kepuasan secara berkala diperlukan agar penyedia layanan dapat mengidentifikasi aspek yang sudah baik maupun yang perlu diperbaiki.');
+  Pg('Kepuasan merupakan perasaan senang atau kecewa yang muncul setelah membandingkan kinerja suatu produk atau jasa dengan harapan (Kotler & Keller, 2016).');
   H('2.2  Skala Likert dan Customer Satisfaction Index');
-  Pg('Skala Likert digunakan untuk mengukur sikap, pendapat, dan persepsi seseorang terhadap suatu fenomena (Sugiyono, 2019). CSI merupakan indeks yang menghitung tingkat kepuasan secara menyeluruh dari rata-rata skor penilaian terhadap skor maksimum: CSI = (rata-rata / skor maksimum) x 100%.');
+  Pg('Skala Likert digunakan untuk mengukur sikap, pendapat, dan persepsi seseorang terhadap suatu fenomena (Sugiyono, 2019). CSI = (rata-rata / skor maksimum) x 100%.');
   H('2.3  Statistika Deskriptif');
   Pg('Statistika deskriptif meringkas data melalui frekuensi, persentase, rata-rata, median, dan simpangan baku (Field, 2018; Ghozali, 2018).');
   
@@ -337,7 +337,7 @@ async function lapPDF(){
   d.save('laporan-'+s.title.replace(/[^a-z0-9]/gi,'-').slice(0,30)+'.pdf');
 }
 
-/* ====== PDF ringkas (statistik saja) ====== */
+/* ====== PDF ringkas ====== */
 function pdfRingkas(){
   var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat.');return}
   var s=sv_(arg);var n=st.r[s.id].length;var c=csi(s);
@@ -380,9 +380,7 @@ function render(){
 
 function stamp(){
   var t=$('#stt'),b=$('#lgs');if(!t)return;
-  if(!st.loaded){t.textContent='Memuat database...';return}
-  if(!st.blobId){t.textContent='';return}
-  t.innerHTML='✓ Database aktif<br><span style="font-size:10px">ID: '+st.blobId.slice(0,12)+'...</span>';
+  t.innerHTML='✓ Data tersimpan di browser';
   b.innerHTML=st.user?'<div class="note" style="margin-bottom:6px">Masuk sebagai:<br><b>'+E(st.user.displayName)+'</b><br><span style="font-size:11px">'+(st.user.role=='pembuat'?'Pembuat survei':'Responden')+'</span></div><button class="nv" id="lo">Keluar</button>':'<button class="nv" id="li">Masuk</button>';
   var li=$('#li'),lo=$('#lo');if(li)li.onclick=showLogin;if(lo)lo.onclick=doLogout;
 }
@@ -390,23 +388,14 @@ function stamp(){
 /* ====== Views ====== */
 function home(){
   var n=0;st.s.forEach(function(s){n+=(st.r[s.id]||[]).length});
-  var h='';
-  if(!st.blobId){
-    h+='<div class="dberr"><b>Database belum dibuat.</b> Database diperlukan agar survei & jawaban tersimpan permanen di cloud (bukan di browser).<br><br><button class="btn" id="setupBtn">Aktifkan database sekarang</button></div>';
-  } else if(!st.loaded){
-    h+='<div class="card">Memuat data dari database...</div>';
-  } else {
-    h+='<div class="dbok"><b>✓ Database aktif.</b> Semua survei dan jawaban tersimpan di cloud. Bagikan URL ini ke teman/dosen: <input readonly value="'+location.origin+location.pathname+'#db='+st.blobId+'" onclick="this.select()" style="margin-top:6px;font-size:11px;width:100%"></div>';
-  }
-  h+='<div class="hd"><div><h1>Dashboard</h1><p class="sub">Buat survei, kumpulkan jawaban, baca hasilnya.</p></div></div>';
-  h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+(st.user?E(st.user.displayName):'-')+'</b><span>User aktif</span></div><div class="card"><b>'+(st.blobId?'Aktif':'Belum')+'</b><span>Database</span></div></div>';
+  var h='<div class="hd"><div><h1>Dashboard</h1><p class="sub">Buat survei, kumpulkan jawaban, baca hasilnya.</p></div></div>';
+  h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+(st.user?E(st.user.displayName):'-')+'</b><span>User aktif</span></div><div class="card"><b>Aktif</b><span>Database</span></div></div>';
   h+='<div class="card"><h3 style="margin-bottom:8px">Daftar Survei</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
   if(st.s.length===0)h+='<tr><td colspan="4" class="note">Belum ada survei. Klik "Buat Survei" untuk memulai.</td></tr>';
   st.s.forEach(function(s){
     h+='<tr><td><b>'+E(s.title)+'</b><div class="note">oleh '+E(s.ownerName||'?')+'</div></td><td>'+s.qs.length+'</td><td>'+(st.r[s.id]||[]).length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button>'+(canEdit(s)?' <button class="btn s g" data-go="edit" data-id="'+s.id+'">Edit</button> <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>';
   });
   M.innerHTML=h+'</table></div>';
-  var sb=$('#setupBtn');if(sb)sb.onclick=function(){$('#setupm').classList.add('on')};
 }
 
 function pick(mode){
@@ -453,16 +442,15 @@ function nw(eid){
       if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}
     });
     if(!lock&&!q.length){$('#ne').textContent='Minimal 1 pertanyaan.';return}
-    $('#ne').textContent='Menyimpan ke database...';
     
     if(E0){
       var ch={title:t,desc:$('#nd').value};if(!lock)ch.qs=q;
-      dbMutate(function(d){d.surveys.forEach(function(x){if(x.id==E0.id&&x.owner==st.user.uid)for(var k in ch)x[k]=ch[k]})})
-        .then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal: '+e.message});
+      dbMutate(function(d){d.surveys.forEach(function(x){if(x.id==E0.id&&x.owner==st.user.uid)for(var k in ch)x[k]=ch[k]})});
+      go('home');
     } else {
       var nv={id:'s'+Date.now(),title:t,desc:$('#nd').value,qs:q,owner:st.user.uid,ownerName:st.user.displayName};
-      dbMutate(function(d){d.surveys.push(nv);d.resp[nv.id]=[]})
-        .then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal: '+e.message});
+      dbMutate(function(d){d.surveys.push(nv);d.resp[nv.id]=[]});
+      go('home');
     }
   };
 }
@@ -493,16 +481,14 @@ function fill(){
       r.push(v);
     });
     if(bad){$('#er').textContent='Masih ada pertanyaan belum dijawab.';bad.scrollIntoView({block:'center'});return}
-    $('#er').textContent='Mengirim ke database...';
     dbMutate(function(d){
       var id=s.id+'_'+st.user.uid;
       d.done=d.done||[];
       if(d.done.indexOf(id)>=0)return{code:'denied',message:'Sudah diisi'};
       d.done.push(id);
       (d.resp[s.id]=d.resp[s.id]||[]).push(r);
-    }).then(function(){
-      M.innerHTML='<div class="card"><h3>Terima kasih!</h3><p class="note">Jawaban tersimpan.</p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></div>';
-    }).catch(function(e){$('#er').textContent=/denied/i.test(e.code+'')?'Sudah diisi':'Gagal: '+e.message});
+    });
+    M.innerHTML='<div class="card"><h3>Terima kasih!</h3><p class="note">Jawaban tersimpan.</p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></div>';
   };
 }
 
@@ -517,7 +503,8 @@ function res(){
 
 function doDel(i){
   if(!confirm('Hapus survei ini?'))return;
-  dbMutate(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==i&&x.owner==st.user.uid)});delete d.resp[i]}).then(function(){home()});
+  dbMutate(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==i&&x.owner==st.user.uid)});delete d.resp[i]});
+  home();
 }
 
 /* ====== Login ====== */
@@ -531,15 +518,6 @@ $('#lgo').onclick=function(){
 };
 $('#lcx').onclick=function(){$('#lm').classList.remove('on')};
 
-/* ====== Setup database ====== */
-$('#mk').onclick=function(){
-  $('#mo').textContent='Membuat database...';
-  dbCreate().then(function(id){
-    setBlobId(id);
-    $('#mo').innerHTML='<b>Berhasil!</b> Database ID: <code>'+id+'</code><br><br>Sekarang web akan dimuat ulang dengan database aktif. Bagikan URL ke teman/dosen.<br><br><button class="btn" onclick="location.reload()">Lanjut</button>';
-  }).catch(function(e){$('#mo').textContent='Gagal: '+e.message+'. Periksa koneksi internet.'});
-};
-
 /* ====== Event delegation ====== */
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-go]');if(t){go(t.dataset.go,t.dataset.id);return}
@@ -547,34 +525,10 @@ document.addEventListener('click',function(e){
   t=e.target.closest('[data-del]');if(t){doDel(t.dataset.del);return}
 });
 
-/* ====== Auto-refresh setiap 5 detik (untuk sinkron antar-tab/device) ====== */
-setInterval(function(){
-  if(st.blobId&&st.loaded&&!document.hidden){
-    dbGet().then(function(){
-      if(cur=='home'||cur=='res'||cur=='pickfill'||cur=='pickres')render();
-    }).catch(function(){});
-  }
-},5000);
-
 /* ====== Boot ====== */
 st.user=getUser();
-st.blobId=getBlobId();
-if(st.blobId){
-  dbGet().then(function(){
-    // Seed survei transportasi HANYA jika database masih kosong
-    if(st.s.length===0&&st.user&&st.user.role=='pembuat'){
-      // Jangan auto-seed, biarkan user buat sendiri
-    }
-    render();
-  }).catch(function(e){
-    stamp();
-    M.innerHTML='<div class="dberr"><b>Gagal memuat database.</b> '+e.message+'<br><br><button class="btn" onclick="location.reload()">Coba lagi</button></div>';
-  });
-} else {
-  // Cek apakah URL hash punya #setup
-  if(location.hash=='#setup'){$('#setupm').classList.add('on')}
-  render();
-}
+dbGet();
+render();
 </script>
 </body>
 </html>
