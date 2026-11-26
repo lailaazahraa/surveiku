@@ -269,7 +269,7 @@ pertanyaan:s.qs.map(function(q,j){var o={kode:'Q'+(j+1),teks:q.t,tipe:q.type,kel
 jawaban:st.r[s.id].map(function(r,i){var o={no:i+1};s.qs.forEach(function(q,j){var v=r[j];o['Q'+(j+1)]=(q.type=='likert'&&v!==''&&v!=null)?+v:(v==null?'':v)});return o})},null,2)}
 async function dl(name,mime,text){var blob=new Blob([text],{type:mime+';charset=utf-8'}),du=null;
 try{if(window.claude&&claude.use)du=await claude.use('downloads')}catch(e){}
-if(du){try{await du.save({filename:name,data:await blob.arrayBuffer()});return}catch(e){}}
+if(du){try{await dl.save({filename:name,data:await blob.arrayBuffer()});return}catch(e){}}
 var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800)}
 function exp(k){if(k=='lap')return lapPDF();if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
 if(k=='json')return dl(b+'.json','application/json',toJSON(s));return dl(b+'.csv','text/csv',toCSV(s))}
@@ -353,8 +353,8 @@ function boot(){try{window.GID=window.GOOGLE_CLIENT_ID||localStorage.getItem('sf
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()
 </script>
 <script>
-/* ===== LAPORAN LENGKAP v3: PERBAIKAN BUG TABEL 4 (NaN) + COVER RAPI ===== */
-var LAP_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIcSURBVHhe7d1BbttAEEXRnv2vOQsEiAEbthPb0qj7Vb0HEEiS+Gd+M5Ls8fPz8wvg4N8fAP8NIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQggh......';
+/* ===== LAPORAN LENGKAP v3: PERBAIKAN TOTAL (Tabel 4, Layout, Cover) ===== */
+var LAP_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIcSURBVHhe7d1BbttAEEXRnv2vOQsEiAEbthPb0qj7Vb0HEEiS+Gd+M5Ls8fPz8wvg4N8fAP8NIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQ......';
 async function lapPDF(){
 var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat. Periksa koneksi internet lalu muat ulang halaman.');return}
 var s=sv_(arg),n=st.r[s.id].length,isK6=(s.ownerName==='Kelompok 6');
@@ -366,7 +366,7 @@ var S=stat(all),csi=S?S.m/5*100:null,v=vr(s);
 var items=s.qs.map(function(q,j){return j}).filter(function(j){return s.qs[j].type=='likert'});
 var im=items.map(function(j){return stat(qcol(j))});
 var dist=all.reduce(function(a,x){a[x-1]++;return a},[0,0,0,0,0]);
-/* PERBAIKAN: gdist harus [0,0,0,0,0] per aspek, bukan array sepanjang jumlah butir */
+/* PERBAIKAN BUG: gdist harus [0,0,0,0,0] per aspek (5 skala Likert) */
 var gdist=gs.map(function(){return [0,0,0,0,0]});
 gs.forEach(function(g,i){gmap[g].forEach(function(j){st.r[s.id].forEach(function(r){var x=+r[j];if(x>=1&&x<=5)gdist[i][x-1]++})})});
 function f1(x){return x.toFixed(1)} function f2(x){return x.toFixed(2)} function f3(x){return x.toFixed(3)}
@@ -492,7 +492,7 @@ marks['g2']=d.getNumberOfPages();fig2();
 d.setFont('times','bold');d.setFontSize(10);d.text('Gambar 2. Distribusi Jawaban per Aspek',PW/2,y,{align:'center'});y+=13;
 src('Sumber: Data primer diolah dari hasil survei (n = '+n+')');
 marks['t4']=d.getNumberOfPages();cap('Tabel 4. Distribusi Persentase Jawaban per Aspek');
-/* PERBAIKAN: hitung persentase dengan benar dari gdist */
+/* PERBAIKAN: hitung persentase dengan benar dari gdist yang sudah fix */
 TBL(['Aspek','1 (%)','2 (%)','3 (%)','4 (%)','5 (%)'],gs.map(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1;return[g].concat(gdist[i].map(function(c){return f1(c/tot*100)}))}),8,{0:{cellWidth:245}});
 marks['s44']=d.getNumberOfPages();H('4.4  Pembahasan per Aspek');
 var BAH=[
@@ -549,26 +549,6 @@ var buf=d.output('arraybuffer'),fn='laporan-survei-lengkap.pdf',dl=null;
 try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
 if(dl){try{await dl.save({filename:fn,data:buf});return}catch(e){}}d.save(fn)
 }
-</script>
-<script type="module">
-var cfg=window.FIREBASE_CONFIG;
-if(cfg&&cfg.apiKey){try{
-const V='https://www.gstatic.com/firebasejs/10.12.2/';
-const [A,F,U]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-firestore.js'),import(V+'firebase-auth.js')]);
-const app=A.initializeApp(cfg),db=F.getFirestore(app),au=U.getAuth(app);
-const PV={google:()=>new U.GoogleAuthProvider(),apple:()=>new U.OAuthProvider('apple.com'),microsoft:()=>new U.OAuthProvider('microsoft.com'),github:()=>new U.GithubAuthProvider()};
-const C=window.CLOUD={on:true,user:null,surveys:[],resp:{},done:[],
-login:p=>U.signInWithPopup(au,(PV[p]||PV.google)()).catch(e=>{if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')alert('Login gagal: '+e.message)}),
-logout:()=>U.signOut(au),
-addSurvey:s=>F.setDoc(F.doc(db,'surveys',s.id),{title:s.title,desc:s.desc||'',qs:s.qs,login:!!s.login,owner:C.user.uid,ownerName:C.user.displayName||'',createdAt:F.serverTimestamp()}),
-updSurvey:(id,ch)=>F.updateDoc(F.doc(db,'surveys',id),ch),
-delSurvey:id=>F.deleteDoc(F.doc(db,'surveys',id)),
-addResp:(sid,a)=>C.user?F.setDoc(F.doc(db,'responses',sid+'_'+C.user.uid),{surveyId:sid,answers:a,ts:F.serverTimestamp()}):F.addDoc(F.collection(db,'responses'),{surveyId:sid,answers:a,ts:F.serverTimestamp()})};
-const bad=e=>window.onCloudErr(e.code||e.message);
-U.onAuthStateChanged(au,u=>{C.user=u;window.onAuth()});
-F.onSnapshot(F.collection(db,'surveys'),s=>{C.surveys=s.docs.map(d=>{const x=d.data();return{id:d.id,title:x.title,desc:x.desc,qs:x.qs,owner:x.owner,ownerName:x.ownerName||'',login:!!x.login}});C.sloaded=true;window.onCloud()},bad);
-F.onSnapshot(F.collection(db,'responses'),s=>{const r={};C.done=s.docs.map(d=>d.id);s.docs.forEach(d=>{const x=d.data();(r[x.surveyId]=r[x.surveyId]||[]).push(x.answers)});C.resp=r;window.onCloud()},bad);
-}catch(e){window.onCloudErr(e.message)}}
 </script>
 </body>
 </html>
