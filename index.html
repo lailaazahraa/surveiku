@@ -8,76 +8,46 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F6F0E6;--side:#EEE2CC;--card:#FFFBF4;--ink:#3B2A1C;--mute:#8A7461;--acc:#B08A57;--acc2:#8C6A3F;--line:#E6D8C0;--row:#F8F1E4}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Poppins,'Segoe UI',sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Poppins,'Segoe UI',sans-serif}
 h1,h2,h3{font-family:Lora,Georgia,serif;margin:0;font-weight:600}
 .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
 aside{background:var(--side);border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh;overflow:auto}
 main{padding:34px 44px 60px;max-width:1180px;width:100%}
 .logo{display:flex;gap:12px;align-items:center;margin-bottom:30px}
 .lg{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8C6A3F,#C9A66B);color:#fff;display:grid;place-items:center;font:700 22px Lora,serif}
-.logo b{font:600 20px Lora,serif;display:block;line-height:1.1}
-.logo small{color:var(--mute);font-size:11px}
+.logo b{font:600 20px Lora,serif;display:block;line-height:1.1}.logo small{color:var(--mute);font-size:11px}
 .nv{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:500 14px Poppins,sans-serif;padding:11px 14px;border-radius:12px;cursor:pointer;margin-bottom:4px}
-.nv:hover{background:var(--row)}
-.nv.on{background:var(--acc2);color:#fff}
+.nv:hover{background:var(--row)}.nv.on{background:var(--acc2);color:#fff}
 .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:16px;flex-wrap:wrap}
-.hd h1{font-size:32px}
-.sub{color:var(--mute);margin:2px 0 0}
+.hd h1{font-size:32px}.sub{color:var(--mute);margin:2px 0 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(120,90,50,.07);margin-bottom:20px;overflow-x:auto}
 .hero{background:linear-gradient(135deg,#8C6A3F,#C9A66B);color:#fff;border:0;padding:38px}
-.hero h1{font-size:38px;max-width:640px;line-height:1.2}
-.hero p{max-width:560px;opacity:.95}
+.hero h1{font-size:38px;max-width:640px;line-height:1.2}.hero p{max-width:560px;opacity:.95}
 .tg{display:inline-block;font-size:11px;letter-spacing:.14em;background:rgba(255,255,255,.22);padding:5px 12px;border-radius:99px;margin-bottom:14px}
 .btn{font:500 14px Poppins,sans-serif;background:var(--acc2);color:#fff;border:0;border-radius:11px;padding:10px 20px;cursor:pointer}
-.btn.g{background:transparent;color:var(--acc2);border:1px solid var(--acc)}
-.btn.w{background:#fff;color:#8C6A3F}
-.btn.s{padding:6px 14px;font-size:13px}
-.st{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
-.st .card{margin:0}
-.st b{font:600 32px Lora,serif;color:var(--acc2);display:block;line-height:1.2}
-.st span{color:var(--mute);font-size:13px}
-table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:12px;color:var(--mute);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-tr:last-child td{border:0}
+.btn.g{background:transparent;color:var(--acc2);border:1px solid var(--acc)}.btn.w{background:#fff;color:#8C6A3F}.btn.s{padding:6px 14px;font-size:13px}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}.st .card{margin:0}
+.st b{font:600 32px Lora,serif;color:var(--acc2);display:block;line-height:1.2}.st span{color:var(--mute);font-size:13px}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;color:var(--mute);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}tr:last-child td{border:0}
 input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
-.qb{display:grid;grid-template-columns:1fr 190px 40px;gap:10px;margin-bottom:10px;align-items:start}
-.qb .qo{grid-column:1/3}
+.qb{display:grid;grid-template-columns:1fr 190px 40px;gap:10px;margin-bottom:10px;align-items:start}.qb .qo{grid-column:1/3}
 .x{border:0;background:var(--row);border-radius:10px;height:40px;cursor:pointer;color:var(--mute)}
 .sec h3{font-size:22px;color:var(--acc2);margin:18px 0 6px}
-.sc,.it{display:grid;grid-template-columns:1fr repeat(5,52px);gap:4px;align-items:center}
-.sc{text-align:center;color:var(--mute);font-size:12px;padding:0 12px}
-.it{background:var(--row);border-radius:12px;padding:10px 12px;margin-top:8px}
-.it.miss{outline:2px solid #C0603F}
+.sc,.it{display:grid;grid-template-columns:1fr repeat(5,52px);gap:4px;align-items:center}.sc{text-align:center;color:var(--mute);font-size:12px;padding:0 12px}
+.it{background:var(--row);border-radius:12px;padding:10px 12px;margin-top:8px}.it.miss{outline:2px solid #C0603F}
 .it label{display:flex;justify-content:center;padding:5px;cursor:pointer}
 .it input[type=radio]{appearance:none;width:20px;height:20px;padding:0;border:2px solid var(--acc);border-radius:50%;margin:0;background:transparent;cursor:pointer}
 .it input:checked{background:radial-gradient(circle,var(--acc2) 45%,transparent 50%);border-color:var(--acc2)}
-.ch label{display:flex;gap:10px;align-items:center;padding:6px 0;cursor:pointer}
-.ch input{width:20px}
+.ch label{display:flex;gap:10px;align-items:center;padding:6px 0;cursor:pointer}.ch input{width:20px}
 .sb{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--line);min-width:180px}
-.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
 .ar{display:grid;grid-template-columns:200px 1fr 60px;gap:12px;align-items:center;margin:9px 0}
-.lgd{display:flex;gap:14px;font-size:12px;color:var(--mute);margin:8px 0 0;flex-wrap:wrap}
-.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
-.md{position:fixed;inset:0;background:rgba(40,28,16,.45);display:none;place-items:center;z-index:9;padding:20px}
-.md.on{display:grid}
-.md .card{width:min(720px,100%);margin:0}
-.note{color:var(--mute);font-size:13px}
-.ok{color:#4F7A4B;font-weight:600}
-.no{color:#B0503A;font-weight:600}
-@media(max-width:900px){
-  .app{display:block}
-  aside{position:fixed;top:0;left:0;height:100%;width:270px;max-width:82vw;transform:translateX(-105%);transition:transform .25s;z-index:30;box-shadow:8px 0 30px rgba(0,0,0,.25)}
-  .open aside{transform:none}
-  main{padding:66px 16px 40px}
-  .st{grid-template-columns:1fr 1fr}
-  .ar{grid-template-columns:110px 1fr 50px}
-  .sc,.it{grid-template-columns:1fr repeat(5,34px)}
-  .qb{grid-template-columns:1fr}
-  .qb .qo{grid-column:auto}
-}
+.lgd{display:flex;gap:14px;font-size:12px;color:var(--mute);margin:8px 0 0;flex-wrap:wrap}.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.md{position:fixed;inset:0;background:rgba(40,28,16,.45);display:none;place-items:center;z-index:9;padding:20px}.md.on{display:grid}.md .card{width:min(720px,100%);margin:0}
+.note{color:var(--mute);font-size:13px}.ok{color:#4F7A4B;font-weight:600}.no{color:#B0503A;font-weight:600}
+.dbok{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;padding:12px;margin-bottom:16px;font-size:13px}
+.dberr{background:#FFEBEE;border:1px solid #EF9A9A;border-radius:12px;padding:12px;margin-bottom:16px;font-size:13px;color:#B71C1C}
+@media(max-width:900px){.app{display:block}aside{position:fixed;top:0;left:0;height:100%;width:270px;max-width:82vw;transform:translateX(-105%);transition:transform .25s;z-index:30;box-shadow:8px 0 30px rgba(0,0,0,.25)}.open aside{transform:none}main{padding:66px 16px 40px}.st{grid-template-columns:1fr 1fr}.ar{grid-template-columns:110px 1fr 50px}.sc,.it{grid-template-columns:1fr repeat(5,34px)}.qb{grid-template-columns:1fr}.qb .qo{grid-column:auto}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -85,65 +55,138 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 <body>
 <div class="app">
 <aside>
-  <div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei</small></div></div>
-  <button class="nv" data-go="home">Dashboard</button>
-  <button class="nv" data-go="new">Buat Survei</button>
-  <button class="nv" data-go="pickfill">Isi Survei</button>
-  <button class="nv" data-go="pickres">Hasil dan Laporan</button>
-  <div id="lgs" style="margin-top:20px"></div>
-  <p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
+<div class="logo"><div class="lg">S</div><div><b>SurveiKu</b><small>Platform Survei</small></div></div>
+<button class="nv" data-go="home">Dashboard</button>
+<button class="nv" data-go="new">Buat Survei</button>
+<button class="nv" data-go="pickfill">Isi Survei</button>
+<button class="nv" data-go="pickres">Hasil dan Laporan</button>
+<div id="lgs" style="margin-top:20px"></div>
+<p class="note" id="stt" style="margin:14px 8px 0;font-size:12px"></p>
 </aside>
 <main id="m"></main>
 </div>
 
 <div class="md" id="lm"><div class="card">
-  <h3 style="margin-bottom:10px">Masuk</h3>
-  <label class="note">Nama Anda</label>
-  <input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px">
-  <label class="note">Masuk sebagai</label>
-  <div style="margin:6px 0 12px">
-    <label style="display:block;padding:6px 0"><input type="radio" name="lr" value="pembuat" checked> Pembuat survei</label>
-    <label style="display:block;padding:6px 0"><input type="radio" name="lr" value="responden"> Responden</label>
-  </div>
-  <p style="margin:0"><button class="btn" id="lgo">Masuk</button> <button class="btn g" id="lcx">Batal</button> <span class="note" id="lerr"></span></p>
+<h3 style="margin-bottom:10px">Masuk</h3>
+<label class="note">Nama Anda</label>
+<input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px">
+<label class="note">Masuk sebagai</label>
+<div style="margin:6px 0 12px">
+<label style="display:block;padding:6px 0"><input type="radio" name="lr" value="pembuat" checked> Pembuat survei</label>
+<label style="display:block;padding:6px 0"><input type="radio" name="lr" value="responden"> Responden</label>
+</div>
+<p style="margin:0"><button class="btn" id="lgo">Masuk</button> <button class="btn g" id="lcx">Batal</button> <span class="note" id="lerr"></span></p>
+</div></div>
+
+<div class="md" id="setupm"><div class="card">
+<h3 style="margin-bottom:10px">Aktifkan Database Bersama</h3>
+<p class="note" style="margin:0 0 12px">Tekan tombol di bawah. Web akan membuat database online (JSONBlob) lalu memberi 1 tautan resmi. Pakai tautan itu untuk semua orang.</p>
+<button class="btn" id="mk">Buat database bersama</button>
+<div id="mo" class="note" style="margin-top:12px"></div>
 </div></div>
 
 <script>
 /* ============================================================
-   SURVEIKU - dengan localStorage (data tersimpan di browser)
+   SURVEIKU - dengan seed data transportasi + JSONBlob + laporan dinamis
    ============================================================ */
 
+var DB_URL='https://jsonblob.com/api/jsonBlob/';
 var $=function(s){return document.querySelector(s)},M=$('#m');
-var st={s:[],r:{},user:null,loaded:false};
+var st={s:[],r:{},user:null,blobId:null,loaded:false};
 var cur='home',arg=null;
 
 function E(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
-/* ====== localStorage API ====== */
+/* ===== SEED DATA TRANSPORTASI (default) ===== */
+var D=[["Tarif dan biaya",["Tarif yang dikenakan terjangkau dan sesuai anggaran","Penyesuaian tarif pada jam sibuk masih wajar","Biaya perjalanan sepadan dengan jarak yang ditempuh"]],
+["Promo dan transparansi",["Promo atau diskon yang diberikan menarik dan membantu","Rincian biaya transparan sebelum pesanan dikonfirmasi","Metode pembayaran non tunai berfungsi dengan lancar"]],
+["Kualitas kendaraan",["Kondisi kendaraan bersih dan terawat","Helm yang disediakan bersih dan layak pakai","Fasilitas pendukung di kendaraan memadai"]],
+["Keselamatan berkendara",["Pengemudi berkendara sesuai aturan lalu lintas","Kecepatan berkendara terasa aman dan terkendali","Pengemudi tidak menggunakan ponsel saat berkendara"]],
+["Fitur keamanan aplikasi",["Fitur keamanan darurat mudah diakses","Fitur pelacakan perjalanan berfungsi dengan baik","Saya merasa terlindungi saat memakai layanan"]],
+["Waktu penjemputan",["Waktu tunggu penjemputan singkat","Pengemudi tiba di titik jemput tepat waktu","Estimasi waktu kedatangan akurat"]],
+["Rute dan perjalanan",["Pengemudi memilih rute yang efisien","Pengemudi menanyakan preferensi rute","Waktu sampai di tujuan sesuai estimasi"]],
+["Performa aplikasi",["Sistem aplikasi responsif","Proses pencarian pengemudi cepat","Tampilan menu aplikasi mudah dipahami"]],
+["Pelayanan pengemudi",["Pengemudi bersikap ramah dan sopan","Pengemudi sigap membantu","Secara keseluruhan saya puas dengan pelayanan pengemudi"]]];
+var RAW=["223232332323232233222222222","312211223213132221321123321","444444444444444444444444444","235335234235345324245543243","444444444444444444444444444","323443444444444444444444444","333434334433434433433334334","434444444444444444444444444","343334343344344231533224554","333343323332433332223232243","333333333333333333333333333","333333333333333333333333333","333444444444444444444444444","444444444555444444555555555","444333333333333333444444444","545455444545445454544455554","444455555545444444434444444","444445455555544444455444555","454344435434453444443534433","344332455355435555334545443","121323233121333223132222323","113122222131332212131331222","232233333323332223223322222","122333333333323333322333223","233223333232123321554444544","443544553334444534345444443","545555544445335345355544544","545343334444444444544555232","544545443333544134455445445","445554445455455455334443543","454545343554354535444553533","345334333545244132544445233","345443544433455445555554344","343344335543545554445453435","334233343433443345353344344","555555555555555555555444555","555545545555455555555555555","555555555555555555555445555","555555555555445544555555555","555555555555555555555555555","555555555555555555555555555","555555555555555555555554545","555444555555555555555555555","444444444555555444555555555","454554433434433234554534453","555435333555444545555444555","543445445543543345545445344","453345543434433345434445324","333233454344444444543332334","445454454445332544545554444"];
+
+function makeSeedQuestions(){
+  var q=[];D.forEach(function(a){a[1].forEach(function(t){q.push({t:t,type:'likert',g:a[0]})})});
+  q.push({t:'Kritik dan saran untuk peningkatan layanan',type:'text',g:'Kritik dan Saran'});
+  return q;
+}
+function makeSeedSurvey(){
+  return{id:'s1',title:'Evaluasi Layanan Transportasi Online Melalui Aspek Tarif, Keamanan dan Kecepatan',
+    desc:'Survei kepuasan pengguna terhadap tarif, keselamatan, dan kecepatan layanan transportasi online. Jawaban dipakai hanya untuk kepentingan akademik.',
+    qs:makeSeedQuestions(),owner:'l_kelompok_6',ownerName:'Kelompok 6'};
+}
+function makeSeedResponses(){return RAW.map(function(x){return x.split('').map(Number).concat([''])})}
+
+/* ===== JSONBlob API ===== */
 function dbGet(){
-  var data;
-  try{data=JSON.parse(localStorage.getItem('sf_data'))}catch(e){data={surveys:[],resp:{},done:[]}}
-  data=data||{surveys:[],resp:{},done:[]};
-  st.s=data.surveys||[];st.r=data.resp||{};st.loaded=true;
-  return data;
+  if(!st.blobId)return Promise.reject(new Error('Database belum dibuat'));
+  return fetch(DB_URL+st.blobId,{headers:{'Content-Type':'application/json','Accept':'application/json'},cache:'no-store'})
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+    .then(function(d){d=d||{};st.s=d.surveys||[];st.r=d.resp||{};st.loaded=true;return d});
 }
 function dbPut(data){
-  try{localStorage.setItem('sf_data',JSON.stringify(data))}catch(e){}
+  if(!st.blobId)return Promise.reject(new Error('Database belum dibuat'));
+  return fetch(DB_URL+st.blobId,{method:'PUT',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status)});
 }
 function dbMutate(fn){
-  var data=dbGet();
-  data.surveys=data.surveys||[];data.resp=data.resp||{};data.done=data.done||[];
-  var err=fn(data);if(err)throw err;
-  dbPut(data);st.s=data.surveys;st.r=data.resp;
-  return data;
+  return dbGet().then(function(d){
+    d=d||{};d.surveys=d.surveys||[];d.resp=d.resp||{};d.done=d.done||[];
+    var err=fn(d);if(err)throw err;
+    return dbPut(d).then(function(){st.s=d.surveys;st.r=d.resp;return d});
+  });
+}
+function dbCreate(){
+  return fetch(DB_URL.replace(/\/$/,''),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({surveys:[],resp:{},done:[]})})
+    .then(function(r){
+      var loc=r.headers.get('Location')||r.headers.get('X-jsonblob')||'';
+      var id=loc.split('/').pop();
+      if(!id)throw new Error('ID tidak terbaca');
+      return id;
+    });
 }
 
-/* ====== User ====== */
-function getUser(){try{return JSON.parse(localStorage.getItem('sf_user'))}catch(e){return null}}
-function setUser(u){st.user=u;try{localStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}}
-function clearUser(){st.user=null;try{localStorage.removeItem('sf_user')}catch(e){}}
+/* ===== Init: cek blobId dari URL atau cache ===== */
+function getBlobId(){
+  var m=/[#&]db=([^&]+)/.exec(location.hash);
+  if(m)return m[1];
+  try{return sessionStorage.getItem('sf_db')||''}catch(e){return ''}
+}
+function setBlobId(id){
+  try{sessionStorage.setItem('sf_db',id)}catch(e){}
+  location.hash='#db='+id;
+}
 
-/* ====== Statistika ====== */
+/* ===== User (cache di sessionStorage) ===== */
+function getUser(){try{return JSON.parse(sessionStorage.getItem('sf_user'))}catch(e){return null}}
+function setUser(u){st.user=u;try{sessionStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}}
+function clearUser(){st.user=null;try{sessionStorage.removeItem('sf_user')}catch(e){}}
+
+/* ===== LocalStorage fallback ===== */
+var LS_KEY='sf2';
+function loadLocal(){
+  var sv=null;
+  try{sv=JSON.parse(localStorage.getItem(LS_KEY))}catch(e){}
+  var seed=makeSeedSurvey();
+  var seedResp=makeSeedResponses();
+  st={s:[seed],r:{s1:seedResp}};
+  if(sv&&Array.isArray(sv.s)){
+    st.s=st.s.concat(sv.s.filter(function(x){return x&&x.id&&Array.isArray(x.qs)}));
+    var r=sv.r||{};
+    for(var k in r){if(Array.isArray(r[k])&&(k!='s1'||r[k].length))st.r[k]=r[k]}
+  }
+  st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=[]});
+}
+function saveLocal(){
+  if(st.blobId)return; // kalau pakai cloud, jangan simpan lokal
+  try{localStorage.setItem(LS_KEY,JSON.stringify({s:st.s.slice(1),r:st.r}))}catch(e){}
+}
+
+/* ===== Statistika ===== */
 function stat(a){var n=a.length;if(!n)return null;var m=a.reduce(function(x,y){return x+y},0)/n,s=a.slice().sort(function(x,y){return x-y}),md=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2,sd=n>1?Math.sqrt(a.reduce(function(x,y){return x+(y-m)*(y-m)},0)/(n-1)):0;return{n:n,m:m,md:md,sd:sd}}
 function nm(sv,j){return st.r[sv.id].map(function(r){return +r[j]}).filter(function(x){return x>0})}
 function csi(sv){var a=[];sv.qs.forEach(function(q,j){if(q.type=='likert')a=a.concat(nm(sv,j))});var s=stat(a);return s?s.m/5*100:null}
@@ -151,7 +194,7 @@ function sv_(id){return st.s.filter(function(s){return s.id==id})[0]}
 function canEdit(s){return st.user&&st.user.role=='pembuat'&&s.owner==st.user.uid}
 
 /* ============================================================
-   LAPORAN PDF - DINAMIS
+   LAPORAN PDF - DINAMIS (tidak ada hardcode data transportasi)
    ============================================================ */
 async function lapPDF(){
   var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat.');return}
@@ -192,15 +235,24 @@ async function lapPDF(){
   function newPage(){d.addPage();y=60}
   function checkSpace(need){if(y+need>BTM)newPage()}
   
+  var isK6=(s.ownerName==='Kelompok 6');
+  var TITLE=isK6?'ANALISIS KEPUASAN PENGGUNA TRANSPORTASI ONLINE MELALUI ASPEK TARIF, KEAMANAN, DAN KECEPATAN':s.title;
+  
   /* ===== COVER ===== */
   y=70;
-  C('LAPORAN HASIL SURVEI',14,10,true);
+  C(isK6?'LAPORAN TUGAS KELOMPOK':'LAPORAN HASIL SURVEI',14,10,true);
+  if(isK6)C('MATA KULIAH STATISTIKA',14,30,true);
   d.setFont('times','bold');d.setFontSize(14);
-  var TL=d.splitTextToSize(s.title,CW-40);
+  var TL=d.splitTextToSize(TITLE,CW-40);
   d.text(TL,PW/2,y,{align:'center'});y+=TL.length*18+12;
-  if(s.ownerName)C('Disusun oleh: '+s.ownerName,12,18,true);
-  C('Dicetak: '+new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}),11,13);
-  y+=20;
+  if(isK6)C('Dosen Pengampu: Deasy Wahyuni, M.Si.',12,24);
+  C('Disusun oleh: '+(s.ownerName||'Pembuat Survei'),12,18,true);
+  if(isK6){
+    ['1.  Laila Azahra : 240103056','2.  Melani Wahyuni : 240103027','3.  Rindi Safitri : 240103008','4.  Mutiara Sabila : 240103064','5.  M. Hanafi : 240103024','6.  Fajril Huda Damanik : 240103012'].forEach(function(a){C(a,11,13)});
+  }
+  y+=16;
+  if(isK6){C('PROGRAM STUDI TEKNIK INFORMATIKA',12,13,true);C('FAKULTAS ILMU KOMPUTER',12,13,true);C('UNIVERSITAS DUMAI',12,13,true);C('2026',12,13,true)}
+  else{C(new Date().getFullYear(),12,13,true)}
   
   /* ===== KATA PENGANTAR ===== */
   newPage();C('KATA PENGANTAR',14,26,true);
@@ -337,7 +389,7 @@ async function lapPDF(){
   d.save('laporan-'+s.title.replace(/[^a-z0-9]/gi,'-').slice(0,30)+'.pdf');
 }
 
-/* ====== PDF ringkas ====== */
+/* ===== PDF ringkas ===== */
 function pdfRingkas(){
   var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat.');return}
   var s=sv_(arg);var n=st.r[s.id].length;var c=csi(s);
@@ -349,7 +401,7 @@ function pdfRingkas(){
   d.save('hasil-'+s.id+'.pdf');
 }
 
-/* ====== CSV & JSON ====== */
+/* ===== CSV & JSON ===== */
 function toCSV(s){
   var q=function(v){v=String(v==null?'':v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   return '\ufeff'+[['No'].concat(s.qs.map(function(x){return x.t}))].concat(st.r[s.id].map(function(r,i){return[i+1].concat(s.qs.map(function(x,j){return r[j]==null?'':r[j]}))})).map(function(r){return r.map(q).join(';')}).join('\r\n')+'\r\n';
@@ -370,7 +422,7 @@ function exp(k){
   return dl(b+'.csv','text/csv',toCSV(s));
 }
 
-/* ====== Navigasi ====== */
+/* ===== Navigasi ===== */
 function go(v,id){cur=v;arg=id;render();window.scrollTo(0,0)}
 function render(){
   document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==cur)});
@@ -380,22 +432,31 @@ function render(){
 
 function stamp(){
   var t=$('#stt'),b=$('#lgs');if(!t)return;
-  t.innerHTML='✓ Data tersimpan di browser';
+  if(!st.loaded){t.textContent='Memuat database...';return}
+  if(!st.blobId){t.textContent='✓ Data tersimpan di browser';return}
+  t.innerHTML='✓ Database aktif<br><span style="font-size:10px">ID: '+st.blobId.slice(0,12)+'...</span>';
   b.innerHTML=st.user?'<div class="note" style="margin-bottom:6px">Masuk sebagai:<br><b>'+E(st.user.displayName)+'</b><br><span style="font-size:11px">'+(st.user.role=='pembuat'?'Pembuat survei':'Responden')+'</span></div><button class="nv" id="lo">Keluar</button>':'<button class="nv" id="li">Masuk</button>';
   var li=$('#li'),lo=$('#lo');if(li)li.onclick=showLogin;if(lo)lo.onclick=doLogout;
 }
 
-/* ====== Views ====== */
+/* ===== Views ===== */
 function home(){
   var n=0;st.s.forEach(function(s){n+=(st.r[s.id]||[]).length});
-  var h='<div class="hd"><div><h1>Dashboard</h1><p class="sub">Buat survei, kumpulkan jawaban, baca hasilnya.</p></div></div>';
-  h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+(st.user?E(st.user.displayName):'-')+'</b><span>User aktif</span></div><div class="card"><b>Aktif</b><span>Database</span></div></div>';
+  var h='';
+  if(!st.blobId){
+    h+='<div class="dbok"><b>✓ Data tersimpan di browser.</b> Untuk berbagi dengan teman/dosen, aktifkan database online.<br><br><button class="btn g s" id="setupBtn">Aktifkan database online</button></div>';
+  } else {
+    h+='<div class="dbok"><b>✓ Database aktif.</b> Bagikan URL ini: <input readonly value="'+location.origin+location.pathname+'#db='+st.blobId+'" onclick="this.select()" style="margin-top:6px;font-size:11px;width:100%"></div>';
+  }
+  h+='<div class="hd"><div><h1>Dashboard</h1><p class="sub">Buat survei, kumpulkan jawaban, baca hasilnya.</p></div></div>';
+  h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+(st.user?E(st.user.displayName):'-')+'</b><span>User aktif</span></div><div class="card"><b>'+(st.blobId?'Cloud':'Lokal')+'</b><span>Database</span></div></div>';
   h+='<div class="card"><h3 style="margin-bottom:8px">Daftar Survei</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
   if(st.s.length===0)h+='<tr><td colspan="4" class="note">Belum ada survei. Klik "Buat Survei" untuk memulai.</td></tr>';
   st.s.forEach(function(s){
     h+='<tr><td><b>'+E(s.title)+'</b><div class="note">oleh '+E(s.ownerName||'?')+'</div></td><td>'+s.qs.length+'</td><td>'+(st.r[s.id]||[]).length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button>'+(canEdit(s)?' <button class="btn s g" data-go="edit" data-id="'+s.id+'">Edit</button> <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>';
   });
   M.innerHTML=h+'</table></div>';
+  var sb=$('#setupBtn');if(sb)sb.onclick=function(){$('#setupm').classList.add('on')};
 }
 
 function pick(mode){
@@ -442,15 +503,24 @@ function nw(eid){
       if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}
     });
     if(!lock&&!q.length){$('#ne').textContent='Minimal 1 pertanyaan.';return}
+    $('#ne').textContent='Menyimpan...';
     
     if(E0){
       var ch={title:t,desc:$('#nd').value};if(!lock)ch.qs=q;
-      dbMutate(function(d){d.surveys.forEach(function(x){if(x.id==E0.id&&x.owner==st.user.uid)for(var k in ch)x[k]=ch[k]})});
-      go('home');
+      if(st.blobId){
+        dbMutate(function(d){d.surveys.forEach(function(x){if(x.id==E0.id&&x.owner==st.user.uid)for(var k in ch)x[k]=ch[k]})})
+          .then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal: '+e.message});
+      } else {
+        E0.title=ch.title;E0.desc=ch.desc;if(ch.qs)E0.qs=ch.qs;saveLocal();go('home');
+      }
     } else {
       var nv={id:'s'+Date.now(),title:t,desc:$('#nd').value,qs:q,owner:st.user.uid,ownerName:st.user.displayName};
-      dbMutate(function(d){d.surveys.push(nv);d.resp[nv.id]=[]});
-      go('home');
+      if(st.blobId){
+        dbMutate(function(d){d.surveys.push(nv);d.resp[nv.id]=[]})
+          .then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal: '+e.message});
+      } else {
+        st.s.push(nv);st.r[nv.id]=[];saveLocal();go('home');
+      }
     }
   };
 }
@@ -481,14 +551,13 @@ function fill(){
       r.push(v);
     });
     if(bad){$('#er').textContent='Masih ada pertanyaan belum dijawab.';bad.scrollIntoView({block:'center'});return}
-    dbMutate(function(d){
-      var id=s.id+'_'+st.user.uid;
-      d.done=d.done||[];
-      if(d.done.indexOf(id)>=0)return{code:'denied',message:'Sudah diisi'};
-      d.done.push(id);
-      (d.resp[s.id]=d.resp[s.id]||[]).push(r);
-    });
-    M.innerHTML='<div class="card"><h3>Terima kasih!</h3><p class="note">Jawaban tersimpan.</p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></div>';
+    $('#er').textContent='Menyimpan...';
+    var saveFn=st.blobId?
+      dbMutate(function(d){var id=s.id+'_'+st.user.uid;d.done=d.done||[];if(d.done.indexOf(id)>=0)return{code:'denied',message:'Sudah diisi'};d.done.push(id);(d.resp[s.id]=d.resp[s.id]||[]).push(r)}):
+      Promise.resolve().then(function(){var id=s.id+'_'+st.user.uid;var done2=st.r._done||[];if(done2.indexOf(id)>=0)throw{code:'denied'};done2.push(id);st.r._done=done2;(st.r[s.id]=st.r[s.id]||[]).push(r);saveLocal()});
+    saveFn.then(function(){
+      M.innerHTML='<div class="card"><h3>Terima kasih!</h3><p class="note">Jawaban tersimpan.</p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></div>';
+    }).catch(function(e){$('#er').textContent=/denied/i.test(e.code+'')?'Sudah diisi':'Gagal: '+e.message});
   };
 }
 
@@ -503,11 +572,14 @@ function res(){
 
 function doDel(i){
   if(!confirm('Hapus survei ini?'))return;
-  dbMutate(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==i&&x.owner==st.user.uid)});delete d.resp[i]});
-  home();
+  if(st.blobId){
+    dbMutate(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==i&&x.owner==st.user.uid)});delete d.resp[i]}).then(function(){home()});
+  } else {
+    st.s=st.s.filter(function(x){return x.id!=i});delete st.r[i];saveLocal();home();
+  }
 }
 
-/* ====== Login ====== */
+/* ===== Login ===== */
 function showLogin(){$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()}
 function doLogout(){clearUser();render()}
 $('#lgo').onclick=function(){
@@ -518,17 +590,52 @@ $('#lgo').onclick=function(){
 };
 $('#lcx').onclick=function(){$('#lm').classList.remove('on')};
 
-/* ====== Event delegation ====== */
+/* ===== Setup database ===== */
+$('#mk').onclick=function(){
+  $('#mo').textContent='Membuat database...';
+  dbCreate().then(function(id){
+    // Copy data lokal ke cloud
+    var data={surveys:st.s,resp:st.r,done:st.r._done||[]};
+    return fetch(DB_URL+id,{method:'PUT',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+      .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return id});
+  }).then(function(id){
+    setBlobId(id);
+    $('#mo').innerHTML='<b>Berhasil!</b> Database ID: <code>'+id+'</code><br><br>Sekarang web akan dimuat ulang dengan database aktif. Bagikan URL ke teman/dosen.<br><br><button class="btn" onclick="location.reload()">Lanjut</button>';
+  }).catch(function(e){$('#mo').textContent='Gagal: '+e.message+'. Periksa koneksi internet.'});
+};
+
+/* ===== Event delegation ===== */
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-go]');if(t){go(t.dataset.go,t.dataset.id);return}
   t=e.target.closest('[data-ex]');if(t){exp(t.dataset.ex);return}
   t=e.target.closest('[data-del]');if(t){doDel(t.dataset.del);return}
 });
 
-/* ====== Boot ====== */
+/* ===== Auto-refresh setiap 5 detik ===== */
+setInterval(function(){
+  if(st.blobId&&st.loaded&&!document.hidden){
+    dbGet().then(function(){
+      if(cur=='home'||cur=='res'||cur=='pickfill'||cur=='pickres')render();
+    }).catch(function(){});
+  }
+},5000);
+
+/* ===== Boot ===== */
 st.user=getUser();
-dbGet();
-render();
+st.blobId=getBlobId();
+if(st.blobId){
+  dbGet().then(function(){render()}).catch(function(e){
+    // Fallback ke lokal
+    loadLocal();
+    st.blobId=null;
+    stamp();
+    render();
+  });
+} else {
+  loadLocal();
+  if(location.hash=='#setup'){$('#setupm').classList.add('on')}
+  render();
+}
 </script>
 </body>
 </html>
