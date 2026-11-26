@@ -76,16 +76,10 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--row);border
 </aside>
 <main id="m"></main>
 </div>
-<div class="md" id="lm"><div class="card"><h3 style="margin-bottom:10px">Masuk</h3><label class="note">Nama Anda</label><input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px"><label class="note">Masuk sebagai</label><div class="ch" style="margin:6px 0 12px"><label><input type="radio" name="lr" value="pembuat" checked>Pembuat survei (membuat, edit, dan hapus surveinya sendiri)</label><label><input type="radio" name="lr" value="responden">Responden (mengisi, membagikan, dan melihat hasil)</label></div><p style="margin:0"><button class="btn" id="lgo" type="button">Masuk</button> <button class="btn g" id="lcx" type="button">Batal</button> <span class="note" id="lerr"></span></p></div></div>
+<div class="md" id="lm"><div class="card"><h3 style="margin-bottom:10px">Masuk</h3><label class="note">Nama Anda</label><input id="ln" placeholder="Contoh: Laila Azahra" style="margin:4px 0 12px"><label class="note">Masuk sebagai</label><div class="ch" style="margin:6px 0 12px"><label><input type="radio" name="lr" value="pembuat" checked>Pembuat survei (membuat, edit, dan hapus surveinya sendiri)</label><label><input type="radio" name="lr" value="responden">Responden (mengisi survei dan melihat hasil)</label></div><p class="note" style="margin:0 0 10px">Pembuat survei tidak dapat mengisi survei, dan responden tidak dapat membuat, mengedit, atau menghapus survei. Keluar dan masuk kembali dengan peran lain untuk berganti peran.</p><p style="margin:0"><button class="btn" id="lgo" type="button">Masuk</button> <button class="btn g" id="lcx" type="button">Batal</button> <span class="note" id="lerr"></span></p></div></div>
 <div class="md" id="cm"><div class="card"><h3 style="margin-bottom:6px">Hapus survei?</h3><p class="note" id="ct" style="margin:0 0 14px"></p><button class="btn" id="cy" type="button">Hapus</button> <button class="btn g" id="cn" type="button">Batal</button></div></div>
 <div class="md" id="sm"><div class="card"><h3 style="margin-bottom:4px">Bagikan survei</h3><p class="note" id="sn" style="margin:0 0 14px"></p><label class="note">Tautan untuk mengisi (hanya halaman survei, seperti Google Form)</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl1" readonly><button class="btn" data-cp="sl1" type="button">Salin</button></div><label class="note">Tautan untuk melihat hasil</label><div style="display:flex;gap:8px;margin:4px 0 14px"><input id="sl2" readonly><button class="btn g" data-cp="sl2" type="button">Salin</button></div><div id="sw" style="display:none;margin:0 0 14px"><p class="note" style="margin:0 0 6px">Halaman ini dibuka dari pratinjau, jadi alamat webnya belum benar. Isi alamat web GitHub Pages Anda sekali, lalu tautan di atas otomatis benar.</p><div style="display:flex;gap:8px"><input id="si" placeholder="https://usernamekamu.github.io/namarepo/"><button class="btn g" id="ssv" type="button">Simpan</button></div></div><p style="margin:0"><button class="btn g" id="sz" type="button">Tutup</button></p></div></div>
 <div class="md" id="md"><div class="card"><h3 id="mt" style="margin-bottom:10px"></h3><textarea id="mx" readonly></textarea><p style="margin:12px 0 0"><button class="btn" id="mc">Salin</button> <button class="btn g" id="mz">Tutup</button></p></div></div>
-<script>
-window.FIREBASE_CONFIG=null;
-window.GOOGLE_CLIENT_ID='';
-window.DB_BLOB='';
-window.LOGIN_PROVIDERS=['google'];
-</script>
 <script>
 var D=[["Tarif dan biaya",["Tarif yang dikenakan terjangkau dan sesuai anggaran","Penyesuaian tarif pada jam sibuk masih wajar","Biaya perjalanan sepadan dengan jarak yang ditempuh"]],
 ["Promo dan transparansi",["Promo atau diskon yang diberikan menarik dan membantu","Rincian biaya transparan sebelum pesanan dikonfirmasi","Metode pembayaran non tunai berfungsi dengan lancar"]],
@@ -107,7 +101,7 @@ try{sv=JSON.parse(localStorage.getItem('sf2'))}catch(e){}
 st={s:[seed()],r:{s1:sr}};
 if(sv&&Array.isArray(sv.s)){st.s=st.s.concat(sv.s.filter(function(x){return x&&x.id&&Array.isArray(x.qs)}));var r=sv.r||{};for(var k in r){if(Array.isArray(r[k])&&(k!='s1'||r[k].length))st.r[k]=r[k]}}
 st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=[]})}
-function save(){if(window.CLOUD&&window.CLOUD.on)return;try{localStorage.setItem('sf2',JSON.stringify({s:st.s.slice(1),r:st.r}))}catch(e){}}
+function save(){try{localStorage.setItem('sf2',JSON.stringify({s:st.s.slice(1),r:st.r}))}catch(e){}}
 function col(sv,j){return st.r[sv.id].map(function(r){return r[j]})}
 function nm(sv,j){return col(sv,j).map(Number).filter(function(x){return x})}
 function stat(a){var n=a.length;if(!n)return null;var m=a.reduce(function(x,y){return x+y},0)/n,s=a.slice().sort(function(x,y){return x-y}),md=n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2,sd=n>1?Math.sqrt(a.reduce(function(x,y){return x+(y-m)*(y-m)},0)/(n-1)):0;return{n:n,m:m,md:md,sd:sd}}
@@ -143,38 +137,30 @@ var qb=[];s.qs.forEach(function(q,j){var a=nm(s,j);if(q.type=='likert'&&a.length
 T('Statistik per pernyataan',['Pernyataan','Mean','Median','SD'],qb);
 if(v){T('Uji validitas (r tabel = '+v.rc.toFixed(3)+', taraf 5%)',['Pernyataan','r hitung','Keputusan'],v.it.map(function(x){return[x.t,isNaN(x.r)?'-':x.r.toFixed(3),x.ok?'Valid':'Tidak valid']}));
 d.setFontSize(11);if(y>780){d.addPage();y=30}d.text('Uji reliabilitas: Cronbach Alpha = '+(isNaN(v.al)?'-':v.al.toFixed(3))+' ('+(v.rel?'Reliabel':'Tidak reliabel')+', '+v.lv+'), '+v.k+' pernyataan, '+v.n+' responden.',40,y+16)}
-var buf=d.output('arraybuffer'),fn='hasil-survei.pdf',dl=null;
-try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
-if(dl){try{await dl.save({filename:fn,data:buf})}catch(e){}}else d.save(fn)}
+d.save('hasil-survei.pdf')}
 function go(v,id){document.body.classList.remove('open');cur=v;arg=id;render();window.scrollTo(0,0)}
 $('#mb').onclick=function(){document.body.classList.toggle('open')};$('#ov').onclick=function(){document.body.classList.remove('open')};
-function render(){var nk={fill:'pickfill',res:'pickres',edit:'new'}[cur]||cur;document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==nk)});({home:home,new:nw,fill:fill,res:res,pickfill:function(){pick('fill')},pickres:function(){pick('res')},edit:function(){nw(arg)},setup:setupView,gset:gsetView,stat:statView,load:function(){M.innerHTML='<div class="card"><p class="note" style="margin:0">Memuat survei...</p></div>'},nf:function(){M.innerHTML='<div class="card"><h3 style="margin-bottom:6px">Survei tidak ditemukan</h3><p class="note" style="margin:0">Tautan salah atau survei sudah dihapus pembuatnya.</p></div>'}})[cur]()}
+function render(){var nk={fill:'pickfill',res:'pickres',edit:'new'}[cur]||cur;document.querySelectorAll('.nv[data-go]').forEach(function(b){b.classList.toggle('on',b.dataset.go==nk)});({home:home,new:nw,fill:fill,res:res,pickfill:function(){pick('fill')},pickres:function(){pick('res')},edit:function(){nw(arg)},stat:statView,nf:function(){M.innerHTML='<div class="card"><h3 style="margin-bottom:6px">Survei tidak ditemukan</h3><p class="note" style="margin:0">Tautan salah atau survei sudah dihapus pembuatnya.</p></div>'}})[cur]()||0}
 function home(){var n=0,c=csi(st.s[0]),ag={};st.s[0].qs.forEach(function(q){if(q.type=='likert')ag[q.g]=1});var na=Object.keys(ag).length;st.s.forEach(function(s){n+=st.r[s.id].length});
 var h='<div class="card hero"><span class="tg">PLATFORM SURVEI ALL-IN-ONE</span><h1>Buat survei, kumpulkan jawaban, baca hasilnya.</h1><p>Susun kuesioner dengan berbagai tipe pertanyaan, bagikan ke responden, lalu lihat statistik Mean, Median, dan SD, indeks kepuasan, uji validitas dan reliabilitas, serta unduh laporan PDF secara otomatis.</p><p style="margin-top:18px"><button class="btn w" data-go="new">Buat Survei Baru</button> <button class="btn" style="background:rgba(255,255,255,.2)" data-go="res" data-id="s1">Lihat Hasil</button></p></div>';
 h+='<div class="st"><div class="card"><b>'+st.s.length+'</b><span>Total survei</span></div><div class="card"><b>'+n+'</b><span>Total responden</span></div><div class="card"><b>'+na+'</b><span>Aspek penilaian (survei utama)</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>CSI survei utama</span></div></div>';
 h+='<div class="card"><h3 style="margin-bottom:8px">Daftar Survei</h3><table><tr><th>Judul</th><th>Pertanyaan</th><th>Responden</th><th>Aksi</th></tr>';
 st.s.forEach(function(s,i){h+='<tr><td><b>'+E(s.title)+'</b>'+(s.ownerName?'<div class="note">Dibuat oleh '+E(s.ownerName)+'</div>':'')+'</td><td>'+s.qs.length+'</td><td>'+st.r[s.id].length+'</td><td><button class="btn s" data-go="fill" data-id="'+s.id+'">Isi</button> <button class="btn s g" data-go="res" data-id="'+s.id+'">Hasil</button> <button class="btn s g" data-share="'+s.id+'">Bagikan</button>'+(i&&canDel(s)?' <button class="btn s g" data-go="edit" data-id="'+s.id+'">Edit</button> <button class="btn s g" data-del="'+s.id+'">Hapus</button>':'')+'</td></tr>'});
 M.innerHTML=h+'</table></div>'}
-var LN={google:'Google',apple:'Apple',microsoft:'Microsoft',github:'GitHub'};
-function provs(){var C=window.CLOUD;return C&&C.local?(window.GID?['google']:['local']):(window.LOGIN_PROVIDERS||['google'])}
-function plab(p){return p=='local'?'Masuk':'Masuk dengan '+(LN[p]||p)}
-function loginBtns(){return provs().map(function(p){return'<button class="btn" data-lp="'+p+'" style="margin:4px 8px 0 0">'+plab(p)+'</button>'}).join('')}
-function gateNew(){var C=window.CLOUD;if(C&&C.local&&C.user&&C.user.role!='pembuat')return'<div class="card" id="gn"><b>Anda masuk sebagai Responden</b><p class="note" style="margin:4px 0 8px">Untuk membuat survei, keluar lalu masuk sebagai Pembuat survei.</p><button class="btn g" data-lo="1">Keluar</button></div>';return C&&C.on&&!C.user?'<div class="card" id="gn"><b>Masuk untuk membuat survei</b><p class="note" style="margin:4px 0 8px">Membuat survei memerlukan akun (tanpa password, cukup lewat akun yang Anda punya).</p>'+loginBtns()+'</div>':''}
-function gateFill(s){var C=window.CLOUD;if(!(C&&C.on))return'';
-var hd='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div>';
-if(C.user&&(C.done||[]).indexOf(s.id+'_'+C.user.uid)>=0)return hd+'<div class="card"><h3 style="margin-bottom:6px">Terima kasih</h3><p class="note">Akun Anda sudah mengisi survei ini. Satu akun hanya dapat mengisi satu kali.</p><p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat Hasil</button></p></div>';
-if(!C.user)return hd+'<div class="card"><h3 style="margin-bottom:6px">Masuk untuk mengisi</h3><p class="note">Masuk dengan akun Anda (tanpa password) untuk mengisi survei ini. Satu akun hanya dapat mengisi satu kali.</p><p>'+loginBtns()+'</p></div>';
-return''}
+function gateNew(){var C=window.CLOUD;
+if(!(C&&C.user))return'<div class="card" id="gn"><b>Anda belum masuk</b><p class="note" style="margin:4px 0 8px">Masuk sebagai Pembuat survei untuk membuat, mengedit, atau menghapus survei.</p><button class="btn" data-lp="local">Masuk</button></div>';
+if(C&&C.user&&C.user.role!='pembuat')return'<div class="card" id="gn"><b>Anda masuk sebagai Responden</b><p class="note" style="margin:4px 0 8px">Untuk membuat survei, keluar lalu masuk sebagai Pembuat survei.</p><button class="btn g" data-lo="1">Keluar</button></div>';return''}
 function pick(mode){var F=mode=='fill';
 M.innerHTML='<div class="hd"><div><h1>'+(F?'Isi Survei':'Hasil dan Statistik')+'</h1><p class="sub">'+(F?'Pilih survei yang ingin Anda isi.':'Pilih survei untuk melihat hasilnya.')+'</p></div></div><div class="card"><input id="sq" placeholder="Cari judul atau deskripsi survei..." autocomplete="off"></div><div id="sl"></div>';
 function list(){var q=$('#sq').value.trim().toLowerCase(),h='',C=window.CLOUD;
 st.s.forEach(function(s){if(q&&(s.title+' '+(s.desc||'')).toLowerCase().indexOf(q)<0)return;
-h+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:16px"><div><b>'+E(s.title)+'</b>'+'<div class="note">'+E((s.desc||'').slice(0,140))+'</div><div class="note">'+s.qs.length+' pertanyaan - '+st.r[s.id].length+' responden'+(s.ownerName?' - dibuat oleh '+E(s.ownerName):'')+'</div></div><div style="white-space:nowrap"><button class="btn" data-go="'+mode+'" data-id="'+s.id+'">'+(F?'Isi Survei':'Lihat Hasil')+'</button> <button class="btn g" data-share="'+s.id+'">Bagikan</button></div></div>'});
+h+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:16px"><div><b>'+E(s.title)+'</b>'+'<div class="note">'+E((s.desc||'').slice(0,140))+'</div><div class="note">'+s.qs.length+' pertanyaan - '+st.r[s.id].length+' responden'+(s.ownerName?' - dibuat oleh '+E(s.ownerName):'')+'</div></div><div style="white-space:nowrap"><button class="btn" data-go="'+mode+'" data-id="'+s.id+'">'+(F?'Isi Survei':'Lihat Hasil')+'</button></div></div>'});
 $('#sl').innerHTML=h||'<div class="card note">Tidak ada survei yang cocok dengan pencarian.</div>'}
 $('#sq').oninput=list;list();window.pickList=list}
-function fillUser(){var C=window.CLOUD;return C&&C.on&&C.user?'<p class="note" style="margin-top:12px">Masuk sebagai <b>'+E(C.user.displayName||C.user.email||'akun')+'</b> <button class="btn g s" data-lo="1" type="button">Keluar</button></p>':''}
-function after(s){if(solo)M.innerHTML='<div class="hd"><div><h1>'+E(s.title)+'</h1></div></div><div class="card"><h3 style="margin-bottom:6px">Terima kasih!</h3><p class="note">Jawaban Anda sudah terkirim.</p><p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></p></div>';else go('res',s.id)}
-function doDel(i){if(window.CLOUD&&window.CLOUD.on){window.CLOUD.delSurvey(i).catch(function(e){stamp('Gagal menghapus: '+e.message)});return}st.s=st.s.filter(function(x){return x.id!=i});delete st.r[i];save();home()}
+function fillUser(){var C=window.CLOUD;return C&&C.user?'<p class="note" style="margin-top:12px">Masuk sebagai <b>'+E(C.user.displayName)+'</b> ('+(C.user.role=='pembuat'?'Pembuat survei':'Responden')+') <button class="btn g s" data-lo="1" type="button">Keluar</button></p>':''}
+function after(s){if(solo)M.innerHTML='<div class="hd"><div><h1>'+E(s.title)+'</h1></div></div><div class="card"><h3 style="margin-bottom:6px">Terima kasih!</h3><p class="note">Jawaban Anda sudah tersimpan dan hasil survei ikut terbaru secara otomatis.</p><p><button class="btn" data-go="res" data-id="'+s.id+'">Lihat hasil</button></p></div>';else go('res',s.id)}
+function doDel(i){if(!canDel(sv_(i))){stamp('Hanya pembuat survei yang boleh menghapus surveinya.');return}
+st.s=st.s.filter(function(x){return x.id!=i});delete st.r[i];save();stash();home()}
 $('#cn').onclick=function(){$('#cm').classList.remove('on')};
 var SL=(function(){
 function lg(x){var c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.001208650973866179,-0.000005395239384953],y=x,t=x+5.5;t-=(x+.5)*Math.log(t);var s=1.000000000190015;for(var j=0;j<6;j++)s+=c[j]/++y;return -t+Math.log(2.5066282746310005*s/x)}
@@ -222,22 +208,21 @@ $('#sxr').innerHTML=h}}
 function qrow(){var d=document.createElement('div');d.className='qb';
 d.innerHTML='<input class="qt" placeholder="Tulis pertanyaan"><select class="qy"><option value="likert">Skala Likert 1-5</option><option value="choice">Pilihan ganda</option><option value="yesno">Ya / Tidak</option><option value="text">Jawaban teks</option></select><button class="x" type="button">&#10005;</button><input class="qo" placeholder="Opsi dipisah koma, misal: Gojek, Grab, Maxim" style="display:none">';
 d.querySelector('.qy').onchange=function(){d.querySelector('.qo').style.display=this.value=='choice'?'block':'none'};d.querySelector('.x').onclick=function(){d.remove()};$('#ql').appendChild(d);return d}
-function nw(eid){var E0=eid?sv_(eid):null,lock=!!(E0&&st.r[E0.id].length);
+function nw(eid){var E0=eid?sv_(eid):null,lock=!!(E0&&st.r[E0.id].length),C0=window.CLOUD;
+if(E0&&!canDel(E0)){M.innerHTML='<div class="card"><b>Tidak diizinkan</b><p class="note" style="margin:4px 0 0">Hanya pembuat survei yang boleh mengedit surveinya. Keluar lalu masuk sebagai Pembuat survei.</p></div>';return}
 M.innerHTML='<div class="hd"><div><h1>'+(E0?'Edit Survei':'Buat Survei')+'</h1><p class="sub">'+(E0?'Ubah judul, deskripsi, dan pertanyaan survei Anda.':'Susun judul, deskripsi, dan pertanyaan survei Anda.')+'</p></div></div>'+gateNew()+'<div class="card"><label class="note">Judul survei</label><input id="nt" placeholder="Contoh: Kepuasan Layanan Kampus" style="margin:4px 0 14px"><label class="note">Deskripsi</label><textarea id="nd" rows="3" placeholder="Jelaskan tujuan survei" style="margin:4px 0 6px"></textarea></div><div class="card"><h3 style="margin-bottom:12px">Pertanyaan</h3>'+(lock?'<p class="note" style="margin:0 0 10px">Pertanyaan tidak dapat diubah karena survei ini sudah memiliki responden, agar data tetap konsisten. Judul dan deskripsi masih bisa diubah.</p><div id="ql">'+E0.qs.map(function(q,j){return'<div class="it" style="display:block">'+(j+1)+'. '+E(q.t)+'</div>'}).join('')+'</div>':'<div id="ql"></div><p><button class="btn g" id="aq" type="button">+ Tambah pertanyaan</button></p>')+'</div><button class="btn" id="sv" type="button">'+(E0?'Simpan Perubahan':'Simpan dan Terbitkan')+'</button> <span class="note" id="ne"></span>';
 if(E0){$('#nt').value=E0.title;$('#nd').value=E0.desc||''}
 if(!lock){if(E0){E0.qs.forEach(function(q){var d=qrow();d.querySelector('.qt').value=q.t;d.querySelector('.qy').value=q.type;if(q.type=='choice'){var o=d.querySelector('.qo');o.style.display='block';o.value=(q.o||[]).join(', ')}})}else qrow();$('#aq').onclick=qrow}
 $('#sv').onclick=function(){var t=$('#nt').value.trim(),q=[],C=window.CLOUD;
 if(!lock)document.querySelectorAll('.qb').forEach(function(d){var x=d.querySelector('.qt').value.trim(),y=d.querySelector('.qy').value;if(x){var o={t:x,type:y,g:'Pertanyaan'};if(y=='choice')o.o=d.querySelector('.qo').value.split(',').map(function(z){return z.trim()}).filter(Boolean);if(y=='yesno')o.o=['Ya','Tidak'];q.push(o)}});
 if(!t||(!lock&&!q.length)){$('#ne').textContent='Isi judul dan minimal satu pertanyaan.';return}
-if(C&&C.on&&!C.user){$('#ne').textContent='Masuk dulu (tombol di sidebar) untuk menyimpan survei.';return}
-if(C&&C.local&&C.user.role!='pembuat'){$('#ne').textContent='Masuk sebagai Pembuat survei untuk membuat atau mengedit survei.';return}
-if(E0){var ch={title:t,desc:$('#nd').value};if(!lock)ch.qs=q;
-if(C&&C.on){$('#ne').textContent='Menyimpan...';C.updSurvey(E0.id,ch).then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal menyimpan: '+e.message});return}
-E0.title=ch.title;E0.desc=ch.desc;if(ch.qs)E0.qs=ch.qs;save();go('home');return}
-var id='s'+Date.now(),nv={id:id,title:t,desc:$('#nd').value,qs:q,login:true};
-if(C&&C.on){$('#ne').textContent='Menyimpan...';C.addSurvey(nv).then(function(){go('home')}).catch(function(e){$('#ne').textContent='Gagal menyimpan: '+e.message});return}
-st.s.push(nv);st.r[id]=[];save();go('home')}}
-function fill(){var s=sv_(arg),C0=window.CLOUD;if(C0&&C0.on&&C0.user&&C0.user.role=='pembuat'){M.innerHTML='<div class="hd"><div><h1>'+E(s.title)+'</h1></div></div><div class="card"><b>Anda masuk sebagai Pembuat survei</b><p class="note" style="margin:4px 0 8px">Untuk mengisi survei, keluar dulu (tombol Keluar di sidebar) lalu masuk sebagai Responden, supaya peran tidak tercampur.</p><button class="btn g" data-lo="1">Keluar</button></div>';return}var gt=gateFill(s);if(gt){M.innerHTML=gt;return}var h='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div><div class="card" id="fm">',g='';
+if(C&&C.on&&!C.user){$('#ne').textContent='Masuk dulu (tombol Masuk di sidebar) sebagai Pembuat survei untuk menyimpan.';return}
+if(C&&C.user&&C.user.role!='pembuat'){$('#ne').textContent='Anda masuk sebagai Responden. Keluar lalu masuk sebagai Pembuat survei.';return}
+if(E0){E0.title=t;E0.desc=$('#nd').value;E0.ownerName=C&&C.user?C.user.displayName:E0.ownerName;if(!lock)E0.qs=q;save();stash();go('home');return}
+var id='s'+Date.now(),nv={id:id,title:t,desc:$('#nd').value,qs:q,login:true,owner:C.user.uid,ownerName:C.user.displayName};
+st.s.push(nv);st.r[id]=[];save();stash();go('home')}}
+function fill(){var s=sv_(arg),C0=window.CLOUD;if(C0&&C0.user&&C0.user.role=='pembuat'){M.innerHTML='<div class="hd"><div><h1>'+E(s.title)+'</h1></div></div><div class="card"><b>Anda masuk sebagai Pembuat survei</b><p class="note" style="margin:4px 0 8px">Untuk mengisi survei, keluar dulu (tombol Keluar di sidebar) lalu masuk sebagai Responden, supaya peran tidak tercampur dan pembuat tidak bisa mengubah jawaban.</p><button class="btn g" data-lo="1">Keluar</button></div>';return}
+var h='<div class="hd"><div><h1>'+E(s.title)+'</h1><p class="sub">'+E(s.desc||'')+'</p></div></div><div class="card" id="fm">',g='';
 s.qs.forEach(function(q,j){if(q.g!=g){g=q.g;h+='<div class="sec"><h3>'+E(g)+'</h3>'+(q.type=='likert'?'<div class="sc"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>':'')+'</div>'}
 if(q.type=='likert'){h+='<div class="it" data-j="'+j+'"><span>'+E(q.t)+'</span>';for(var v=1;v<=5;v++)h+='<label><input type="radio" name="q'+j+'" value="'+v+'" aria-label="'+v+'"></label>';h+='</div>'}
 else if(q.type=='text'){h+='<div class="it" style="display:block" data-j="'+j+'"><p style="margin:0 0 6px">'+E(q.t)+'</p><textarea name="q'+j+'" rows="3"></textarea></div>'}
@@ -247,146 +232,121 @@ $('#sb').onclick=function(){var r=[],bad=null;s.qs.forEach(function(q,j){var el=
 if(q.type=='text')v=el.querySelector('textarea').value;else{var c=el.querySelector('input:checked');v=c?(q.type=='likert'?+c.value:c.value):''}
 if(q.type!='text'&&v===''){el.classList.add('miss');bad=bad||el}r.push(v)});
 if(bad){$('#er').textContent='Masih ada pertanyaan yang belum dijawab.';bad.scrollIntoView({block:'center'});return}
-var C=window.CLOUD;if(C&&C.on){$('#er').textContent='Mengirim jawaban...';C.addResp(s.id,r).then(function(){after(s)}).catch(function(e){$('#er').textContent=/permission|denied/i.test(e.code+' '+e.message)?(C.user?'Akun ini sudah pernah mengisi survei ini.':'Survei ini mewajibkan login. Silakan masuk dulu.'):'Gagal mengirim: '+e.message});return}
 st.r[s.id].push(r);save();after(s)}}
-function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div><button class="btn" data-ex="lap">Unduh Laporan Lengkap</button> <button class="btn" data-ex="pdf">Unduh PDF</button> <button class="btn g" data-ex="csv">Ekspor CSV</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
+function res(){var s=sv_(arg),n=st.r[s.id].length,c=csi(s),h='<div class="hd"><div><h1>Hasil dan Statistik</h1><p class="sub">'+E(s.title)+'</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-ex="lap">Unduh Laporan Lengkap</button> <button class="btn g" data-ex="pdf">Unduh PDF Ringkas</button> <button class="btn g" data-ex="csv">Ekspor CSV (Data Mentah)</button> <button class="btn g" data-ex="csvs">Ekspor CSV (Ringkasan)</button> <button class="btn g" data-ex="json">Ekspor JSON</button></div></div>';
 var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(nm(s,j))});var S=stat(all);
 h+='<div class="st"><div class="card"><b>'+n+'</b><span>Responden</span></div><div class="card"><b>'+(S?S.m.toFixed(2):'-')+'</b><span>Rata-rata skor (1-5)</span></div><div class="card"><b>'+(S?S.md:'-')+'</b><span>Median</span></div><div class="card"><b>'+(c==null?'-':c.toFixed(1)+'%')+'</b><span>Indeks kepuasan (CSI)</span></div></div>';
 var gs={},go_=[];s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gs[q.g]){gs[q.g]=[];go_.push(q.g)}gs[q.g]=gs[q.g].concat(nm(s,j))}});
-if(!n)h+='<div class="card"><p class="note" style="margin:0">Belum ada responden. Klik <b>Isi Survei</b> pada dashboard untuk mengisi survei ini terlebih dahulu.</p></div>';
+if(!n)h+='<div class="card"><p class="note" style="margin:0">Belum ada responden. Jawaban baru otomatis muncul dan laporan ikut menyesuaikan setiap ada responden yang mengisi.</p></div>';
 if(go_.length&&n){h+='<div class="card"><h3 style="margin-bottom:6px">Indeks Kepuasan per Aspek</h3>';go_.forEach(function(g){var z=stat(gs[g]);if(!z)return;var m=z.m;h+='<div class="ar"><span>'+E(g)+'</span><div class="bar"><i style="width:'+m/5*100+'%"></i></div><b>'+(m/5*100).toFixed(1)+'%</b></div>'});h+='</div>'}
 h+='<div class="card"><h3 style="margin-bottom:6px">Statistik per Pertanyaan</h3><table><tr><th>Pertanyaan</th><th>Mean</th><th>Median</th><th>SD</th><th>Sebaran jawaban</th></tr>';
 s.qs.forEach(function(q,j){var a=nm(s,j);
 if(q.type=='likert'&&a.length){var z=stat(a);h+='<tr><td>'+E(q.t)+'</td><td>'+z.m.toFixed(2)+'</td><td>'+z.md+'</td><td>'+z.sd.toFixed(2)+'</td><td>'+sbar(a)+'</td></tr>'}
 else if(q.type=='choice'||q.type=='yesno'){var cc=col(s,j);h+='<tr><td>'+E(q.t)+'</td><td colspan="4">'+q.o.map(function(o){return E(o)+': <b>'+cc.filter(function(x){return x==o}).length+'</b>'}).join(' &nbsp; ')+'</td></tr>'}
-else if(q.type=='text'){var t=col(s,j).filter(Boolean);h+='<tr><td>'+E(q.t)+'</td><td colspan="4" class="note">'+(t.length?t.slice(-3).map(E).join(' | '):'Belum ada jawaban teks')+'</td></tr>'}});
+else if(q.type=='text'){var t=col(s,j).filter(Boolean);h+='<tr><td>'+E(q.t)+'</td><td colspan="4" class="note">'+(t.length?t.length+' jawaban teks. Unduh Ekspor CSV untuk membaca isinya.':'Belum ada jawaban teks')+'</td></tr>'}});
 h+='</table><div class="lgd">'+LB.map(function(l,i){return'<span><i style="background:'+CL[i]+'"></i>'+l+'</span>'}).join('')+'</div></div>';h+=vrh(s);M.innerHTML=h}
 function slug(t){return String(t).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'survei'}
-function toCSV(s){var q=function(v){v=String(v==null?'':v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-return '\ufeff'+[['No'].concat(s.qs.map(function(x){return x.t}))].concat(st.r[s.id].map(function(r,i){return[i+1].concat(s.qs.map(function(x,j){return r[j]==null?'':r[j]}))})).map(function(r){return r.map(q).join(';')}).join('\r\n')+'\r\n'}
+function toCSV(s){function q(v){v=String(v==null?'':v);return /[",;\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+var L=[['No'].concat(s.qs.map(function(x,j){return'Q'+(j+1)+' - '+x.t}))];
+st.r[s.id].forEach(function(r,i){L.push([String(i+1)].concat(s.qs.map(function(x,j){return r[j]==null?'':r[j]})))});
+return '\ufeff'+L.map(function(r){return r.map(q).join(';')}).join('\r\n')+'\r\n'}
+function stCSV(s){function q(v){v=String(v==null?'':v);return /[",;\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+var L=[['No','Pertanyaan','Tipe','Aspek','Mean','Median','SD','Penilaian 1 (STS)','Penilaian 2 (TS)','Penilaian 3 (Netral)','Penilaian 4 (S)','Penilaian 5 (SS)']];
+var items=s.qs.map(function(q,j){return j}).filter(function(j){return s.qs[j].type=='likert'});
+items.forEach(function(j,i){var a=qcol(s,j),z=stat(a),d=[0,0,0,0,0];a.forEach(function(x){if(x>=1&&x<=5)d[x-1]++});
+L.push([String(i+1),s.qs[j].t,'Likert',s.qs[j].g,z?z.m.toFixed(2):'-',z?String(z.md):'-',z?z.sd.toFixed(2):'-',String(d[0]),String(d[1]),String(d[2]),String(d[3]),String(d[4])])});
+s.qs.forEach(function(q,j){if(q.type=='likert')return;
+var cc=col(s,j).filter(Boolean),cnt={};cc.forEach(function(v){cnt[v]=(cnt[v]||0)+1});
+L.push([String(L.length),q.t,q.type,q.g,'-','-','-','','','','',Object.keys(cnt).map(function(k){return k+' = '+cnt[k]}).join(' | ')])});
+return '\ufeff'+L.map(function(r){return r.map(q).join(';')}).join('\r\n')+'\r\n'}
+function qcol(sv,j){return st.r[sv.id].map(function(r){return +r[j]}).filter(function(x){return x>0})}
 function toJSON(s){return JSON.stringify({survei:{id:s.id,judul:s.title,deskripsi:s.desc||'',diekspor:new Date().toISOString()},jumlah_responden:st.r[s.id].length,
 pertanyaan:s.qs.map(function(q,j){var o={kode:'Q'+(j+1),teks:q.t,tipe:q.type,kelompok:q.g};if(q.o)o.opsi=q.o;return o}),
 jawaban:st.r[s.id].map(function(r,i){var o={no:i+1};s.qs.forEach(function(q,j){var v=r[j];o['Q'+(j+1)]=(q.type=='likert'&&v!==''&&v!=null)?+v:(v==null?'':v)});return o})},null,2)}
-async function dl(name,mime,text){var blob=new Blob([text],{type:mime+';charset=utf-8'}),du=null;
-try{if(window.claude&&claude.use)du=await claude.use('downloads')}catch(e){}
-if(du){try{await dl.save({filename:name,data:await blob.arrayBuffer()});return}catch(e){}}
+async function dl(name,mime,text){var blob=new Blob([text],{type:mime+';charset=utf-8'});
 var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800)}
 function exp(k){if(k=='lap')return lapPDF();if(k=='pdf')return pdf();var s=sv_(arg),b=slug(s.title)+'-'+new Date().toISOString().slice(0,10);
-if(k=='json')return dl(b+'.json','application/json',toJSON(s));return dl(b+'.csv','text/csv',toCSV(s))}
+if(k=='json')return dl(b+'.json','application/json',toJSON(s));
+if(k=='csv')return dl(b+'-data-mentah.csv','text/csv',toCSV(s));
+if(k=='csvs')return dl(b+'-ringkasan.csv','text/csv',stCSV(s))}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-go]');if(t)return go(t.dataset.go,t.dataset.id);
-t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;$('#ct').textContent='Survei "'+sv_(i).title+'" akan dihapus beserta jawabannya. Tindakan ini tidak bisa dibatalkan.';$('#cm').classList.add('on');$('#cy').onclick=function(){$('#cm').classList.remove('on');doDel(i)};return}
-t=e.target.closest('[data-ex]');if(t)exp(t.dataset.ex)});
+t=e.target.closest('[data-del]');if(t){var i=t.dataset.del;if(!canDel(sv_(i))){stamp('Hanya pembuat survei yang boleh menghapus surveinya.');return}
+$('#ct').textContent='Survei "'+sv_(i).title+'" akan dihapus beserta jawabannya. Tindakan ini tidak bisa dibatalkan.';$('#cm').classList.add('on');$('#cy').onclick=function(){$('#cm').classList.remove('on');doDel(i)};return}
+t=e.target.closest('[data-ex]');if(t)exp(t.dataset.ex);
+t=e.target.closest('[data-lp]');if(t)window.CLOUD.login();
+t=e.target.closest('[data-lo]');if(t)window.CLOUD.logout()});
 document.addEventListener('change',function(e){var it=e.target.closest('.it');if(it)it.classList.remove('miss')});
 $('#mz').onclick=function(){$('#md').classList.remove('on')};
 $('#mc').onclick=function(){$('#mx').select();try{document.execCommand('copy');$('#mc').textContent='Tersalin'}catch(e){}};
 $('#th').onclick=function(){var r=document.documentElement,d=r.getAttribute('data-theme')=='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);r.setAttribute('data-theme',d?'light':'dark')};
-function canDel(s){var C=window.CLOUD;return !!(C&&C.on&&C.user&&C.user.role=='pembuat'&&s.owner&&s.owner==C.user.uid)}
-function cloudMerge(){var C=window.CLOUD;if(!C||!C.on)return;var sr=RAW.map(function(x){return x.split('').map(Number).concat([''])});
-st={s:[seed()].concat(C.surveys||[]),r:{s1:sr.concat(C.resp.s1||[])}};st.s.forEach(function(x){if(!st.r[x.id])st.r[x.id]=C.resp[x.id]||[]})}
-function stamp(m){var C=window.CLOUD,t=$('#stt'),b=$('#lgs');if(!t)return;t.textContent=m||'';
-var sb='';b.innerHTML=sb+((C&&C.on)?(C.user?'<button class="nv" data-lo="1">Keluar ('+E((C.user.displayName||C.user.email||'akun').split(' ')[0])+')</button>':provs().map(function(p){return'<button class="nv" data-lp="'+p+'">'+plab(p)+'</button>'}).join('')):'')}
-window.onCloud=function(){cloudMerge();var C=window.CLOUD;
-if(wait){if(st.s.some(function(x){return x.id==wait.id})){cur=wait.c;arg=wait.id;wait=null;render()}else if(C.sloaded){cur='nf';wait=null;render()}}
-else if(cur=='home'||cur=='res')render();else if((cur=='pickfill'||cur=='pickres')&&window.pickList)window.pickList();stamp()};
-window.onAuth=function(){stamp();var g=$('#gn');if(g&&window.CLOUD&&window.CLOUD.user)g.style.display='none';if(cur=='fill'&&!document.querySelector('#fm'))render()};
-window.onCloudErr=function(m){window.CLOUDFAIL=true;window.DB_BLOB='';initLocal();wait=null;route();render();stamp('Database online tidak dapat dihubungi ('+m+'). Memakai penyimpanan di browser ini.')};
-document.addEventListener('click',function(e){var C=window.CLOUD,t=e.target.closest('[data-lp]');if(t&&C&&C.on){C.login(t.dataset.lp);return}t=e.target.closest('[data-lo]');if(t&&C&&C.on)C.logout()});
+function canDel(s){var C=window.CLOUD;return !!(C&&C.user&&C.user.role=='pembuat'&&(!s.owner||s.owner==C.user.uid))}
+function stash(){try{localStorage.setItem('sf2',JSON.stringify({s:st.s.slice(1),r:st.r}))}catch(e){}}
+function stamp(m){var C=window.CLOUD,t=$('#stt'),b=$('#lgs');if(!t)return;if(m!==undefined)t.textContent=m;
+b.innerHTML=(C&&C.user)?'<p class="note" style="margin:0 8px 8px;font-size:12px">Masuk sebagai <b>'+E(C.user.displayName)+'</b><br>'+(C.user.role=='pembuat'?'Pembuat survei':'Responden')+'</p><button class="nv" data-lo="1">Keluar</button>':'<button class="nv" data-lp="local">Masuk</button>'}
+window.onCloud=function(){if(cur=='home'||cur=='res')render();else if((cur=='pickfill'||cur=='pickres')&&window.pickList)window.pickList();stamp()};
+window.onAuth=function(){stamp();if(cur=='home'||cur=='new'||cur=='fill')render()};
 var wait=null,solo=false;
 function route(){var m=/^#(isi|hasil)=([^&]+)/.exec(location.hash);solo=!!m;document.body.classList.toggle('solo',solo);if(!m){wait=null;return}
-var id=decodeURIComponent(m[2]),c=m[1]=='isi'?'fill':'res',C=window.CLOUD;
-if(st.s.some(function(x){return x.id==id})){cur=c;arg=id;wait=null}
-else if((window.FIREBASE_CONFIG||window.DB_BLOB)&&!window.CLOUDFAIL&&!(C&&C.sloaded)){wait={c:c,id:id};cur='load'}else{cur='nf';wait=null}}
+var id=decodeURIComponent(m[2]),c=m[1]=='isi'?'fill':'res';
+if(st.s.some(function(x){return x.id==id})){cur=c;arg=id;wait=null}else{cur='nf';arg=id;wait=null}}
 function isWeb(){return /^https?:/.test(location.href)}
 function base(){var h=location.href.split('#')[0];if(isWeb())return h;try{return localStorage.getItem('sf_site')||h}catch(e){return h}}
-function showShare(id){var sv=sv_(id),q=encodeURIComponent(sv.id),dq=(window.DB_BLOB&&!window.DB_FIXED)?'&db='+window.DB_BLOB:'';window._sh=id;$('#sn').textContent=sv.title;$('#sl1').value=base()+'#isi='+q+dq;$('#sl2').value=base()+'#hasil='+q+dq;var bad=!isWeb()&&!(function(){try{return localStorage.getItem('sf_site')}catch(e){return ''}})();$('#sw').style.display=bad?'block':'none';$('#sm').classList.add('on')}
+function showShare(id){var sv=sv_(id),q=encodeURIComponent(sv.id);window._sh=id;$('#sn').textContent=sv.title;$('#sl1').value=base()+'#isi='+q;$('#sl2').value=base()+'#hasil='+q;var bad=!isWeb()&&!(function(){try{return localStorage.getItem('sf_site')}catch(e){return ''}})();$('#sw').style.display=bad?'block':'none';$('#sm').classList.add('on')}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-share]');if(t){showShare(t.dataset.share);return}
 t=e.target.closest('[data-cp]');if(t){var i=$('#'+t.dataset.cp),ok=false;i.select();try{ok=document.execCommand('copy')}catch(x){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(i.value);t.textContent='Tersalin';setTimeout(function(){t.textContent='Salin'},1500);return}
 if(e.target.id=='sz'||e.target.id=='sm')$('#sm').classList.remove('on');if(e.target.id=='ssv'){var u=$('#si').value.trim();if(/^https?:\/\//.test(u)){if(u.indexOf('#')>=0)u=u.split('#')[0];try{localStorage.setItem('sf_site',u)}catch(x){}showShare(window._sh)}}});
 window.onhashchange=function(){route();render()};
-function loadGIS(cb){if(window.google&&google.accounts&&google.accounts.oauth2)return cb();var sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.onload=cb;sc.onerror=function(){stamp('Tidak dapat memuat layanan login Google. Periksa koneksi internet.')};document.head.appendChild(sc)}
-function gLogin(){loadGIS(function(){var tc=google.accounts.oauth2.initTokenClient({client_id:window.GID,scope:'openid profile email',callback:function(r){if(!r||r.error){stamp('Login Google dibatalkan atau gagal.');return}
-fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+r.access_token}}).then(function(x){return x.json()}).then(function(u){if(!u.sub)throw new Error('profil tidak terbaca');window.CLOUD.setUser({uid:'g_'+u.sub,displayName:u.name||u.email,email:u.email,role:'pembuat'});stamp('')}).catch(function(e){stamp('Login Google gagal: '+e.message)})}});tc.requestAccessToken({prompt:'select_account'})})}
-function gsetView(){var o=(location.origin&&location.origin!='null')?location.origin:'(alamat GitHub Pages Anda, tanpa garis miring di akhir)';
-M.innerHTML='<div class="hd"><div><h1>Aktifkan Login Google</h1><p class="sub">Dilakukan sekali oleh pembuat web.</p></div></div><div class="card"><p class="note" style="margin-top:0">Login Google asli memerlukan satu kode (Client ID) dari akun Google Anda. Langkah:</p><ol class="note" style="padding-left:20px;line-height:1.9"><li>Buka console.cloud.google.com lalu buat proyek baru.</li><li>Menu APIs &amp; Services &gt; OAuth consent screen: pilih External, isi nama aplikasi dan email, simpan.</li><li>Menu Credentials &gt; Create credentials &gt; OAuth client ID &gt; Web application.</li><li>Pada Authorized JavaScript origins isi: <b>'+E(o)+'</b></li><li>Klik Create, salin <b>Client ID</b> (berakhiran .apps.googleusercontent.com) lalu tempel di bawah.</li></ol><input id="gi" placeholder="123456-abc.apps.googleusercontent.com"><p style="margin:12px 0 0"><button class="btn" id="gs" type="button">Simpan dan aktifkan</button></p><div id="go" class="note" style="margin-top:10px"></div></div>';
-$('#gs').onclick=function(){var v=$('#gi').value.trim();if(!/\.apps\.googleusercontent\.com$/.test(v)){$('#go').textContent='Client ID tidak valid.';return}window.GID=v;try{localStorage.setItem('sf_gid',v)}catch(e){}var C=window.CLOUD,p=(C&&C.setCfg)?C.setCfg({gid:v}):Promise.resolve();p.then(function(){$('#go').textContent='Tersimpan. Login Google sekarang aktif. Klik Keluar lalu Masuk dengan Google.';stamp()}).catch(function(e){$('#go').textContent='Gagal menyimpan: '+e.message})}}
-function initRemote(){var U=(window.DB_URL||'https://jsonblob.com/api/jsonBlob/')+window.DB_BLOB,KU='sf_user',H={'Content-Type':'application/json','Accept':'application/json'},last='';
-var C=window.CLOUD={on:true,local:true,remote:true,user:null,surveys:[],resp:{},done:[],sloaded:false};
-try{C.user=JSON.parse(localStorage.getItem(KU))}catch(e){}
-function norm(d){d=d||{};C.surveys=d.surveys||[];C.resp=d.resp||{};C.done=d.done||[];var g=(d.cfg||{}).gid;if(g&&g!=window.GID){window.GID=g;try{localStorage.setItem('sf_gid',g)}catch(e){}}}
-function get(){return fetch(U,{headers:H,cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})}
-function put(d){return fetch(U,{method:'PUT',headers:H,body:JSON.stringify(d)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status)})}
-function mut(fn){return get().then(function(d){d=d||{};d.surveys=d.surveys||[];d.resp=d.resp||{};d.done=d.done||[];var e=fn(d);if(e)throw e;return put(d).then(function(){last=JSON.stringify(d);norm(d);window.onCloud()})})}
-function poll(first){return get().then(function(d){var j=JSON.stringify(d);if(j===last&&C.sloaded)return;last=j;norm(d);C.sloaded=true;window.onCloud()}).catch(function(e){if(!C.sloaded&&first)window.onCloudErr(e.message)})}
-C.login=function(){if(window.GID){gLogin();return}$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
-C.loginDo=function(n,role){C.user={uid:'l_'+n.toLowerCase().replace(/\s+/g,'_'),displayName:n,role:role};try{localStorage.setItem(KU,JSON.stringify(C.user))}catch(e){}window.onAuth();window.onCloud()};
-C.logout=function(){C.user=null;try{localStorage.removeItem(KU)}catch(e){}window.onAuth();window.onCloud()};
-C.setUser=function(u){C.user=u;try{localStorage.setItem(KU,JSON.stringify(u))}catch(e){}window.onAuth();window.onCloud()};
-C.setCfg=function(ch){return mut(function(d){d.cfg=d.cfg||{};for(var k in ch)d.cfg[k]=ch[k]})};
-C.addSurvey=function(v){v.owner=C.user.uid;v.ownerName=C.user.displayName;return mut(function(d){d.surveys.push(v)})};
-C.updSurvey=function(id,ch){return mut(function(d){d.surveys.forEach(function(x){if(x.id==id&&x.owner==C.user.uid)for(var k in ch)x[k]=ch[k]})})};
-C.delSurvey=function(id){return mut(function(d){d.surveys=d.surveys.filter(function(x){return !(x.id==id&&x.owner==C.user.uid)});delete d.resp[id]})};
-C.addResp=function(sid,a){var id=sid+'_'+C.user.uid;return mut(function(d){if(d.done.indexOf(id)>=0)return{code:'permission-denied',message:'denied'};d.done.push(id);(d.resp[sid]=d.resp[sid]||[]).push(a)})};
-cloudMerge();poll(true);setInterval(function(){if(!document.hidden)poll(false)},5000)}
+$('#lgo').onclick=function(){var n=$('#ln').value.trim();if(!n){$('#lerr').textContent='Isi nama Anda.';return}window.CLOUD.loginDo(n,document.querySelector('input[name=lr]:checked').value);$('#lm').classList.remove('on')};
+$('#lcx').onclick=function(){$('#lm').classList.remove('on')};
 function initLocal(){var K='sf3';
 function rd(){var d={surveys:[],resp:{},done:[],user:null};try{var x=JSON.parse(localStorage.getItem(K));if(x)for(var k in x)d[k]=x[k]}catch(e){}return d}
 function wr(d){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
 var C=window.CLOUD={on:true,local:true,user:null,surveys:[],resp:{},done:[],sloaded:true};
 function sync(){var d=rd();C.surveys=d.surveys;C.resp=d.resp;C.done=d.done;C.user=d.user}
 function ok(){sync();window.onCloud();return Promise.resolve()}
-C.login=function(){if(window.GID){gLogin();return}$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
+C.login=function(){$('#lerr').textContent='';$('#lm').classList.add('on');$('#ln').focus()};
 C.loginDo=function(n,role){var d=rd();d.user={uid:'l_'+n.toLowerCase().replace(/\s+/g,'_'),displayName:n,role:role};wr(d);sync();window.onAuth();window.onCloud()};
 C.logout=function(){var d=rd();d.user=null;wr(d);sync();window.onAuth();window.onCloud()};
-C.setUser=function(u){var d=rd();d.user=u;wr(d);sync();window.onAuth();window.onCloud()};
-C.addSurvey=function(v){var d=rd();v.owner=d.user.uid;v.ownerName=d.user.displayName;d.surveys.push(v);wr(d);return ok()};
-C.updSurvey=function(id,ch){var d=rd();d.surveys.forEach(function(x){if(x.id==id)for(var k in ch)x[k]=ch[k]});wr(d);return ok()};
-C.delSurvey=function(id){var d=rd();d.surveys=d.surveys.filter(function(x){return x.id!=id});delete d.resp[id];wr(d);return ok()};
-C.addResp=function(sid,a){var d=rd(),id=sid+'_'+d.user.uid;if(d.done.indexOf(id)>=0)return Promise.reject({code:'permission-denied',message:'denied'});d.done.push(id);(d.resp[sid]=d.resp[sid]||[]).push(a);wr(d);return ok()};
-window.addEventListener('storage',function(e){if(e.key==K){sync();window.onAuth();window.onCloud()}});
-sync();cloudMerge()}
-$('#lgo').onclick=function(){var n=$('#ln').value.trim();if(!n){$('#lerr').textContent='Isi nama Anda.';return}window.CLOUD.loginDo(n,document.querySelector('input[name=lr]:checked').value);$('#lm').classList.remove('on')};
-$('#lcx').onclick=function(){$('#lm').classList.remove('on')};
-function dbId(){var m=/[#&]db=([^&]+)/.exec(location.hash);if(m){try{localStorage.setItem('sf_db',m[1])}catch(e){}return m[1]}try{return window.DB_BLOB||localStorage.getItem('sf_db')||''}catch(e){return window.DB_BLOB||''}}
-function setupView(){M.innerHTML='<div class="hd"><div><h1>Aktifkan Database Bersama</h1><p class="sub">Dilakukan sekali oleh pembuat web.</p></div></div><div class="card"><p class="note" style="margin-top:0">Tekan tombol di bawah. Web akan membuat database bersama lalu memberi satu tautan resmi. Pakai tautan itu untuk semua orang, termasuk dosen.</p><button class="btn" id="mk" type="button">Buat database bersama</button><div id="mo" class="note" style="margin-top:12px"></div></div>';
-$('#mk').onclick=function(){$('#mo').textContent='Membuat...';fetch((window.DB_URL||'https://jsonblob.com/api/jsonBlob/').replace(/\/$/,''),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({surveys:[],resp:{},done:[]})}).then(function(r){var l=r.headers.get('Location')||r.headers.get('X-jsonblob')||'',id=l.split('/').pop();if(!id)throw new Error('ID tidak terbaca');
-try{localStorage.setItem('sf_db',id)}catch(e){}var u=base()+'#db='+id;$('#mo').innerHTML='<b>Berhasil.</b> Tautan resmi web (salin, pakai untuk semua orang):<input readonly value="'+u+'" onclick="this.select()" style="margin-top:8px"><p><button class="btn" id="gc" type="button">Lanjut</button></p><p class="note">Setelah menekan Lanjut, web memakai database bersama. Kirim tautan di atas ke teman dan dosen.</p>';$('#gc').onclick=function(){try{var u=(JSON.parse(localStorage.getItem('sf3'))||{}).user;if(u)localStorage.setItem('sf_user',JSON.stringify(u))}catch(e){}location.hash='#db='+id;location.reload()}}).catch(function(e){$('#mo').textContent=isWeb()?'Gagal membuat database ('+e.message+'). Periksa koneksi internet lalu coba lagi.':'Gagal: halaman ini dibuka dari pratinjau yang memblokir koneksi. Buka web lewat alamat GitHub Pages Anda (https://...github.io/...), lalu ulangi langkah ini.'})}}
-function boot(){try{window.GID=window.GOOGLE_CLIENT_ID||localStorage.getItem('sf_gid')||''}catch(e){window.GID=window.GOOGLE_CLIENT_ID||''}window.DB_FIXED=!!window.DB_BLOB;window.DB_BLOB=dbId();load();initLocal();route();if(location.hash=='#setup'&&!window.DB_BLOB)cur='setup';render();stamp()}
+sync()}
+function boot(){load();initLocal();route();render();stamp()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()
 </script>
 <script>
-/* ===== LAPORAN LENGKAP v3: PERBAIKAN TOTAL (Tabel 4, Layout, Cover) ===== */
-var LAP_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIcSURBVHhe7d1BbttAEEXRnv2vOQsEiAEbthPb0qj7Vb0HEEiS+Gd+M5Ls8fPz8wvg4N8fAP8NIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQ......';
-async function lapPDF(){
+/* ================= LAPORAN LENGKAP v4 =================
+   - Laporan dibuat OTOMATIS dari data survei APA PUN (bukan hanya transportasi)
+   - Margin dan ukuran kertas seragam di semua bagian termasuk Lampiran
+   - Nama anggota berupa daftar rata kiri (bukan tengah)
+   - Tanda tangan "Dumai, ..." sejajar kanan dengan "Penulis"
+   - Tanpa halamanEkor: judul bab/subbab tidak pernah terpisah dari isinya */
+function lapPDF(){
 var J=window.jspdf;if(!J||!J.jsPDF){alert('Library PDF belum termuat. Periksa koneksi internet lalu muat ulang halaman.');return}
-var s=sv_(arg),n=st.r[s.id].length,isK6=(s.ownerName==='Kelompok 6');
+var s=sv_(arg),n=st.r[s.id].length;
+if(!n){alert('Belum ada responden untuk survei ini. Isi survei dulu supaya laporan berisi hasil yang akurat.');return}
 var gs=[],gmap={};s.qs.forEach(function(q,j){if(q.type=='likert'){if(!gmap[q.g]){gmap[q.g]=[];gs.push(q.g)}gmap[q.g].push(j)}});
+var items=s.qs.map(function(q,j){return j}).filter(function(j){return s.qs[j].type=='likert'});
 function qcol(j){return st.r[s.id].map(function(r){return +r[j]}).filter(function(x){return x>0})}
 var ga=gs.map(function(g){var a=[];gmap[g].forEach(function(j){a=a.concat(qcol(j))});return stat(a)});
-var all=[];s.qs.forEach(function(q,j){if(q.type=='likert')all=all.concat(qcol(j))});
+var all=[];items.forEach(function(j){all=all.concat(qcol(j))});
 var S=stat(all),csi=S?S.m/5*100:null,v=vr(s);
-var items=s.qs.map(function(q,j){return j}).filter(function(j){return s.qs[j].type=='likert'});
 var im=items.map(function(j){return stat(qcol(j))});
-var dist=all.reduce(function(a,x){a[x-1]++;return a},[0,0,0,0,0]);
-/* PERBAIKAN BUG: gdist harus [0,0,0,0,0] per aspek (5 skala Likert) */
-var gdist=gs.map(function(){return [0,0,0,0,0]});
+var dist=all.reduce(function(a,x){if(x>=1&&x<=5)a[x-1]++;return a},[0,0,0,0,0]);
+var gdist=gs.map(function(){return[0,0,0,0,0]});
 gs.forEach(function(g,i){gmap[g].forEach(function(j){st.r[s.id].forEach(function(r){var x=+r[j];if(x>=1&&x<=5)gdist[i][x-1]++})})});
-function f1(x){return x.toFixed(1)} function f2(x){return x.toFixed(2)} function f3(x){return x.toFixed(3)}
-var GR=['#2b2b2b','#5e5e5e','#8c8c8c','#bdbdbd','#e6e6e6'];
-var TITLE=isK6?'ANALISIS KEPUASAN PENGGUNA TRANSPORTASI ONLINE MELALUI ASPEK TARIF, KEAMANAN, DAN KECEPATAN':s.title;
-var TOC=[['KATA PENGANTAR','kp',0],['DAFTAR ISI','di',0],['DAFTAR TABEL','dt',0],['DAFTAR GAMBAR','dg',0],
-['BAB I  PENDAHULUAN','b1',0],['1.1  Latar Belakang','s11',1],['1.2  Rumusan Masalah','s12',1],['1.3  Tujuan','s13',1],['1.4  Manfaat','s14',1],
-['BAB II  TINJAUAN PUSTAKA','b2',0],['2.1  Kepuasan Pelanggan dan Kualitas Layanan','s21',1],['2.2  Penelitian Terdahulu','s22',1],['2.3  Skala Likert dan Customer Satisfaction Index','s23',1],['2.4  Statistika Deskriptif dan Reliabilitas','s24',1],
-['BAB III  METODE PENELITIAN','b3',0],['3.1  Jenis dan Desain Penelitian','s31',1],['3.2  Instrumen','s32',1],['3.3  Teknik Analisis Data','s33',1],['3.4  Pengumpulan Data','s34',1],
-['BAB IV  HASIL DAN PEMBAHASAN','b4',0],['4.1  Uji Reliabilitas','s41',1],['4.2  Distribusi Jawaban Keseluruhan','s42',1],['4.3  Indeks Kepuasan per Aspek','s43',1],['4.4  Pembahasan per Aspek','s44',1],['4.5  Statistik per Butir','s45',1],
-['BAB V  PENUTUP','b5',0],['5.1  Kesimpulan','s51',1],['5.2  Saran','s52',1],['5.3  Keterbatasan','s53',1],
-['DAFTAR PUSTAKA','dp',0],['LAMPIRAN','lamp',0]];
-var DTAB=[['Tabel 1. Kriteria Customer Satisfaction Index','t1'],['Tabel 2. Distribusi Jawaban Keseluruhan','t2'],['Tabel 3. Rata-rata dan CSI per Aspek','t3'],['Tabel 4. Distribusi Persentase Jawaban per Aspek','t4'],['Tabel 5. Statistik Deskriptif per Butir Pernyataan','t5']];
+function f1(x){return x.toFixed(1)}function f2(x){return x.toFixed(2)}function f3(x){return x.toFixed(3)}
+function crit(p){return p>=81?'Sangat Puas':p>=66?'Puas':p>=51?'Cukup Puas':p>=35?'Kurang Puas':'Tidak Puas'}
+var rank=ga.map(function(z,i){return{i:i,m:z?z.m:0}}).sort(function(a,b){return b.m-a.m});
+function rankOf(i){for(var k=0;k<rank.length;k++)if(rank[k].i==i)return k+1;return'-'}
+var TITLE=s.title.toUpperCase();
+var BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][new Date().getMonth()],THN=new Date().getFullYear();
+var ANGGOTA=[['Laila Azahra','240103056'],['Melani Wahyuni','240103027'],['Rindi Safitri','240103008'],['Mutiara Sabila','240103064'],['M. Hanafi','240103024'],['Fajril Huda Damanik','240103012']];
+var TOC=['kp','di','dt','b1','s11','s12','s13','s14','b2','s21','s22','s23','s24','b3','s31','s32','s33','s34','b4','s41','s42','s43','s44','s45','b5','s51','s52','s53','dp','lamp'],
+    TEKS={kp:'Kata Pengantar',di:'Daftar Isi',dt:'Daftar Tabel',b1:'BAB I  Pendahuluan',s11:'1.1  Latar Belakang',s12:'1.2  Rumusan Masalah',s13:'1.3  Tujuan',s14:'1.4  Manfaat',b2:'BAB II  Tinjauan Pustaka',s21:'2.1  Kepuasan Pelanggan dan Kualitas Layanan',s22:'2.2  Penelitian Terdahulu',s23:'2.3  Skala Likert dan Customer Satisfaction Index',s24:'2.4  Statistika Deskriptif dan Reliabilitas',b3:'BAB III  Metode Penelitian',s31:'3.1  Jenis dan Desain Penelitian',s32:'3.2  Instrumen',s33:'3.3  Teknik Analisis Data',s34:'3.4  Pengumpulan Data',b4:'BAB IV  Hasil dan Pembahasan',s41:'4.1  Uji Reliabilitas',s42:'4.2  Distribusi Jawaban Keseluruhan',s43:'4.3  Indeks Kepuasan per Aspek',s44:'4.4  Pembahasan per Aspek',s45:'4.5  Statistik per Butir',b5:'BAB V  Penutup',s51:'5.1  Kesimpulan',s52:'5.2  Saran',s53:'5.3  Keterbatasan',dp:'Daftar Pustaka',lamp:'Lampiran'};
+var DTAB=[['Tabel 1. Kriteria Customer Satisfaction Index','t1'],['Tabel 2. Distribusi Jawaban Keseluruhan','t2'],['Tabel 3. Rata-rata dan CSI per Aspek','t3'],['Tabel 4. Distribusi Persentase Jawaban per Aspek','t4'],['Tabel 5. Statistik Deskriptif per Butir Pernyataan','t5'],['Tabel 6. Data Mentah Respons (bagian 1)','t6'],['Tabel 7. Data Mentah Respons (bagian 2)','t7']];
 var DFIG=[['Gambar 1. Indeks Kepuasan (CSI) per Aspek','g1'],['Gambar 2. Distribusi Jawaban per Aspek','g2']];
-var PUST=['Appliansyach, M. F., Sugiyo, Q. N., Maulana, D. B., & Sahara, S. (2023). Analisis kepuasan pengguna transportasi umum ojek online (Gojek) melalui instrumen layanan. Jurnal Ekonomi, Bisnis dan Manajemen (EBISMEN), 2(2), 140-147.',
+var PUST=['Appliansyach, M. F., Sugiyo, Q. N., Maulana, D. B., & Sahara, S. (2023). Analisis kepuasan pengguna jasa layanan. Jurnal Ekonomi, Bisnis dan Manajemen (EBISMEN), 2(2), 140-147.',
 'Field, A. (2018). Discovering statistics using IBM SPSS Statistics (5th ed.). SAGE Publications.',
 'Ghozali, I. (2018). Aplikasi analisis multivariate dengan program IBM SPSS 25 (9th ed.). Badan Penerbit Universitas Diponegoro.',
 'Hair, J. F., Black, W. C., Babin, B. J., & Anderson, R. E. (2019). Multivariate data analysis (8th ed.). Cengage Learning.',
-'Kementerian Perhubungan Republik Indonesia. (2019a). Keputusan Menteri Perhubungan Nomor KP 348 Tahun 2019 tentang pedoman perhitungan biaya jasa penggunaan sepeda motor yang digunakan untuk kepentingan masyarakat yang dilakukan dengan aplikasi. Jakarta: Kementerian Perhubungan.',
-'Kementerian Perhubungan Republik Indonesia. (2019b). Peraturan Menteri Perhubungan Nomor PM 12 Tahun 2019 tentang pelindungan keselamatan pengguna sepeda motor yang digunakan untuk kepentingan masyarakat. Jakarta: Kementerian Perhubungan.',
 'Kotler, P., & Keller, K. L. (2016). Marketing management (15th ed.). Pearson Education.',
 'Sekaran, U., & Bougie, R. (2016). Research methods for business: A skill-building approach (7th ed.). John Wiley & Sons.',
 'Sugiyono. (2019). Metode penelitian kuantitatif, kualitatif, dan R&D. Bandung: Alfabeta.',
@@ -397,158 +357,148 @@ function gen(pm){
 var d=new J.jsPDF({unit:'pt',format:'a4'}),marks={},y=0;
 var PW=595,PH=842,MX=50,CW=PW-MX*2,BTM=PH-55;
 function sect(key){d.addPage();y=60;marks[key]=d.getNumberOfPages()}
-function C(t,size,gap,bold){d.setFont('times',bold?'bold':'normal');d.setFontSize(size||12);d.text(t,PW/2,y,{align:'center'});y+=gap||18}
-function H(t){d.setFont('times','bold');d.setFontSize(12);d.text(t,MX,y);y+=18}
-function Pg(t,size){d.setFont('times','normal');d.setFontSize(size||11);var L=d.splitTextToSize(t,CW);if(y+L.length*(size||11)*1.45>BTM){d.addPage();y=60}d.text(L,MX,y);y+=L.length*(size||11)*1.45+5}
-function cap(t){d.setFont('times','bold');d.setFontSize(10);d.text(t,MX,y);y+=14}
-function TBL(head,body,fs,wd){var o={startY:y,head:[head],body:body,styles:{font:'times',fontSize:fs||9,cellPadding:2.5,fillColor:[255,255,255],textColor:[0,0,0],lineColor:[60,60,60],lineWidth:.3},headStyles:{fillColor:[255,255,255],textColor:[0,0,0],lineColor:[0,0,0],lineWidth:.4},margin:{left:MX,right:MX}};if(wd)o.columnStyles=wd;d.autoTable(o);y=d.lastAutoTable.finalY+12}
-function tocline(t,pg,ind){d.setFont('times','normal');d.setFontSize(11);var x=MX+(ind||0)*18;d.text(t,x,y);var pw=d.getTextWidth(String(pg));d.text(String(pg),PW-MX,y,{align:'right'});d.setDrawColor(150);d.setLineDashPattern([1,2],0);d.line(x+d.getTextWidth(t)+5,y-2.5,PW-MX-pw-5,y-2.5);d.setLineDashPattern([],0);y+=17}
+function C(t,size,gap,bold){d.setFont('times',bold?'bold':'normal');d.setFontSize(size||12);d.text(t,PW/2,y,{align:'center'});y+=(gap||(size||12)*1.5)}
+function need(h){if(y+h>BTM){d.addPage();y=60}}
+function H(t){need(70);d.setFont('times','bold');d.setFontSize(12);d.text(t,MX,y);y+=18}
+function Pg(t,size){d.setFont('times','normal');d.setFontSize(size||11);var L=d.splitTextToSize(t,CW);need(L.length*(size||11)*1.45);d.text(L,MX,y);y+=L.length*(size||11)*1.45+8}
+function cap(t){need(90);d.setFont('times','bold');d.setFontSize(10);d.text(t,MX,y);y+=14}
+function TBL(head,body,fs,wd,hs){need(60);var o={startY:y,head:[head],body:body,styles:{font:'times',fontSize:fs||9,cellPadding:2.5,fillColor:[255,255,255],textColor:[0,0,0],lineColor:[80,80,80],lineWidth:.3},headStyles:{fillColor:[240,240,240],textColor:[0,0,0],lineColor:[0,0,0],lineWidth:.5},margin:{left:MX,right:MX,top:60,bottom:60}};if(wd)o.columnStyles=wd;if(hs){for(var k in hs)o.headStyles[k]=hs[k]}d.autoTable(o);y=d.lastAutoTable.finalY+12}
+function tocline(t,pg,ind){d.setFont('times','normal');d.setFontSize(11);var x=MX+(ind||0)*18;d.text(t,x,y);d.text(String(pg),PW-MX,y,{align:'right'});d.setDrawColor(150);d.setLineDashPattern([1,2],0);d.line(x+d.getTextWidth(t)+5,y-2.5,PW-MX-14,y-2.5);d.setLineDashPattern([],0);y+=17}
 function src(t){d.setFont('times','italic');d.setFontSize(9);d.text(t,PW/2,y,{align:'center'});y+=16}
-function fig1(){var x0=200,bw=320;d.setFont('times','normal');d.setFontSize(8);
-gs.forEach(function(g,i){var z=ga[i],c=z?z.m/5*100:0;d.setFillColor(120,120,120);d.rect(x0,y-7,bw*c/100,11,'F');d.setTextColor(0,0,0);d.text(g,195,y,{align:'right'});d.text(f1(c)+'%',x0+bw*c/100+4,y);y+=16});
+function emblem(){var cx=PW/2,r=48;d.setDrawColor(40,40,40);d.setLineWidth(1.4);d.circle(cx,y+r/2,r,'S');d.setLineWidth(.5);d.circle(cx,y+r/2,r-6,'S');d.setFont('times','bold');d.setFontSize(9);d.text('UNIVERSITAS',cx,y+22-4,{align:'center'});d.text('DUMAI',cx,y+58-4,{align:'center'});d.setLineWidth(1);d.line(cx-34,y+30-4,cx+34,y+30-4);d.setFontSize(13);d.setFont('times','normal');d.text('UD',cx,y+48-4,{align:'center'});y+=r+14}
+function fig1(){var x0=205,bw=310;need(gs.length*16+50);d.setFont('times','normal');d.setFontSize(8);
+gs.forEach(function(g,i){var z=ga[i],c=z?z.m/5*100:0;d.setFillColor(120,120,120);d.setDrawColor(180);d.rect(x0,y-7,bw,11);d.setFillColor(90,90,90);d.rect(x0,y-7,bw*c/100,11,'F');d.text(g,195,y,{align:'right'});d.text(f1(c)+'%',x0+bw+6,y);y+=16});
 y+=4;d.text('0%',x0,y-4);d.text('50%',x0+bw/2,y-4,{align:'center'});d.text('100%',x0+bw,y-4,{align:'right'});y+=12}
-function fig2(){var x0=200,bw=320;d.setFont('times','normal');d.setFontSize(8);
-gs.forEach(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1,xx=x0;d.text(g,195,y,{align:'right'});
-gdist[i].forEach(function(c,k){var w=bw*c/tot;if(w>0){var h=GR[k];d.setFillColor(parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16));d.rect(xx,y-7,w,11,'F');xx+=w}});
-d.setTextColor(0,0,0);d.text('100%',x0+bw+4,y);y+=16});
-var lx=x0;['1 STS','2 TS','3 N','4 S','5 SS'].forEach(function(l,k){var h=GR[k];d.setFillColor(parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16));d.rect(lx,y-6,8,8,'F');d.setTextColor(0,0,0);d.text(l,lx+11,y);lx+=d.getTextWidth(l)+26});y+=14}
+function fig2(){var x0=205,bw=310,GR=['#4a4a4a','#7d7d7d','#b0b0b0','#d4d4d4','#2b2b2b'];need(gs.length*16+60);d.setFont('times','normal');d.setFontSize(8);
+gs.forEach(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1,xx=x0;d.setDrawColor(180);d.rect(x0,y-7,bw,11);d.text(g,195,y,{align:'right'});
+gdist[i].forEach(function(c,k){var w=bw*c/tot;if(w>0){d.setFillColor(parseInt(GR[k].slice(1,3),16),parseInt(GR[k].slice(3,5),16),parseInt(GR[k].slice(5,7),16));d.rect(xx,y-7,w,11,'F');xx+=w}});
+y+=16});
+var GR2=['#4a4a4a','#7d7d7d','#b0b0b0','#d4d4d4','#2b2b2b'],lx=x0;['1 STS','2 TS','3 N','4 S','5 SS'].forEach(function(l,k){d.setFillColor(parseInt(GR2[k].slice(1,3),16),parseInt(GR2[k].slice(3,5),16),parseInt(GR2[k].slice(5,7),16));d.rect(lx,y-6,8,8,'F');d.text(l,lx+11,y);lx+=d.getTextWidth(l)+26});y+=14}
 /* ===== COVER ===== */
-y=70;
-C(isK6?'LAPORAN TUGAS KELOMPOK':'LAPORAN HASIL SURVEI',14,10,true);
-if(isK6)C('MATA KULIAH STATISTIKA',14,30,true);
-d.setFont('times','bold');d.setFontSize(14);var TL=d.splitTextToSize(TITLE,CW-40);d.text(TL,PW/2,y,{align:'center'});y+=TL.length*18+12;
-if(isK6)C('Dosen Pengampu: Deasy Wahyuni, M.Si.',12,24);
-try{var img=new Image();img.src=LAP_LOGO;var iw=100,ih=img.height?iw*img.height/img.width:100;d.addImage(LAP_LOGO,'PNG',PW/2-iw/2,y,iw,ih);y+=ih+18}catch(e){y+=10}
-C(isK6?'Disusun oleh: Kelompok 6':'Disusun oleh: '+(s.ownerName||'Pembuat Survei'),12,18,true);
-if(isK6)['1.  Laila Azahra : 240103056','2.  Melani Wahyuni : 240103027','3.  Rindi Safitri : 240103008','4.  Mutiara Sabila : 240103064','5.  M. Hanafi : 240103024','6.  Fajril Huda Damanik : 240103012'].forEach(function(a){C(a,11,13)});
-y+=16;
-if(isK6){C('PROGRAM STUDI TEKNIK INFORMATIKA',12,13,true);C('FAKULTAS ILMU KOMPUTER',12,13,true);C('UNIVERSITAS DUMAI',12,13,true);C('2026',12,13,true)}
-else{C(new Date().getFullYear(),12,13,true)}
+y=64;
+C('LAPORAN TUGAS KELOMPOK',14,8,true);C('MATA KULIAH STATISTIKA',14,26,true);
+d.setFont('times','bold');d.setFontSize(14);var TL=d.splitTextToSize(TITLE,CW-40);d.text(TL,PW/2,y,{align:'center'});y+=TL.length*18+10;
+C('Dosen Pengampu: Deasy Wahyuni, M.Si.',12,24);
+emblem();
+C('Disusun oleh:',11,10,true);
+/* nama anggota: daftar sejajar (No | Nama | NIM), tanpa garis tabel */
+(function(){var lx=PW/2-150,ln=lx+26,lnm=lx+250;d.setFont('times','normal');d.setFontSize(11);
+ANGGOTA.forEach(function(a,i){d.text((i+1)+'.',lx,y);d.text(a[0],ln,y);d.text(a[1],lnm,y,{align:'right'});y+=15});y+=14})();
+d.setFont('times','bold');d.setFontSize(12);
+['PROGRAM STUDI TEKNIK INFORMATIKA','FAKULTAS ILMU KOMPUTER','UNIVERSITAS DUMAI',String(THN)].forEach(function(t,i){C(t,12,i==3?0:13,true)});
 /* ===== KATA PENGANTAR ===== */
 sect('kp');C('KATA PENGANTAR',14,26,true);
 Pg('Puji syukur penulis panjatkan ke hadirat Tuhan Yang Maha Esa atas rahmat dan karunia-Nya sehingga laporan survei yang berjudul "'+s.title+'" ini dapat diselesaikan dengan baik.');
-Pg('Laporan ini disusun berdasarkan hasil survei yang dikumpulkan melalui aplikasi SurveiKu. Penulis mengucapkan terima kasih kepada semua pihak yang telah membantu, serta kepada seluruh responden yang telah bersedia mengisi kuesioner.');
+Pg('Laporan ini disusun berdasarkan hasil survei yang dikumpulkan melalui aplikasi SurveiKu dan dianalisis menggunakan statistika deskriptif, indeks kepuasan pelanggan, serta uji reliabilitas. Penulis mengucapkan terima kasih kepada dosen pengampu, semua pihak yang telah membantu, serta seluruh responden yang telah bersedia mengisi kuesioner.');
 Pg('Penulis menyadari bahwa laporan ini masih memiliki keterbatasan. Oleh karena itu, kritik dan saran yang membangun sangat penulis harapkan demi perbaikan di masa mendatang.');
-y+=36;Pg('Dumai, November 2026');d.text('Penulis',PW-MX,y,{align:'right'});
+y+=30;
+d.setFont('times','normal');d.setFontSize(11);d.text('Dumai, '+BULAN+' '+THN,PW-MX,y,{align:'right'});y+=64;
+d.setFont('times','bold');d.setFontSize(11);d.text('Penulis',PW-MX,y,{align:'right'});
 /* ===== DAFTAR ISI / TABEL / GAMBAR ===== */
 sect('di');C('DAFTAR ISI',14,26,true);
-TOC.forEach(function(e){if(y>BTM-20){d.addPage();y=60}tocline(e[0],pm[e[1]]||'  ',e[2])});
+TOC.forEach(function(k){if(y>BTM-20){d.addPage();y=60}tocline(TEKS[k],pm[k]||'  ',['s11','s12','s13','s14','s21','s22','s23','s24','s31','s32','s33','s34','s41','s42','s43','s44','s45','s51','s52','s53'].indexOf(k)>=0?1:0)});
 sect('dt');C('DAFTAR TABEL',14,26,true);
-DTAB.forEach(function(e){tocline(e[0],pm[e[1]]||'  ',0)});
+DTAB.forEach(function(e){if(y>BTM-20){d.addPage();y=60}tocline(e[0],pm[e[1]]||'  ',0)});
 y+=18;C('DAFTAR GAMBAR',14,26,true);
 DFIG.forEach(function(e){tocline(e[0],pm[e[1]]||'  ',0)});
 /* ===== BAB I ===== */
 sect('b1');C('BAB I',14,10,true);C('PENDAHULUAN',14,26,true);
 marks['s11']=marks['b1'];H('1.1  Latar Belakang');
-Pg('Transportasi berbasis aplikasi telah menjadi bagian penting dari mobilitas masyarakat perkotaan. Seiring meningkatnya persaingan, kualitas layanan tidak lagi hanya ditentukan oleh ketersediaan armada, melainkan oleh pengalaman pengguna secara menyeluruh, mencakup kewajaran tarif, jaminan keselamatan, dan efisiensi waktu perjalanan. Kepuasan pelanggan merupakan perasaan senang atau kecewa yang muncul setelah membandingkan kinerja suatu produk atau jasa dengan harapan (Kotler & Keller, 2016). Oleh sebab itu, pengukuran kepuasan secara berkala diperlukan agar penyedia layanan dapat mengidentifikasi aspek yang sudah baik maupun yang perlu diperbaiki.');
+Pg('Perkembangan layanan berbasis teknologi digital menuntut setiap penyedia jasa untuk terus memahami kepuasan penggunanya. Kepuasan pelanggan merupakan perasaan senang atau kecewa yang muncul setelah seseorang membandingkan kinerja suatu produk atau jasa dengan harapannya (Kotler & Keller, 2016). Pengukuran kepuasan secara berkala diperlukan agar penyelenggara dapat mengidentifikasi aspek yang sudah berjalan dengan baik maupun yang perlu diperbaiki.');
+Pg('Survei dengan judul "'+s.title+'" dilaksanakan untuk mewujudkan tujuan tersebut. '+(s.desc?s.desc+' ':'')+'Sebanyak '+n+' responden berpartisipasi, dan seluruh jawaban diolah menjadi indeks kepuasan per aspek, distribusi jawaban, serta uji reliabilitas instrumen.');
 H('1.2  Rumusan Masalah');marks['s12']=d.getNumberOfPages();
-Pg('Berdasarkan latar belakang tersebut, rumusan masalah penelitian ini adalah: (1) bagaimana tingkat kepuasan pengguna terhadap layanan transportasi online secara keseluruhan; (2) aspek mana yang memperoleh penilaian tertinggi dan terendah; dan (3) aspek apa yang perlu diprioritaskan untuk perbaikan.');
-H('1.3  Tujuan');
-Pg('Penelitian ini bertujuan mengukur tingkat kepuasan pengguna menggunakan Customer Satisfaction Index (CSI), memetakan distribusi jawaban pada setiap aspek, serta merumuskan rekomendasi berbasis data.');
-H('1.4  Manfaat');
-Pg('Hasil penelitian diharapkan menjadi masukan bagi penyedia layanan transportasi online dalam meningkatkan mutu layanan, serta menjadi latihan penerapan statistika deskriptif dan uji reliabilitas bagi mahasiswa.');
+Pg('Berdasarkan latar belakang tersebut, rumusan masalah penelitian ini adalah: (1) bagaimana tingkat kepuasan responden terhadap aspek-aspek yang diukur secara keseluruhan; (2) aspek mana yang memperoleh penilaian tertinggi dan terendah; dan (3) aspek apa yang perlu diprioritaskan untuk perbaikan.');
+H('1.3  Tujuan');marks['s13']=d.getNumberOfPages();
+Pg('Penelitian ini bertujuan mengukur tingkat kepuasan responden menggunakan Customer Satisfaction Index (CSI), memetakan distribusi jawaban pada setiap aspek, serta merumuskan rekomendasi perbaikan yang berbasis data.');
+H('1.4  Manfaat');marks['s14']=d.getNumberOfPages();
+Pg('Hasil penelitian diharapkan menjadi masukan bagi pihak yang bersangkutan dalam meningkatkan mutu layanan, serta menjadi latihan penerapan statistika deskriptif dan uji reliabilitas bagi mahasiswa.');
 /* ===== BAB II ===== */
 sect('b2');C('BAB II',14,10,true);C('TINJAUAN PUSTAKA',14,26,true);
 marks['s21']=marks['b2'];H('2.1  Kepuasan Pelanggan dan Kualitas Layanan');
-Pg('Kepuasan pelanggan dipandang sebagai hasil evaluasi purna konsumsi terhadap kesesuaian antara harapan dan kinerja layanan (Tjiptono & Chandra, 2016). Kualitas jasa umumnya dijelaskan melalui dimensi bukti fisik, keandalan, daya tanggap, jaminan, dan empati (Zeithaml et al., 2018). Pada layanan transportasi online, dimensi tersebut tercermin pada kondisi kendaraan, ketepatan penjemputan, keselamatan, dan keramahan pengemudi.');
-H('2.2  Penelitian Terdahulu');
-Pg('Appliansyach et al. (2023) meneliti kepuasan pengguna ojek online pada mahasiswa di Jakarta dan menyimpulkan bahwa secara umum responden puas serta pelayanan berpengaruh signifikan terhadap kepuasan. Dari sisi regulasi, keselamatan pengguna diatur dalam Peraturan Menteri Perhubungan Nomor PM 12 Tahun 2019, sedangkan pedoman perhitungan biaya jasa diatur dalam Keputusan Menteri Perhubungan Nomor KP 348 Tahun 2019 (Kementerian Perhubungan, 2019a, 2019b).');
-H('2.3  Skala Likert dan Customer Satisfaction Index');
+Pg('Kepuasan pelanggan dipandang sebagai hasil evaluasi purna konsumsi terhadap kesesuaian antara harapan dan kinerja layanan (Tjiptono & Chandra, 2016). Kualitas jasa umumnya dijelaskan melalui dimensi bukti fisik, keandalan, daya tanggap, jaminan, dan empati (Zeithaml et al., 2018). Semakin kecil jarak antara kinerja yang dirasakan dan harapan pengguna, semakin tinggi tingkat kepuasannya.');
+H('2.2  Penelitian Terdahulu');marks['s22']=d.getNumberOfPages();
+Pg('Penelitian terdahulu menunjukkan bahwa pengukuran kepuasan pengguna jasa dapat dilakukan secara efektif dengan kuesioner berskala Likert dan analisis indeks kepuasan (Appliansyach et al., 2023). Hasil penelitian tersebut memperlihatkan bahwa kualitas pelayanan berpengaruh signifikan terhadap kepuasan pengguna, sehingga temuan survei dapat dijadikan dasar perbaikan layanan.');
+H('2.3  Skala Likert dan Customer Satisfaction Index');marks['s23']=d.getNumberOfPages();
 Pg('Skala Likert digunakan untuk mengukur sikap, pendapat, dan persepsi seseorang terhadap suatu fenomena (Sugiyono, 2019). CSI merupakan indeks yang menghitung tingkat kepuasan secara menyeluruh dari rata-rata skor penilaian terhadap skor maksimum. Bila tidak tersedia skor kepentingan, setiap aspek diberi bobot setara.');
-H('2.4  Statistika Deskriptif dan Reliabilitas');
-Pg("Statistika deskriptif meringkas data melalui frekuensi, persentase, rata-rata, median, dan simpangan baku (Field, 2018; Hair et al., 2019). Reliabilitas instrumen dapat diuji dengan Cronbach's Alpha, dengan nilai di atas 0,70 umumnya dianggap dapat diterima (Ghozali, 2018). Namun, nilai alpha yang sangat tinggi hanya menjadi bukti terbatas bagi reliabilitas dan dapat mengindikasikan butir yang berulang (Taber, 2018).");
+H('2.4  Statistika Deskriptif dan Reliabilitas');marks['s24']=d.getNumberOfPages();
+Pg("Statistika deskriptif meringkas data melalui frekuensi, persentase, rata-rata, median, dan simpangan baku (Field, 2018; Hair et al., 2019). Reliabilitas instrumen dapat diuji dengan Cronbach's Alpha, dengan nilai di atas 0,60 umumnya dianggap reliabel (Ghozali, 2018). Nilai alpha yang terlalu tinggi dapat menjadi indikasi butir yang menjawab seragam, sehingga tetap perlu dibaca dengan hati-hati (Taber, 2018).");
 /* ===== BAB III ===== */
 sect('b3');C('BAB III',14,10,true);C('METODE PENELITIAN',14,26,true);
 marks['s31']=marks['b3'];H('3.1  Jenis dan Desain Penelitian');
 Pg('Penelitian ini bersifat deskriptif kuantitatif dengan pendekatan survei (Sekaran & Bougie, 2016). Data dikumpulkan melalui kuesioner daring dari '+n+' responden yang dipilih secara sukarela.');
 H('3.2  Instrumen');
-Pg('Instrumen terdiri atas '+items.length+' pernyataan yang dikelompokkan ke dalam '+gs.length+' aspek, yaitu '+gs.join(', ')+'. Skala yang digunakan adalah Likert 1-5 (1 = Sangat Tidak Setuju, 2 = Tidak Setuju, 3 = Cukup Netral, 4 = Setuju, 5 = Sangat Setuju). Satu pertanyaan terbuka disediakan untuk kritik dan saran.');
-marks['s33']=d.getNumberOfPages();H('3.3  Teknik Analisis Data');
+Pg('Instrumen terdiri atas '+items.length+' pernyataan yang dikelompokkan ke dalam '+gs.length+' aspek, yaitu '+gs.join(', ')+'. Skala yang digunakan adalah Likert 1-5 (1 = Sangat Tidak Setuju, 2 = Tidak Setuju, 3 = Netral, 4 = Setuju, 5 = Sangat Setuju). Satu pertanyaan terbuka disediakan untuk kritik dan saran.');
+marks['s32']=marks['b3'];H('3.3  Teknik Analisis Data');marks['s33']=d.getNumberOfPages();
 Pg("Analisis dilakukan dengan statistika deskriptif dan perhitungan CSI = (rata-rata skor / 5) x 100%. Kriteria CSI disajikan pada Tabel 1. Reliabilitas diuji dengan Cronbach's Alpha. Perhitungan dilakukan otomatis oleh aplikasi SurveiKu dan hasilnya dapat direplikasi menggunakan SPSS.");
 marks['t1']=d.getNumberOfPages();cap('Tabel 1. Kriteria Customer Satisfaction Index');
 TBL(['Rentang CSI (%)','Kriteria'],[['81 - 100','Sangat Puas'],['66 - 80','Puas'],['51 - 65','Cukup Puas'],['35 - 50','Kurang Puas'],['0 - 34','Tidak Puas']],9,{0:{cellWidth:200},1:{cellWidth:290}});
 H('3.4  Pengumpulan Data');
-Pg('Kuesioner disusun menggunakan aplikasi web SurveiKu dan disebarkan secara daring kepada responden. Respons yang masuk tersimpan otomatis pada database survei. Struktur kuesioner dan data mentah respons disajikan pada Lampiran.');
+Pg('Kuesioner disusun menggunakan aplikasi web SurveiKu dan disebarkan secara daring kepada responden. Respons yang masuk tersimpan otomatis dan langsung diikutkan dalam perhitungan. Struktur kuesioner dan data mentah respons disajikan pada Lampiran.');
 /* ===== BAB IV ===== */
 sect('b4');C('BAB IV',14,10,true);C('HASIL DAN PEMBAHASAN',14,26,true);
 marks['s41']=marks['b4'];H('4.1  Uji Reliabilitas');
-Pg("Nilai Cronbach's Alpha untuk "+(v?v.k:items.length)+" butir sebesar "+(v?f3(v.al):'-')+", melampaui batas 0,70 sehingga instrumen dinyatakan sangat reliabel. Nilai yang sangat tinggi ini juga mencerminkan adanya responden yang cenderung menjawab seragam di seluruh butir (misalnya semua bernilai 3, 4, atau 5), sehingga perlu dicatat sebagai keterbatasan.");
+Pg(v?(v?"Nilai Cronbach's Alpha untuk "+v.k+" butir sebesar "+f3(v.al)+", "+(v.al>=0.7?'melampaui batas 0,70':(v.al>=0.6?'memenuhi batas minimum 0,60':'di bawah batas umum 0,60'))+" sehingga instrumen dinyatakan "+(v.rel?'reliabel.':'belum reliabel secara keseluruhan, sehingga hasil antarbutir sebaiknya dibaca sebagai gambaran umum.'):"Uji reliabilitas tidak dapat dihitung karena jumlah responden kurang dari 3.");
 marks['s42']=d.getNumberOfPages();H('4.2  Distribusi Jawaban Keseluruhan');
 marks['t2']=d.getNumberOfPages();cap('Tabel 2. Distribusi Jawaban Keseluruhan');
 var dn=all.length||1;
-TBL(['Skor','Kategori','Persentase (%)'],[['1','Sangat Tidak Setuju',f1(dist[0]/dn*100)],['2','Tidak Setuju',f1(dist[1]/dn*100)],['3','Cukup Netral',f1(dist[2]/dn*100)],['4','Setuju',f1(dist[3]/dn*100)],['5','Sangat Setuju',f1(dist[4]/dn*100)]],9,{0:{cellWidth:60},1:{cellWidth:330},2:{cellWidth:100}});
-Pg('Dari '+dn+' jawaban, '+f1((dist[3]+dist[4])/dn*100)+'% berada pada kategori Setuju dan Sangat Setuju, '+f1(dist[2]/dn*100)+'% netral, dan hanya '+f1((dist[0]+dist[1])/dn*100)+'% bernilai negatif. Rata-rata keseluruhan adalah '+f2(S.m)+' dari 5, dengan CSI sebesar '+f1(csi)+'% yang termasuk kategori Puas.');
+TBL(['Skor','Kategori','Persentase (%)'],[['1','Sangat Tidak Setuju',f2(dist[0]/dn*100)],['2','Tidak Setuju',f2(dist[1]/dn*100)],['3','Netral',f2(dist[2]/dn*100)],['4','Setuju',f2(dist[3]/dn*100)],['5','Sangat Setuju',f2(dist[4]/dn*100)]],9,{0:{cellWidth:60},1:{cellWidth:330},2:{cellWidth:100}});
+Pg('Dari '+dn+' jawaban, '+f2((dist[3]+dist[4])/dn*100)+'% berada pada kategori Setuju dan Sangat Setuju, '+f2(dist[2]/dn*100)+'% netral, dan '+f2((dist[0]+dist[1])/dn*100)+'% bernilai negatif. Rata-rata keseluruhan adalah '+f2(S.m)+' dari 5, dengan CSI sebesar '+f1(csi)+'% yang termasuk kategori '+crit(csi)+'.');
 marks['s43']=d.getNumberOfPages();H('4.3  Indeks Kepuasan per Aspek');
-if(y+gs.length*14+40>BTM){d.addPage();y=60}
 marks['t3']=d.getNumberOfPages();cap('Tabel 3. Rata-rata dan CSI per Aspek');
-TBL(['Aspek','Rata-rata','CSI (%)','Kriteria'],gs.map(function(g,i){var z=ga[i];return[g,z?f2(z.m):'-',z?f1(z.m/5*100):'-','Puas']}),9,{0:{cellWidth:290},1:{cellWidth:80},2:{cellWidth:70},3:{cellWidth:70}});
-Pg('Gambar 1 menunjukkan perbandingan indeks kepuasan antaraspek, sedangkan Gambar 2 menunjukkan sebaran jawaban responden pada tiap aspek.');
-if(y+gs.length*16+70>BTM){d.addPage();y=60}
+TBL(['Aspek','Rata-rata','CSI (%)','Kategori'],gs.map(function(g,i){var z=ga[i];return[g,z?f2(z.m):'-',z?f1(z.m/5*100):'-',z?crit(z.m/5*100):'-']}),9,{0:{cellWidth:260},1:{cellWidth:80},2:{cellWidth:80},3:{cellWidth:70}});
+Pg('Gambar 1 menunjukkan perbandingan indeks kepuasan antaraspek, sedangkan Gambar 2 menunjukkan sebaran jawaban responden pada tiap aspek. Aspek dengan indeks tertinggi adalah '+gs[rank[0].i]+' ('+f1(rank[0].m/5*100)+'%), sedangkan yang terendah adalah '+gs[rank[rank.length-1].i]+' ('+f1(rank[rank.length-1].m/5*100)+'%).');
 marks['g1']=d.getNumberOfPages();fig1();
 d.setFont('times','bold');d.setFontSize(10);d.text('Gambar 1. Indeks Kepuasan (CSI) per Aspek',PW/2,y,{align:'center'});y+=13;
 src('Sumber: Data primer diolah dari hasil survei (n = '+n+')');
-if(y+gs.length*16+50>BTM){d.addPage();y=60}
 marks['g2']=d.getNumberOfPages();fig2();
 d.setFont('times','bold');d.setFontSize(10);d.text('Gambar 2. Distribusi Jawaban per Aspek',PW/2,y,{align:'center'});y+=13;
 src('Sumber: Data primer diolah dari hasil survei (n = '+n+')');
 marks['t4']=d.getNumberOfPages();cap('Tabel 4. Distribusi Persentase Jawaban per Aspek');
-/* PERBAIKAN: hitung persentase dengan benar dari gdist yang sudah fix */
-TBL(['Aspek','1 (%)','2 (%)','3 (%)','4 (%)','5 (%)'],gs.map(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1;return[g].concat(gdist[i].map(function(c){return f1(c/tot*100)}))}),8,{0:{cellWidth:245}});
+TBL(['Aspek','1 (%)','2 (%)','3 (%)','4 (%)','5 (%)'],gs.map(function(g,i){var tot=gdist[i].reduce(function(a,b){return a+b},0)||1;return[g].concat(gdist[i].map(function(c){return f2(c/tot*100)}))}),8,{0:{cellWidth:245}});
 marks['s44']=d.getNumberOfPages();H('4.4  Pembahasan per Aspek');
-var BAH=[
-'Responden menilai tarif relatif terjangkau, namun aspek ini berada pada jajaran terendah. Sensitivitas harga lazim menjadi sumber ketidakpuasan, terutama ketika penyesuaian tarif pada jam sibuk dirasa kurang sepadan dengan jarak tempuh (Kotler & Keller, 2016). Adanya pedoman perhitungan biaya jasa yang ditetapkan pemerintah (Kementerian Perhubungan, 2019a) tidak otomatis menjamin persepsi kewajaran di mata pengguna.',
-'Promo dan kejelasan rincian biaya dinilai cukup baik. Skor yang sedikit di atas aspek tarif menunjukkan bahwa transparansi komponen biaya sebelum pesanan dikonfirmasi membantu pengguna menerima harga yang dibayarkan.',
-'Kualitas kendaraan cenderung seragam dan memadai, tetapi belum menjadi pembeda yang memuaskan secara kuat. Kondisi ini sejalan dengan dimensi tangibles pada kualitas jasa (Zeithaml et al., 2018).',
-'Aspek ini memiliki proporsi jawaban Sangat Setuju yang cukup tinggi, tetapi juga memuat sebaran nilai rendah yang terlihat. Artinya pengalaman keselamatan antarpengguna belum sepenuhnya konsisten, padahal standar keselamatan telah diatur dalam Peraturan Menteri Perhubungan Nomor PM 12 Tahun 2019 (Kementerian Perhubungan, 2019b).',
-'Mayoritas responden setuju bahwa fitur keamanan seperti pelacakan perjalanan membuat mereka merasa terlindungi. Nilai 4 mendominasi, sehingga fitur ini dinilai baik namun masih menyisakan ruang menuju kategori sangat puas.',
-'Aspek ini memiliki proporsi jawaban rendah (nilai 1 dan 2) tertinggi di antara seluruh aspek. Waktu tunggu dan ketepatan kedatangan pengemudi merupakan titik lemah utama yang perlu diprioritaskan, karena dimensi daya tanggap (responsiveness) sangat memengaruhi persepsi kualitas layanan (Tjiptono & Chandra, 2016).',
-'Aspek dengan kepuasan tertinggi. Pemilihan rute yang efisien dan ketepatan waktu tiba di tujuan dinilai memenuhi harapan, sejalan dengan fokus utama pengguna transportasi daring, yaitu kecepatan dan efisiensi.',
-'Nilai 4 mendominasi, menunjukkan sistem aplikasi yang responsif dan mudah digunakan. Kepuasan terhadap sisi teknologi cenderung stabil.',
-'Keramahan dan kesigapan pengemudi dinilai baik secara umum, tetapi aspek ini memiliki proporsi nilai 2 yang cukup tinggi, yang menandakan variasi perilaku pengemudi di lapangan. Temuan ini konsisten dengan penelitian Appliansyach et al. (2023) yang menyimpulkan bahwa pelayanan berpengaruh signifikan terhadap kepuasan pengguna ojek online.'];
-gs.forEach(function(g,i){var z=ga[i],tot=gdist[i].reduce(function(a,b){return a+b},0)||1,p45=(gdist[i][3]+gdist[i][4])/tot*100;
-Pg((i+1)+') '+g+' (rata-rata '+f2(z.m)+'; CSI '+f1(z.m/5*100)+'%). '+BAH[i]+' Sebanyak '+f1(p45)+'% jawaban berada pada nilai 4 dan 5.')});
+gs.forEach(function(g,i){var z=ga[i],tot=gdist[i].reduce(function(a,b){return a+b},0)||1,p45=(gdist[i][3]+gdist[i][4])/tot*100,domk=gdist[i].indexOf(Math.max.apply(null,gdist[i])),r=rankOf(i);
+var kat=z?crit(z.m/5*100):'-';
+var t=(i+1)+') '+g+' (rata-rata '+f2(z.m)+'; CSI '+f1(z.m/5*100)+'%; kategori '+kat+'). Aspek ini menempati peringkat ke-'+r+' dari '+gs.length+' aspek yang dinilai.';
+if(r==1)t+=' Ini merupakan peringkat tertinggi, artinya aspek ini sudah berjalan dengan baik dan perlu dipertahankan.';
+if(r==gs.length)t+=' Ini merupakan peringkat terendah, artinya aspek ini perlu menjadi prioritas utama perbaikan.';
+t+=' Sebanyak '+f2(p45)+'% jawaban berada pada nilai 4 dan 5, dengan jawaban terbanyak pada kategori "'+LB[domk].slice(2)+'".';
+Pg(t)});
 marks['s45']=d.getNumberOfPages();H('4.5  Statistik per Butir');
 marks['t5']=d.getNumberOfPages();cap('Tabel 5. Statistik Deskriptif per Butir Pernyataan');
 TBL(['Butir','Aspek','Mean','SD','% Nilai 4-5'],items.map(function(j,i){var z=im[i],a=qcol(j);return['X'+(i+1),s.qs[j].g,f2(z.m),f2(z.sd),Math.round(a.filter(function(x){return x>=4}).length/a.length*100)+'%']}),8,{0:{cellWidth:50},1:{cellWidth:270},2:{cellWidth:60},3:{cellWidth:60},4:{cellWidth:70}});
 /* ===== BAB V ===== */
 sect('b5');C('BAB V',14,10,true);C('PENUTUP',14,26,true);
 marks['s51']=marks['b5'];H('5.1  Kesimpulan');
-var rank=ga.map(function(z,i){return{i:i,z:z}}).sort(function(a,b){return b.z.m-a.z.m});
-Pg('Secara keseluruhan pengguna berada pada tingkat kepuasan yang tinggi dengan CSI '+f1(csi)+'% (kategori Puas). Aspek dengan kepuasan tertinggi adalah '+gs[rank[0].i]+' ('+f1(rank[0].z.m/5*100)+'%), sedangkan yang terendah adalah '+gs[rank[rank.length-1].i]+' ('+f1(rank[rank.length-1].z.m/5*100)+'%). Seluruh aspek berada pada kategori Puas dan belum ada yang mencapai kategori Sangat Puas.');
-H('5.2  Saran');
-Pg('Penyedia layanan disarankan: (1) memprioritaskan perbaikan ketepatan waktu penjemputan dan pengurangan waktu tunggu; (2) meninjau kebijakan tarif jam sibuk agar terasa lebih wajar; (3) meningkatkan konsistensi pelatihan keselamatan dan pelayanan pengemudi; dan (4) mempertahankan performa aplikasi serta fitur keamanan yang sudah baik.');
-H('5.3  Keterbatasan');
-Pg('Jumlah responden terbatas (n = '+n+') dan dipilih secara sukarela, sehingga hasil tidak dapat digeneralisasi ke seluruh populasi pengguna.');
+Pg('Secara keseluruhan responden berada pada tingkat kepuasan dengan CSI '+f1(csi)+'% (kategori '+crit(csi)+'). Aspek dengan penilaian tertinggi adalah '+gs[rank[0].i]+' (CSI '+f1(rank[0].m/5*100)+'%), sedangkan yang terendah adalah '+gs[rank[rank.length-1].i]+' (CSI '+f1(rank[rank.length-1].m/5*100)+'%). Dari '+gs.length+' aspek yang diukur, tidak ada yang mencapai kategori Sangat Puas, sehingga masih terdapat ruang perbaikan pada semua aspek.');
+H('5.2  Saran');marks['s52']=d.getNumberOfPages();
+Pg('Berdasarkan hasil data, disarankan: (1) memprioritaskan perbaikan pada aspek dengan indeks terendah, yaitu '+gs[rank[rank.length-1].i]+'; (2) menindaklanjuti aspek dengan indeks kedua terendah, yaitu '+gs[rank[rank.length-2].i]+', dengan langkah yang terukur; (3) mempertahankan dan menjadikan praktik baik pada aspek tertinggi, yaitu '+gs[rank[0].i]+', sebagai acuan; dan (4) melakukan survei lanjutan dengan jumlah responden yang lebih besar agar hasil semakin mencerminkan populasi.');
+H('5.3  Keterbatasan');marks['s53']=d.getNumberOfPages();
+Pg('Jumlah responden terbatas (n = '+n+') dan dipilih secara sukarela, sehingga hasil tidak dapat digeneralisasi ke seluruh populasi. Jawaban responden juga bersifat persepsi diri, sehingga dapat berbeda dengan kondisi di lapangan.');
 /* ===== DAFTAR PUSTAKA ===== */
-sect('dp');C('DAFTAR PUSTAKA',14,26,true);
-PUST.forEach(function(t){Pg(t,10)});
-/* ===== LAMPIRAN ===== */
+sect('dp');C('DAFTAR PUSTAKA',14,26,true);marks['dp0']=d.getNumberOfPages();
+PUST.forEach(function(t){d.setFont('times','normal');d.setFontSize(10);var L=d.splitTextToSize(t,CW);need(L.length*14.5);d.text(L,MX,y,{align:'justify'});y+=L.length*14.5+8});
+/* ===== LAMPIRAN (margin dan kertas sama dengan seluruh laporan) ===== */
 sect('lamp');C('LAMPIRAN',14,24,true);
 d.setFont('times','bold');d.setFontSize(11);d.text('Lampiran 1. Struktur Kuesioner',MX,y);y+=18;
-Pg('Kuesioner terdiri atas '+items.length+' pernyataan skala Likert 1-5 yang dikelompokkan ke dalam '+gs.length+' aspek dan satu pertanyaan terbuka (kritik dan saran). Daftar pernyataan per aspek adalah sebagai berikut.',9.5);
+Pg('Kuesioner terdiri atas '+items.length+' pernyataan skala Likert 1-5 yang dikelompokkan ke dalam '+gs.length+' aspek dan satu pertanyaan terbuka (kritik dan saran). Daftar pernyataan per aspek disajikan pada tabel berikut.',10);
 var rows1=[];
 gs.forEach(function(g,gi){gmap[g].forEach(function(j,k){rows1.push([k===0?g:'','X'+(items.indexOf(j)+1),s.qs[j].t])})});
-TBL(['Aspek','Kode','Pernyataan'],rows1,8,{0:{cellWidth:150},1:{cellWidth:50},2:{cellWidth:295}});
-d.setFont('times','italic');d.setFontSize(9);d.text('Sumber: Dokumen survei "'+s.title+'".',MX,y);y+=16;
-if(y+80>BTM){d.addPage();y=60}
+TBL(['Aspek','Kode','Pernyataan'],rows1,9,{0:{cellWidth:140},1:{cellWidth:50},2:{cellWidth:300}});
+d.setFont('times','italic');d.setFontSize(9);d.text('Sumber: Dokumen survei "'+s.title+'".',MX,y);y+=20;
 d.setFont('times','bold');d.setFontSize(11);d.text('Lampiran 2. Data Mentah Respons (n = '+n+')',MX,y);y+=18;
-Pg('Kolom X1-X'+items.length+' adalah butir pernyataan secara berurutan sesuai Tabel 5 dan Lampiran 1; nilai 1-5 adalah skor Likert. Jawaban kritik dan saran tidak ditampilkan. Data dibagi menjadi dua tabel agar tetap pada ukuran kertas yang sama.',9.5);
+Pg('Kolom X1-X'+items.length+' adalah butir pernyataan secara berurutan sesuai Lampiran 1; nilai 1-5 adalah skor Likert. Data dibagi menjadi dua tabel dengan margin kertas yang sama seperti bagian lain laporan.',10);
 var half=Math.ceil(items.length/2);
 marks['t6']=d.getNumberOfPages();cap('Tabel 6. Data Mentah Respons, Butir X1-X'+half);
-TBL(['No'].concat(items.slice(0,half).map(function(j,i){return'X'+(i+1)})),st.r[s.id].map(function(r,i){return[i+1].concat(items.slice(0,half).map(function(j){var v=r[j];return(v===''||v==null)?'-':v}))}),5.5);
+TBL(['No'].concat(items.slice(0,half).map(function(j,i){return'X'+(i+1)})),st.r[s.id].map(function(r,i){return[i+1].concat(items.slice(0,half).map(function(j){var val=r[j];return(val===''||val==null)?'-':val}))}),6,null,{fontSize:6,lineWidth:.2,cellPadding:1.5,halign:'center'});
 marks['t7']=d.getNumberOfPages();cap('Tabel 7. Data Mentah Respons, Butir X'+(half+1)+'-X'+items.length);
-TBL(['No'].concat(items.slice(half).map(function(j,i){return'X'+(half+i+1)})),st.r[s.id].map(function(r,i){return[i+1].concat(items.slice(half).map(function(j){var v=r[j];return(v===''||v==null)?'-':v}))}),5.5);
-d.setFont('times','italic');d.setFontSize(9);d.text('Sumber: Ekspor data respons aplikasi SurveiKu.',MX,y);
-/* nomor halaman pojok kanan bawah (skip cover) */
+TBL(['No'].concat(items.slice(half).map(function(j,i){return'X'+(half+i+1)})),st.r[s.id].map(function(r,i){return[i+1].concat(items.slice(half).map(function(j){var val=r[j];return(val===''||val==null)?'-':val}))}),6,null,{fontSize:6,lineWidth:.2,cellPadding:1.5,halign:'center'});
+d.setFont('times','italic');d.setFontSize(9);d.text('Sumber: Data respons aplikasi SurveiKu.',MX,y);
+/* nomor halaman (tanpa cover) */
 var N=d.getNumberOfPages();
-for(var i=2;i<=N;i++){d.setPage(i);d.setFont('times','normal');d.setFontSize(10);d.setTextColor(0,0,0);d.text(String(i),PW-MX,PH-28,{align:'right'})}
-return{doc:d,marks:marks}
-}
+for(var i=2;i<=N;i++){d.setPage(i);d.setFont('times','normal');d.setFontSize(10);d.setTextColor(0,0,0);d.text(String(i),PW-MX,PH-28,{align:'right'});d.setTextColor(0,0,0)}
+return{doc:d,marks:marks}}
 var r1=gen({});var r2=gen(r1.marks);var d=r2.doc;
-var buf=d.output('arraybuffer'),fn='laporan-survei-lengkap.pdf',dl=null;
-try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
-if(dl){try{await dl.save({filename:fn,data:buf});return}catch(e){}}d.save(fn)
-}
+d.save('laporan-survei-lengkap.pdf')}
 </script>
 </body>
 </html>
